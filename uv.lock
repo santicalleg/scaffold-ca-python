@@ -68,7 +68,6 @@ wheels = [
 
 [[package]]
 name = "scaffold-ca-python"
-version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "rich" },

@@ -1,7 +1,7 @@
 [project]
 name = "scaffold-ca-python"
-version = "0.1.0"
-description = "Add your description here"
+dynamic = ["version"]
+description = "Scaffolder to generate Clean Architecture apps"
 readme = "README.md"
 authors = [
     { email = "santiagocalleg@gmail.com" }
@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-scaffold-ca-python = "scaffold_ca_python:app"
+scaffold-ca-python = "scaffold_ca_python.cli:app"
 
 [build-system]
 requires = ["hatchling", "uv-dynamic-versioning"]

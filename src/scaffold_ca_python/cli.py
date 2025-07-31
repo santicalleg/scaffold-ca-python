@@ -13,7 +13,7 @@ app = typer.Typer(
 def version() -> None:
     """Show the MCP version."""
     try:
-        version = importlib.metadata.version("scaffold-clean-architecture-python")
+        version = importlib.metadata.version("scaffold-ca-python")
         print(f"Scaffold version: {version}")
     except importlib.metadata.PackageNotFoundError:
         print("Scaffold version unknown (package not installed)")
