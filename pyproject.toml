@@ -1,0 +1,28 @@
+[project]
+name = "scaffold-ca-python"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { email = "santiagocalleg@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "rich>=14.1.0",
+    "typer>=0.16.0",
+]
+
+[project.scripts]
+scaffold-ca-python = "scaffold_ca_python:app"
+
+[build-system]
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.uv-dynamic-versioning]
+vcs = "git"
+style = "pep440"
+bump = true
