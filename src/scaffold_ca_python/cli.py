@@ -11,10 +11,15 @@ app = typer.Typer(
 
 @app.command()
 def version() -> None:
-    """Show the MCP version."""
+    """Show the Scaffold version."""
     try:
         version = importlib.metadata.version("scaffold-ca-python")
         print(f"Scaffold version: {version}")
     except importlib.metadata.PackageNotFoundError:
         print("Scaffold version unknown (package not installed)")
         sys.exit(1)
+
+@app.command()
+def hello(name: str = typer.Argument("World")) -> None:
+    """Say hello to NAME."""
+    typer.echo(f"Hello, {name}!")
