@@ -24,14 +24,14 @@
 
 **Purpose**: Configure the tool project itself — dependencies, toolchain, entry points, and the minimal CLI skeleton. These tasks are prerequisites for everything else.
 
-- [ ] T001 Add missing runtime dependencies (jinja2, pydantic>=2, pyyaml) to `[project.dependencies]` in pyproject.toml
-- [ ] T002 Create full source and test directory skeleton with `__init__.py` files: `src/scaffold_ca_python/{commands,core,models,templates}` and `tests/{commands,core,models,templates}` in the repository root
-- [ ] T003 [P] Add `[tool.ruff]` configuration (line-length=120, select=["E","F","I","UP","ANN"], target-version="py313") to pyproject.toml
-- [ ] T004 [P] Add `[tool.mypy]` strict configuration (strict=true, python_version="3.13") to pyproject.toml
-- [ ] T005 [P] Add `[tool.pytest.ini_options]` with `addopts = "--cov=scaffold_ca_python --cov-fail-under=80"` and `[tool.coverage.run]` source list to pyproject.toml
-- [ ] T006 Add `[tool.hatch.build.targets.wheel]` block declaring `packages = ["src/scaffold_ca_python"]` and `[tool.hatch.build.targets.wheel.force-include]` glob for `templates/**` to pyproject.toml
-- [ ] T007 Add `scaffold = "scaffold_ca_python.cli:app"` alias under `[project.scripts]` (alongside the existing `scaffold-ca-python` entry) in pyproject.toml
-- [ ] T008 Refactor `src/scaffold_ca_python/cli.py` to accept `register(app)` calls from each command module, remove the placeholder `version` command, and keep the Typer app as the sole exported symbol
+- [X] T001 Add missing runtime dependencies (jinja2, pydantic>=2, pyyaml) to `[project.dependencies]` in pyproject.toml
+- [X] T002 Create full source and test directory skeleton with `__init__.py` files: `src/scaffold_ca_python/{commands,core,models,templates}` and `tests/{commands,core,models,templates}` in the repository root
+- [X] T003 [P] Add `[tool.ruff]` configuration (line-length=120, select=["E","F","I","UP","ANN"], target-version="py313") to pyproject.toml
+- [X] T004 [P] Add `[tool.mypy]` strict configuration (strict=true, python_version="3.13") to pyproject.toml
+- [X] T005 [P] Add `[tool.pytest.ini_options]` with `addopts = "--cov=scaffold_ca_python --cov-fail-under=80"` and `[tool.coverage.run]` source list to pyproject.toml
+- [X] T006 Add `[tool.hatch.build.targets.wheel]` block declaring `packages = ["src/scaffold_ca_python"]` and `[tool.hatch.build.targets.wheel.force-include]` glob for `templates/**` to pyproject.toml
+- [X] T007 Add `scaffold = "scaffold_ca_python.cli:app"` alias under `[project.scripts]` (alongside the existing `scaffold-ca-python` entry) in pyproject.toml
+- [X] T008 Refactor `src/scaffold_ca_python/cli.py` to accept `register(app)` calls from each command module, remove the placeholder `version` command, and keep the Typer app as the sole exported symbol
 
 **Checkpoint**: `uv sync` installs cleanly, `scaffold --help` shows an empty app, and all tool configs pass `ruff check .` and `mypy src/`.
 

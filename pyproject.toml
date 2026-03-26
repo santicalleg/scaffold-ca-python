@@ -8,12 +8,16 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "jinja2>=3.1",
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
     "rich>=14.1.0",
     "typer>=0.16.0",
 ]
 
 [project.scripts]
 scaffold-ca-python = "scaffold_ca_python.cli:app"
+scaffold = "scaffold_ca_python.cli:app"
 
 [build-system]
 requires = ["hatchling", "uv-dynamic-versioning"]
@@ -26,3 +30,36 @@ source = "uv-dynamic-versioning"
 vcs = "git"
 style = "pep440"
 bump = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/scaffold_ca_python"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/scaffold_ca_python/templates" = "scaffold_ca_python/templates"
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "ANN"]
+
+[tool.mypy]
+strict = true
+python_version = "3.13"
+
+[tool.pytest.ini_options]
+addopts = "--cov=scaffold_ca_python --cov-fail-under=80"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["scaffold_ca_python"]
+
+[dependency-groups]
+dev = [
+    "jinja2>=3.1.6",
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.8",
+]
