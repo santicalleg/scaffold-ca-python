@@ -1,0 +1,41 @@
+"""{{ pascal_name }} — async event handler entry point stub (tech: {{ tech }})."""
+from __future__ import annotations
+
+{% if mode == "async" %}
+import asyncio
+
+
+class {{ pascal_name }}EventHandler:
+    """Async event handler for {{ pascal_name }} using {{ tech }}."""
+
+    def __init__(self) -> None:
+        # TODO: inject {{ tech }} connection/channel
+        pass
+
+    async def handle(self, event: dict) -> None:
+        """Handle an incoming {{ pascal_name }} event from {{ tech }}."""
+        # TODO: call appropriate use case
+        raise NotImplementedError
+
+    async def start(self) -> None:
+        """Start consuming events from {{ tech }}."""
+        # TODO: initialise {{ tech }} consumer and call self.handle per message
+        raise NotImplementedError
+{% else %}
+class {{ pascal_name }}EventHandler:
+    """Sync event handler for {{ pascal_name }} using {{ tech }}."""
+
+    def __init__(self) -> None:
+        # TODO: inject {{ tech }} connection/channel
+        pass
+
+    def handle(self, event: dict) -> None:
+        """Handle an incoming {{ pascal_name }} event from {{ tech }}."""
+        # TODO: call appropriate use case
+        raise NotImplementedError
+
+    def start(self) -> None:
+        """Start consuming events from {{ tech }}."""
+        # TODO: initialise {{ tech }} consumer and call self.handle per message
+        raise NotImplementedError
+{% endif %}

@@ -1,0 +1,29 @@
+"""{{ pascal_name }} — Amazon SQS listener entry point stub."""
+from __future__ import annotations
+
+{% if mode == "async" %}
+import asyncio
+
+
+class {{ pascal_name }}SqsListener:
+    """Async SQS listener for {{ pascal_name }}."""
+
+    def __init__(self, queue_url: str = "") -> None:
+        self._queue_url = queue_url
+
+    async def start(self) -> None:
+        """Start polling SQS queue for {{ pascal_name }} messages."""
+        # TODO: use aiobotocore or boto3 in a thread to poll and process
+        raise NotImplementedError
+{% else %}
+class {{ pascal_name }}SqsListener:
+    """Sync SQS listener for {{ pascal_name }}."""
+
+    def __init__(self, queue_url: str = "") -> None:
+        self._queue_url = queue_url
+
+    def start(self) -> None:
+        """Start polling SQS queue for {{ pascal_name }} messages."""
+        # TODO: use boto3 sqs.receive_message in a loop
+        raise NotImplementedError
+{% endif %}

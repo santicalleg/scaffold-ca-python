@@ -1,0 +1,17 @@
+"""{{ pascal_name }} — CLI entry point stub."""
+from __future__ import annotations
+
+import typer
+
+{{ snake_name }}_app = typer.Typer(name="{{ snake_name }}", help="{{ pascal_name }} CLI entry point")
+
+
+@{{ snake_name }}_app.command()
+def run() -> None:
+    """Run the {{ pascal_name }} CLI command."""
+    # TODO: call use case
+    typer.echo("{{ pascal_name }} CLI entry point — implement me!")
+
+
+if __name__ == "__main__":
+    {{ snake_name }}_app()

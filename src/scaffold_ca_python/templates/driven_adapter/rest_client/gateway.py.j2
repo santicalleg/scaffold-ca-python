@@ -1,0 +1,17 @@
+"""{{ pascal_name }}Gateway — domain port generated for {{ pascal_name }}."""
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+from typing import Any
+
+
+class {{ pascal_name }}Gateway(ABC):
+    """Abstract gateway (port) for {{ pascal_name }}.
+
+    Implement this interface in infrastructure/driven_adapters/.
+    Only domain layers may depend on this class.
+    """
+
+    # TODO: define the operations that driven adapters must implement
+    @abstractmethod
+    def execute(self, *args: Any, **kwargs: Any) -> Any: ...

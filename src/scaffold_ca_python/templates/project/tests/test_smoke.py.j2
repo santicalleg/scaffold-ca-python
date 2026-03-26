@@ -1,0 +1,15 @@
+"""Smoke test — verifies the project was scaffolded correctly (FR-004)."""
+
+
+def test_package_importable() -> None:
+    """The top-level package must be importable without errors."""
+    import importlib
+    pkg = importlib.import_module("{{ package }}")
+    assert pkg is not None
+
+
+def test_app_main_importable() -> None:
+    """The app.main module must be importable without errors."""
+    import importlib
+    main = importlib.import_module("{{ package }}.app.main")
+    assert hasattr(main, "main")

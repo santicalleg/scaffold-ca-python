@@ -1,0 +1,7 @@
+from __future__ import annotations
+from abc import ABC, abstractmethod
+from typing import Any
+
+class {{ pascal_name }}Gateway(ABC):
+    @abstractmethod
+    def execute(self, *args: Any, **kwargs: Any) -> Any: ...

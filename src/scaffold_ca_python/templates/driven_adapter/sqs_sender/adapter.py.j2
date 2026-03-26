@@ -1,0 +1,17 @@
+"""{{ pascal_name }} — Amazon SQS message sender driven adapter."""
+from __future__ import annotations
+
+from {{ package }}.domain.model.gateways.{{ snake_name }}_gateway import {{ pascal_name }}Gateway
+
+
+class {{ pascal_name }}SqsSender({{ pascal_name }}Gateway):
+    """Amazon SQS message sender adapter for {{ pascal_name }}Gateway.
+
+    Inject a boto3 SQS client and the queue URL.
+    """
+
+    def __init__(self, sqs_client=None, queue_url: str = "") -> None:
+        self._client = sqs_client
+        self._queue_url = queue_url
+
+    # TODO: implement gateway send method(s) using self._client.send_message

@@ -1,0 +1,50 @@
+"""{{ project_name }} — application entry point and DI wiring.
+
+This module is the composition root. It instantiates all infrastructure
+components and wires them to the use cases via the domain gateway protocols.
+
+Add your adapters and use cases here as you generate them with
+`scaffold generate driven-adapter` and `scaffold generate use-case`.
+"""
+from __future__ import annotations
+
+{% if mode == "async" %}
+import asyncio
+{% endif %}
+
+
+def build_container() -> dict:
+    """Construct and return the application dependency container.
+
+    Replace the placeholder no-op implementations with real adapters.
+    """
+    # --- driven adapters (add generated adapters here) ---
+    adapters: dict = {}
+
+    # --- use cases (add generated use cases here) ---
+    use_cases: dict = {}
+
+    return {"adapters": adapters, "use_cases": use_cases}
+
+
+{% if mode == "async" %}
+async def main() -> None:
+    """Async application entry point."""
+    container = build_container()
+    # TODO: start your entry points (e.g. FastAPI app, Kafka consumer)
+    print(f"{{ project_name }} started (async). Container: {container}")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+{% else %}
+def main() -> None:
+    """Synchronous application entry point."""
+    container = build_container()
+    # TODO: start your entry points (e.g. Flask app, CLI runner)
+    print(f"{{ project_name }} started. Container: {container}")
+
+
+if __name__ == "__main__":
+    main()
+{% endif %}

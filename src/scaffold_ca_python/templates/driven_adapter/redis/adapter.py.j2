@@ -1,0 +1,24 @@
+"""{{ pascal_name }} — Redis driven adapter (mode: {{ mode }})."""
+from __future__ import annotations
+
+from {{ package }}.domain.model.gateways.{{ snake_name }}_gateway import {{ pascal_name }}Gateway
+
+{% if mode == "repository" %}
+# Repository mode: uses Redis as a key-value store for domain entities.
+class {{ pascal_name }}RedisAdapter({{ pascal_name }}Gateway):
+    """Redis repository adapter for {{ pascal_name }}Gateway."""
+
+    def __init__(self, client=None) -> None:
+        self._client = client  # redis.Redis or redis.asyncio.Redis
+
+    # TODO: implement gateway methods (get/set/delete keys)
+{% else %}
+# Template mode: uses Redis as a generic cache / pub-sub transport.
+class {{ pascal_name }}RedisAdapter({{ pascal_name }}Gateway):
+    """Redis template adapter for {{ pascal_name }}Gateway."""
+
+    def __init__(self, client=None) -> None:
+        self._client = client  # redis.Redis or redis.asyncio.Redis
+
+    # TODO: implement gateway methods (execute templates, pipelines)
+{% endif %}

@@ -1,0 +1,17 @@
+"""{{ pascal_name }} — Kafka producer (sender) driven adapter."""
+from __future__ import annotations
+
+from {{ package }}.domain.model.gateways.{{ snake_name }}_gateway import {{ pascal_name }}Gateway
+
+
+class {{ pascal_name }}KafkaSender({{ pascal_name }}Gateway):
+    """Kafka producer adapter for {{ pascal_name }}Gateway.
+
+    Inject a confluent-kafka Producer or aiokafka AIOKafkaProducer.
+    """
+
+    def __init__(self, producer=None, topic: str = "") -> None:
+        self._producer = producer
+        self._topic = topic
+
+    # TODO: implement gateway send method(s) using self._producer

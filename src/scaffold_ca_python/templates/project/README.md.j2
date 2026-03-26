@@ -1,0 +1,50 @@
+# {{ project_name }}
+
+A Python project scaffolded with [scaffold-ca-python](https://github.com/scaffold-ca-python/scaffold-ca-python) following **Clean Architecture** principles.
+
+## Project structure
+
+```
+{{ package }}/
+├── domain/
+│   ├── model/          # Entities (dataclasses) and gateway interfaces (ports)
+│   │   └── gateways/   # Abstract protocols — define WHAT adapters must do
+│   └── usecase/        # Use case classes — orchestrate business logic
+├── infrastructure/
+│   ├── driven_adapters/ # Concrete gateway implementations (DB, HTTP, queues …)
+│   ├── entry_points/    # Delivery mechanisms (REST, events, CLI …)
+│   └── helpers/         # Shared utilities for adapters and entry points
+├── app/                 # Composition root — DI wiring, application entry point
+└── deployment/          # Dockerfile and CI/CD pipeline files
+```
+
+## Layer dependency rules
+
+```
+domain/model        ← no imports from other layers
+domain/usecase      ← may import from domain/model only
+infrastructure/     ← may import from domain/
+app/                ← may import from any layer (composition root)
+```
+
+Run `scaffold validate` at any time to check for violations.
+
+## Getting started
+
+```bash
+# Install dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest
+
+# Start the application
+python -m {{ package }}.app.main
+```
+
+## Generated with
+
+```
+scaffold-ca-python {{ tool_version }}
+mode: {{ mode }}
+```

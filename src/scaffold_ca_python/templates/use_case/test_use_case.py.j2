@@ -1,0 +1,27 @@
+"""Tests for {{ pascal_name }}UseCase."""
+from __future__ import annotations
+
+import pytest
+from {{ package }}.domain.usecase.{{ snake_name }}_use_case import {{ pascal_name }}UseCase
+
+
+def test_{{ snake_name }}_use_case_instantiates() -> None:
+    """{{ pascal_name }}UseCase must instantiate without arguments."""
+    use_case = {{ pascal_name }}UseCase()
+    assert use_case is not None
+
+
+{% if mode == "async" %}
+@pytest.mark.asyncio
+async def test_{{ snake_name }}_use_case_raises_not_implemented() -> None:
+    """execute() must raise NotImplementedError until implemented."""
+    use_case = {{ pascal_name }}UseCase()
+    with pytest.raises(NotImplementedError):
+        await use_case.execute()
+{% else %}
+def test_{{ snake_name }}_use_case_raises_not_implemented() -> None:
+    """execute() must raise NotImplementedError until implemented."""
+    use_case = {{ pascal_name }}UseCase()
+    with pytest.raises(NotImplementedError):
+        use_case.execute()
+{% endif %}

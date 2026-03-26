@@ -1,0 +1,36 @@
+"""{{ pascal_name }}UseCase — application use case."""
+from __future__ import annotations
+
+{% if mode == "async" %}
+class {{ pascal_name }}UseCase:
+    """Use case for {{ pascal_name }}.
+
+    Inject the required gateway(s) via the constructor.
+    Only import from domain.model — never from infrastructure layers.
+    """
+
+    def __init__(self) -> None:
+        # TODO: inject gateway(s) — e.g. self._gateway = gateway
+        pass
+
+    async def execute(self, *args, **kwargs):
+        """Execute the {{ pascal_name }} use case."""
+        # TODO: implement business logic
+        raise NotImplementedError
+{% else %}
+class {{ pascal_name }}UseCase:
+    """Use case for {{ pascal_name }}.
+
+    Inject the required gateway(s) via the constructor.
+    Only import from domain.model — never from infrastructure layers.
+    """
+
+    def __init__(self) -> None:
+        # TODO: inject gateway(s) — e.g. self._gateway = gateway
+        pass
+
+    def execute(self, *args, **kwargs):
+        """Execute the {{ pascal_name }} use case."""
+        # TODO: implement business logic
+        raise NotImplementedError
+{% endif %}

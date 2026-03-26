@@ -1,0 +1,17 @@
+"""{{ pascal_name }} — AWS S3 driven adapter."""
+from __future__ import annotations
+
+from {{ package }}.domain.model.gateways.{{ snake_name }}_gateway import {{ pascal_name }}Gateway
+
+
+class {{ pascal_name }}S3Adapter({{ pascal_name }}Gateway):
+    """AWS S3 adapter for {{ pascal_name }}Gateway.
+
+    Inject a boto3 S3 client.
+    """
+
+    def __init__(self, s3_client=None, bucket: str = "") -> None:
+        self._client = s3_client
+        self._bucket = bucket
+
+    # TODO: implement gateway methods (put_object, get_object, delete_object)

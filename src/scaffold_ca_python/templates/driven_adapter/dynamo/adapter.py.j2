@@ -1,0 +1,16 @@
+"""{{ pascal_name }} — DynamoDB driven adapter."""
+from __future__ import annotations
+
+from {{ package }}.domain.model.gateways.{{ snake_name }}_gateway import {{ pascal_name }}Gateway
+
+
+class {{ pascal_name }}DynamoAdapter({{ pascal_name }}Gateway):
+    """DynamoDB adapter for {{ pascal_name }}Gateway.
+
+    Inject a boto3 DynamoDB resource / table.
+    """
+
+    def __init__(self, table=None) -> None:
+        self._table = table
+
+    # TODO: implement gateway methods using self._table

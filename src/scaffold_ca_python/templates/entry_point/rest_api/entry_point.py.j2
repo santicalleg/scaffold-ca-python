@@ -1,0 +1,46 @@
+"""{{ pascal_name }} — REST API entry point stub."""
+from __future__ import annotations
+
+{% if mode == "async" %}
+# Async mode: uses FastAPI-style async router
+try:
+    from fastapi import APIRouter
+    router = APIRouter(prefix="/{{ snake_name }}", tags=["{{ pascal_name }}"])
+
+    @router.get("/")
+    async def list_{{ snake_name }}():
+        """List {{ pascal_name }} resources."""
+        # TODO: call use case
+        return []
+
+    @router.post("/")
+    async def create_{{ snake_name }}(payload: dict):
+        """Create a {{ pascal_name }} resource."""
+        # TODO: call use case
+        return {}
+
+except ImportError:
+    # FastAPI not installed — replace with your preferred async web framework
+    pass
+{% else %}
+# Sync mode: uses Flask-style blueprint
+try:
+    from flask import Blueprint, jsonify, request
+    {{ snake_name }}_bp = Blueprint("{{ snake_name }}", __name__, url_prefix="/{{ snake_name }}")
+
+    @{{ snake_name }}_bp.get("/")
+    def list_{{ snake_name }}():
+        """List {{ pascal_name }} resources."""
+        # TODO: call use case
+        return jsonify([])
+
+    @{{ snake_name }}_bp.post("/")
+    def create_{{ snake_name }}():
+        """Create a {{ pascal_name }} resource."""
+        # TODO: call use case
+        return jsonify({}), 201
+
+except ImportError:
+    # Flask not installed — replace with your preferred sync web framework
+    pass
+{% endif %}

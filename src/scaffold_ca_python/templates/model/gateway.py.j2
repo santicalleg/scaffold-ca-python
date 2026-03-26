@@ -1,0 +1,43 @@
+"""{{ pascal_name }}Gateway — domain port (interface) for {{ pascal_name }}."""
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+from typing import Any
+
+{% if mode == "async" %}
+class {{ pascal_name }}Gateway(ABC):
+    """Abstract gateway for {{ pascal_name }} persistence / retrieval."""
+
+    @abstractmethod
+    async def find_by_id(self, entity_id: Any) -> "{{ pascal_name }} | None":
+        """Retrieve a {{ pascal_name }} by its identifier."""
+        ...
+
+    @abstractmethod
+    async def save(self, entity: Any) -> None:
+        """Persist a {{ pascal_name }}."""
+        ...
+
+    @abstractmethod
+    async def delete(self, entity_id: Any) -> None:
+        """Remove a {{ pascal_name }} by its identifier."""
+        ...
+{% else %}
+class {{ pascal_name }}Gateway(ABC):
+    """Abstract gateway for {{ pascal_name }} persistence / retrieval."""
+
+    @abstractmethod
+    def find_by_id(self, entity_id: Any) -> "{{ pascal_name }} | None":
+        """Retrieve a {{ pascal_name }} by its identifier."""
+        ...
+
+    @abstractmethod
+    def save(self, entity: Any) -> None:
+        """Persist a {{ pascal_name }}."""
+        ...
+
+    @abstractmethod
+    def delete(self, entity_id: Any) -> None:
+        """Remove a {{ pascal_name }} by its identifier."""
+        ...
+{% endif %}

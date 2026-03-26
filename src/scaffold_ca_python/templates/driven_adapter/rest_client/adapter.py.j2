@@ -1,0 +1,23 @@
+"""{{ pascal_name }} — REST client driven adapter."""
+from __future__ import annotations
+
+import urllib.request
+import urllib.error
+import json
+
+from {{ package }}.domain.model.gateways.{{ snake_name }}_gateway import {{ pascal_name }}Gateway
+
+BASE_URL = "{{ url }}"
+
+
+class {{ pascal_name }}RestClient({{ pascal_name }}Gateway):
+    """HTTP REST client adapter for {{ pascal_name }}Gateway.
+
+    Calls {{ url }} to fulfil gateway contract.
+    Replace urllib with httpx / aiohttp as needed.
+    """
+
+    def __init__(self, base_url: str = BASE_URL) -> None:
+        self._base_url = base_url.rstrip("/")
+
+    # TODO: implement gateway methods using self._base_url

@@ -8,12 +8,21 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "jinja2>=3.1",
     "rich>=14.1.0",
     "typer>=0.16.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+]
+
 [project.scripts]
 scaffold-ca-python = "scaffold_ca_python.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/scaffold_ca_python"]
 
 [build-system]
 requires = ["hatchling", "uv-dynamic-versioning"]

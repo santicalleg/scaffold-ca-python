@@ -1,0 +1,17 @@
+"""{{ pascal_name }} entity — domain model."""
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Any
+
+
+@dataclass
+class {{ pascal_name }}:
+    """{{ pascal_name }} domain entity.
+
+    Add your fields here. Use primitive types or other value objects.
+    Do not import from infrastructure layers.
+    """
+    id: Any = field(default=None)
+
+    # TODO: add your domain fields here

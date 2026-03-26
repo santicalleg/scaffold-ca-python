@@ -1,0 +1,31 @@
+"""{{ pascal_name }} — Kafka consumer entry point stub."""
+from __future__ import annotations
+
+{% if mode == "async" %}
+import asyncio
+
+
+class {{ pascal_name }}KafkaConsumer:
+    """Async Kafka consumer for {{ pascal_name }} events."""
+
+    def __init__(self, topic: str = "{{ snake_name }}") -> None:
+        self._topic = topic
+
+    async def start(self) -> None:
+        """Start consuming messages from Kafka topic {{ snake_name }}."""
+        # TODO: initialise aiokafka AIOKafkaConsumer and consume messages
+        # Inject use cases to process each message
+        raise NotImplementedError
+{% else %}
+class {{ pascal_name }}KafkaConsumer:
+    """Sync Kafka consumer for {{ pascal_name }} events."""
+
+    def __init__(self, topic: str = "{{ snake_name }}") -> None:
+        self._topic = topic
+
+    def start(self) -> None:
+        """Start consuming messages from Kafka topic {{ snake_name }}."""
+        # TODO: initialise confluent_kafka Consumer and poll messages
+        # Inject use cases to process each message
+        raise NotImplementedError
+{% endif %}

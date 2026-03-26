@@ -1,0 +1,20 @@
+"""{{ pascal_name }} — GraphQL entry point stub."""
+from __future__ import annotations
+
+# strawberry is the recommended GraphQL library for Python 3.13+
+# pip install strawberry-graphql
+try:
+    import strawberry
+
+    @strawberry.type
+    class Query:
+        @strawberry.field
+        def {{ snake_name }}_info(self) -> str:
+            # TODO: call use case
+            return "{{ pascal_name }} GraphQL entry point"
+
+    schema = strawberry.Schema(query=Query)
+
+except ImportError:
+    # strawberry not installed — replace with your preferred GraphQL library
+    schema = None  # type: ignore[assignment]
