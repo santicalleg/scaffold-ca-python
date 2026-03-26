@@ -1,30 +1,56 @@
 <!--
 ## Sync Impact Report
 
-**Version change**: (new) → 1.0.0
-**Type**: Initial ratification — all sections are new.
+**Version change**: 1.0.0 → 2.0.0
+**Type**: MAJOR — backward-incompatible reduction of Principle III command scope; new mandatory
+constraint added to Principle II (`tests/templates/` directory).
+
+### Modified principles
+- **Principle II** — Added mandatory `tests/templates/` directory requirement with per-group
+  rendering assertions (new bullet under the existing unit-test bullet).
+- **Principle III** — Removed `gat`/`gpt` command rows (out of v1 scope); scoped `gda` types
+  from 9 to 3 (`rest-consumer`, `secrets`, `generic`); scoped `gep` types from 8 to 4
+  (`restapi`, `agent`, `mcp`, `generic`); `restapi` is now the canonical FastAPI entry-point
+  type name (previously `rest-client`).
 
 ### Added sections
-- Core Principles (I–VII)
-- Technology Stack
-- Governance
+None.
 
-### Modified / removed principles
-N/A (initial ratification)
+### Removed sections
+- `generate-acceptance-test` (`gat`) row from Principle III command table.
+- `generate-performance-test` (`gpt`) row from Principle III command table.
 
-### Template alignment
-| Template | Status | Notes |
+### Templates requiring updates
+| File | Status | Notes |
 |---|---|---|
-| `.specify/templates/plan-template.md` | ✅ Compatible | Constitution Check gate is a feature-level placeholder; no structural update required |
-| `.specify/templates/spec-template.md` | ✅ Compatible | Existing structure supports CA and TDD requirements |
-| `.specify/templates/tasks-template.md` | ✅ Updated | Removed "tests are OPTIONAL" language to match Principle V (Test-First NON-NEGOTIABLE) |
-| `.specify/templates/agent-file-template.md` | ✅ No action needed | No outdated agent-specific references found |
+| `specs/004-scaffold-ca-python-cli/plan.md` | ✅ updated | Constitution Check: Principle II (tests/templates/ mandate) + Principle III (remove scoped note) |
+| `specs/004-scaffold-ca-python-cli/spec.md` | ✅ updated | `rest-client` → `restapi` in US-5 and FR-009; `gep` supported types updated |
+| `specs/004-scaffold-ca-python-cli/contracts/gep.md` | ✅ updated | All `rest-client` → `restapi`; `rest_client/` → `restapi/` directory names |
+| `specs/004-scaffold-ca-python-cli/quickstart.md` | ✅ updated | `gep --type rest-client` → `gep --type restapi`; directory reference updated |
+| `specs/004-scaffold-ca-python-cli/tasks.md` | ✅ updated | `rest-client` → `restapi` in Phase 6; T083–T089 added for `tests/templates/` |
 
 ### Deferred items
 None — all placeholders resolved.
+
+---
+
+### Amendment v2.0.1 (2026-03-26) — PATCH
+**Type**: PATCH — wording clarification only; no semantic change to governance.
+
+**Changes**:
+- Principle III `generate-project` table cell: removed "asyncio or sync" and "optional Pydantic
+  models" (both contradicted FR-003 and FR-004); replaced with "async-only, Pydantic v2 domain
+  models — no sync mode, no opt-out".
+- Principle III `generate-pipeline` table cell: added Azure Pipelines alongside GitHub Actions
+  to match FR-015 scope (no new commands or constraints added).
+
+**Templates updated**: None — both changes correct stale table prose; no downstream template
+or artifact structure was affected.
 -->
 
 # scaffold-ca-python Constitution
+
+**Version**: 2.0.1 | **Ratified**: 2026-03-25 | **Last amended**: 2026-03-26
 
 ## Core Principles
 
@@ -64,6 +90,11 @@ concatenation or f-string assembly for generated code is FORBIDDEN.
 - Templates MUST be versioned alongside the CLI source.
 - Templates MUST have dedicated unit tests that render them with representative inputs
   and assert structural correctness of the output.
+- A `tests/templates/` directory MUST be present in the CLI test suite. It MUST contain
+  at least one test per template group (one per subdirectory under
+  `src/scaffold_ca_python/templates/`) that renders the template with representative
+  context and asserts: (a) key class/function names are present, (b) import statements
+  are correct, (c) async syntax is used where applicable.
 - Template context objects MUST be validated via Pydantic models before rendering.
 
 **Rationale**: A single rendering path eliminates inconsistencies between generated
@@ -78,15 +109,13 @@ for Python idioms:
 
 | Command | Alias | Purpose |
 |---|---|---|
-| `generate-project` | `ca` | Scaffold full CA project (asyncio or sync, pyproject.toml, optional Pydantic models, optional logging setup) |
+| `generate-project` | `ca` | Scaffold full CA project (async-only, pyproject.toml, Pydantic v2 domain models — no sync mode, no opt-out) |
 | `generate-model` | `gm` | Domain model class in `domain/model/` |
 | `generate-use-case` | `guc` | Use-case class in `domain/usecase/` |
-| `generate-driven-adapter` | `gda` | Driven adapter; types: `sqlalchemy`, `mongodb`, `redis`, `rest-consumer`, `sqs`, `s3`, `kafka`, `secrets`, `generic` |
-| `generate-entry-point` | `gep` | Entry point; types: `restapi` (FastAPI), `graphql`, `kafka`, `sqs`, `async-event-handler`, `mcp`, `agent` (A2A), `generic` |
+| `generate-driven-adapter` | `gda` | Driven adapter; types: `rest-consumer`, `secrets`, `generic` |
+| `generate-entry-point` | `gep` | Entry point; types: `restapi` (FastAPI), `agent` (A2A), `mcp`, `generic` |
 | `generate-helper` | `gh` | Utility helper module in `infrastructure/helpers/` |
-| `generate-pipeline` | `gpipe` | CI/CD pipeline files (GitHub Actions) |
-| `generate-acceptance-test` | `gat` | Acceptance test scaffold (pytest-bdd) |
-| `generate-performance-test` | `gpt` | Performance test scaffold (locust) |
+| `generate-pipeline` | `gpipe` | CI/CD pipeline files (GitHub Actions or Azure Pipelines, via mandatory `--provider`) |
 | `validate-structure` | `vs` | Validate CA layer boundaries and dependency rule |
 | `delete-module` | `dm` | Safely delete a generated module |
 | `update-project` | `up` | Update project dependencies to latest compatible versions |

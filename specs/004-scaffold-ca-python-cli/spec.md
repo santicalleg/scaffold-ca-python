@@ -2,7 +2,7 @@
 
 **Feature Branch**: `004-scaffold-ca-python-cli`  
 **Created**: 2026-03-25  
-**Status**: Draft  
+**Status**: Ready  
 **Input**: Build scaffold-ca-python, a command-line tool that allows Python developers to instantly scaffold production-ready Python applications following Clean Architecture principles, without having to manually set up the folder structure, boilerplate code, configuration files, or test scaffolds.
 
 ## User Scenarios & Testing *(mandatory)*
@@ -13,7 +13,7 @@ A developer wants to start a new Python project that follows Clean Architecture.
 
 **Why this priority**: It is the entry point for every other user story. Without a correctly scaffolded project, all generation commands have no target to operate on. This story alone constitutes a usable MVP.
 
-**Independent Test**: Running `scaffold-ca-python ca --name MyProject --package com.example` on an empty directory produces a project that can be started without any additional manual setup.
+**Independent Test**: Running `scaffold-ca-python ca --name MyProject --package com.example` on an empty directory produces a project that can be started without any additional manual setup. Verified by: (a) `uv sync` inside the generated directory completes without errors, and (b) `python -c "import my_project"` succeeds under the installed virtual environment — confirming all imports resolve and no unhandled exception is raised (per the "immediately runnable" definition in Assumptions).
 
 **Acceptance Scenarios**:
 
@@ -83,17 +83,18 @@ A developer wants to expose the application's use cases to the outside world via
 
 **Why this priority**: Entry points define how the application is triggered (HTTP, events, agents). Teams need to generate them reliably for each transport they support.
 
-**Independent Test**: Running `scaffold-ca-python gep --type rest-client` immediately produces a functional FastAPI router skeleton — no additional configuration or flags are required.
+**Independent Test**: Running `scaffold-ca-python gep --type restapi` immediately produces a functional FastAPI router skeleton — no additional configuration or flags are required.
 
 **Acceptance Scenarios**:
 
-1. **Given** a scaffolded project, **When** the developer runs `scaffold-ca-python gep --type rest-client`, **Then** `infrastructure/entry-points/rest-client/` is created immediately with a complete FastAPI router, at least one example handler stub, and a test scaffold — no additional flags are needed to activate FastAPI.
-2. **Given** `--type rest-client --swagger path/to/openapi.yaml`, **When** the OpenAPI file exists, **Then** the router is generated with routes derived from the provided specification.
-3. **Given** `--type agent`, **When** combined with `--enable-kafka`, **Then** a Kafka consumer is included in the generated agent entry point.
-4. **Given** `--type agent`, **When** combined with `--enable-mcp-client`, **Then** an MCP client initialisation block is included in the generated agent entry point.
-5. **Given** any entry point type that already exists in the project, **When** the command is run again, **Then** a clear error is shown and no files are overwritten.
+1. **Given** a scaffolded project, **When** the developer runs `scaffold-ca-python gep --type restapi`, **Then** `infrastructure/entry-points/restapi/` is created immediately with a complete FastAPI router, at least one example handler stub, and a test scaffold — no additional flags are needed to activate FastAPI.
+2. **Given** `--type restapi --swagger path/to/openapi.yaml`, **When** the OpenAPI file exists, **Then** the router is generated with routes derived from the provided specification.
+3. **Given** `--type mcp`, **When** executed, **Then** `infrastructure/entry-points/mcp/` is created with an MCP server stub containing placeholder definitions for at least one tool, one resource, and one prompt handler, plus a test scaffold.
+4. **Given** `--type agent`, **When** combined with `--enable-kafka`, **Then** a Kafka consumer is included in the generated agent entry point.
+5. **Given** `--type agent`, **When** combined with `--enable-mcp-client`, **Then** an MCP client initialisation block is included in the generated agent entry point.
+6. **Given** any entry point type that already exists in the project, **When** the command is run again, **Then** a clear error is shown and no files are overwritten.
 
-**Supported types**: `rest-client` (FastAPI), `agent` (A2A), `mcp`, `generic`
+**Supported types**: `restapi` (FastAPI), `agent` (A2A), `mcp`, `generic`
 
 ---
 
@@ -120,6 +121,8 @@ A developer wants to add a cross-cutting utility module or a CI/CD pipeline, fol
 
 **Why this priority**: Helpers and pipelines are supporting artefacts that standardise operational practices and reduce copy-paste drift across projects and teams.
 
+**Tasks traceability note**: For implementation purposes this story is split into two independent task streams — `[US7]` (helper generation, `gh`) and `[US8]` (pipeline generation, `gpipe`) — to allow parallel work. Both streams are fully covered by this single user story because the commands share the same developer intent ("add a supporting artefact in the right place with the right structure") and the same priority.
+
 **Independent Test**: Running `scaffold-ca-python gh --name LoggingHelper` creates a helper module in `infrastructure/helpers/` and a test mirror file; running `scaffold-ca-python gpipe --provider github` creates `.github/workflows/ci.yml` with lint, test, and coverage steps.
 
 **Acceptance Scenarios**:
@@ -128,8 +131,8 @@ A developer wants to add a cross-cutting utility module or a CI/CD pipeline, fol
 2. **Given** a scaffolded project, **When** the developer runs `scaffold-ca-python gpipe --provider github`, **Then** `.github/workflows/ci.yml` is created with steps for linting, running tests, and enforcing the coverage threshold.
 3. **Given** a scaffolded project, **When** the developer runs `scaffold-ca-python gpipe --provider azure`, **Then** `azure-pipelines.yml` is created with equivalent steps for linting, running tests, and enforcing the coverage threshold.
 4. **Given** `gpipe` is run without `--provider`, **Then** the tool shows a validation error with a resolution hint listing the two supported providers.
-3. **Given** a helper with the same name already exists, **When** `gh` is run again, **Then** a clear error is shown and the file is not overwritten.
-5. **Given** a pipeline file for the chosen provider already exists, **When** `gpipe` is run with the same provider, **Then** a clear error is shown and the file is not overwritten.
+5. **Given** a helper with the same name already exists, **When** `gh` is run again, **Then** a clear error is shown and the file is not overwritten.
+6. **Given** a pipeline file for the chosen provider already exists, **When** `gpipe` is run with the same provider, **Then** a clear error is shown and the file is not overwritten.
 
 ---
 
@@ -167,6 +170,23 @@ A developer wants to preview what any generation command would produce, without 
 
 ---
 
+### User Story 10 — Update Project Dependencies (Priority: P10)
+
+A developer working inside a scaffolded project wants to update all declared dependencies to their latest compatible versions without manually editing any configuration files.
+
+**Why this priority**: Dependency freshness is an ongoing maintenance concern; automating it removes friction and reduces the risk of stale transitive dependencies accumulating over time.
+
+**Independent Test**: Running `scaffold-ca-python up --dry-run` inside a scaffolded project prints the two `uv` commands that would be executed without spawning any subprocess. Running `scaffold-ca-python up` invokes `uv lock --upgrade` then `uv sync` in sequence inside the detected project root.
+
+**Acceptance Scenarios**:
+
+1. **Given** a scaffolded project with `uv` on PATH, **When** the developer runs `scaffold-ca-python up`, **Then** `uv lock --upgrade` and `uv sync` are invoked in sequence in the detected project root and the command exits 0 on success.
+2. **Given** `--dry-run`, **When** executed, **Then** the two `uv` commands are printed to stdout with their `cwd` shown, and no subprocess is spawned.
+3. **Given** `uv` is not installed or not on PATH, **When** `up` is run, **Then** the command exits 1 with a resolution hint directing the developer to the `uv` installation page.
+4. **Given** `uv lock --upgrade` returns a non-zero exit code, **When** that occurs, **Then** `uv sync` is NOT executed and the command exits 2 with the `uv` error output displayed.
+
+---
+
 ### Edge Cases
 
 - What happens when the target directory has restricted write permissions? → The tool displays a permission error with the affected path and no partial writes are left on disk.
@@ -180,14 +200,14 @@ A developer wants to preview what any generation command would produce, without 
 ### Functional Requirements
 
 - **FR-001**: The tool MUST provide a `generate-project` command (alias `ca`) that scaffolds a complete Clean Architecture Python project structure with all six layers.
-- **FR-002**: Generated projects MUST include `pyproject.toml`, `README.md`, `.gitignore`, and an optional logging configuration file.
+- **FR-002**: Generated projects MUST include `pyproject.toml`, `README.md`, and `.gitignore`. (Logging configuration support is explicitly deferred to a follow-up feature and is not part of this specification.)
 - **FR-003**: All generated project boilerplate MUST use `async def` and `await` for I/O operations; synchronous mode is not supported.
 - **FR-004**: All generated domain model classes MUST use Pydantic as their base model; there is no opt-out or alternative model style.
 - **FR-005**: The tool MUST provide a `generate-model` command (alias `gm`) that creates a typed model class in `domain/model/` and a corresponding test scaffold.
 - **FR-006**: The tool MUST provide a `generate-use-case` command (alias `guc`) that creates a use case class with injectable port constructor arguments in `domain/usecase/` and a corresponding test scaffold.
 - **FR-007**: The tool MUST provide a `generate-driven-adapter` command (alias `gda`) that creates a driven adapter module in `infrastructure/driven-adapters/` for the three supported types: `rest-consumer`, `secrets`, and `generic`.
 - **FR-008**: The `gda` command MUST require a `--name` parameter when `--type generic` is specified.
-- **FR-009**: The tool MUST provide a `generate-entry-point` command (alias `gep`) that creates an entry point module in `infrastructure/entry-points/` for the four supported types: `rest-client`, `agent`, `mcp`, and `generic`.
+- **FR-009**: The tool MUST provide a `generate-entry-point` command (alias `gep`) that creates an entry point module in `infrastructure/entry-points/` for the four supported types: `restapi`, `agent`, `mcp`, and `generic`.
 - **FR-010**: The `gep --type restapi` command MUST immediately generate a complete FastAPI router skeleton without requiring additional flags; it MUST additionally support a `--swagger` flag to generate routes from an OpenAPI specification file.
 - **FR-011**: The `gep --type agent` command MUST support `--enable-kafka` and `--enable-mcp-client` flags to compose additional capabilities.
 - **FR-012**: The tool MUST provide a `validate-structure` command (alias `vs`) that inspects all Python imports in the project and reports any cross-layer dependency violations, exiting with code 1 when violations exist and code 0 otherwise.
@@ -215,10 +235,10 @@ A developer wants to preview what any generation command would produce, without 
 
 ### Measurable Outcomes
 
-- **SC-001**: A developer can go from zero to a runnable, correctly structured Clean Architecture Python project in under 60 seconds using `scaffold-ca-python ca`.
-- **SC-002**: Every generation command (`gm`, `guc`, `gda`, `gep`, `gh`) completes within 3 seconds on a standard developer machine.
+- **SC-001**: A developer can go from zero to a runnable, correctly structured Clean Architecture Python project in under 60 seconds using `scaffold-ca-python ca`. *(Non-automatable outcome metric: validated by the end-to-end walkthrough in T082, not by an automated timing assertion. Establishes the human-perceived UX bar.)*
+- **SC-002**: Every generation command (`gm`, `guc`, `gda`, `gep`, `gh`) completes within 3 seconds on a standard developer machine (macOS 14+ or Linux with an Apple M-series or equivalent x86-64 processor and at least 8 GB RAM).
 - **SC-003**: The `validate-structure` command completes a full project scan in under 5 seconds for projects with up to 200 Python source files.
-- **SC-004**: All 9 user stories produce generated output that passes the project's own test suite with 0 failures and ≥ 80% coverage on the CLI codebase.
+- **SC-004**: All 10 user stories produce generated output that passes the project's own test suite with 0 failures and ≥ 80% coverage on the CLI codebase.
 - **SC-005**: A developer can integrate `validate-structure` into a CI pipeline and receive a failing build within 2 minutes of a layer violation being merged.
 - **SC-006**: 100% of supported command types (`gda` types and `gep` types as defined in the constitution) are implemented and covered by tests.
 - **SC-007**: Dry-run mode produces zero file-system side effects, verifiable by a checksum of the project directory before and after any dry-run invocation.
