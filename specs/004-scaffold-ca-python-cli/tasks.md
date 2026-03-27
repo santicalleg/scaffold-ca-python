@@ -47,31 +47,31 @@
 
 ### Model Tests *(write these BEFORE model implementations)*
 
-- [ ] T009 [P] Write tests for `Layer` enum: 6 values, `FORBIDDEN_IMPORTS` mapping, inner→outer detection logic in tests/models/test_layer.py
-- [ ] T010 [P] Write tests for `ProjectContext` and `ModuleContext`: field validation, `python_package` derivation, `^[A-Za-z][A-Za-z0-9_]*$` constraint in tests/models/test_context.py
-- [ ] T011 [P] Write tests for `GeneratedFile`, `CreateFile`, `DeleteFile`, and `FileOperation` union: field presence, `is_test` flag, `kind` discriminator in tests/models/test_file_operation.py
-- [ ] T012 [P] Write tests for `Violation` and `ValidationReport`: field population, `passed` property True/False, `files_scanned` counter in tests/models/test_violation.py
+- [X] T009 [P] Write tests for `Layer` enum: 6 values, `FORBIDDEN_IMPORTS` mapping, inner→outer detection logic in tests/models/test_layer.py
+- [X] T010 [P] Write tests for `ProjectContext` and `ModuleContext`: field validation, `python_package` derivation, `^[A-Za-z][A-Za-z0-9_]*$` constraint in tests/models/test_context.py
+- [X] T011 [P] Write tests for `GeneratedFile`, `CreateFile`, `DeleteFile`, and `FileOperation` union: field presence, `is_test` flag, `kind` discriminator in tests/models/test_file_operation.py
+- [X] T012 [P] Write tests for `Violation` and `ValidationReport`: field population, `passed` property True/False, `files_scanned` counter in tests/models/test_violation.py
 
 ### Model Implementations
 
-- [ ] T013 [P] Implement `Layer` enum (6 values: DOMAIN_MODEL, DOMAIN_USECASE, ENTRY_POINTS, DRIVEN_ADAPTERS, HELPERS, APPLICATION) and `FORBIDDEN_IMPORTS` dependency dict in src/scaffold_ca_python/models/layer.py
-- [ ] T014 [P] Implement `ProjectContext` and `ModuleContext` as Pydantic v2 `BaseModel` with `@field_validator` for name and `@computed_field` for derived names in src/scaffold_ca_python/models/context.py
-- [ ] T015 [P] Implement `GeneratedFile`, `CreateFile`, `DeleteFile`, and `FileOperation = CreateFile | DeleteFile` union type in src/scaffold_ca_python/models/file_operation.py
-- [ ] T016 [P] Implement `Violation` and `ValidationReport` Pydantic v2 models with `@property passed` in src/scaffold_ca_python/models/violation.py
+- [X] T013 [P] Implement `Layer` enum (6 values: DOMAIN_MODEL, DOMAIN_USECASE, ENTRY_POINTS, DRIVEN_ADAPTERS, HELPERS, APPLICATION) and `FORBIDDEN_IMPORTS` dependency dict in src/scaffold_ca_python/models/layer.py
+- [X] T014 [P] Implement `ProjectContext` and `ModuleContext` as Pydantic v2 `BaseModel` with `@field_validator` for name and `@computed_field` for derived names in src/scaffold_ca_python/models/context.py
+- [X] T015 [P] Implement `GeneratedFile`, `CreateFile`, `DeleteFile`, and `FileOperation = CreateFile | DeleteFile` union type in src/scaffold_ca_python/models/file_operation.py
+- [X] T016 [P] Implement `Violation` and `ValidationReport` Pydantic v2 models with `@property passed` in src/scaffold_ca_python/models/violation.py
 
 ### Core Tests *(write these BEFORE core implementations)*
 
-- [ ] T017 [P] Write tests for `name_utils`: `to_snake_case`, `to_pascal_case`, `validate_name` regex accept/reject cases and normalisation in tests/core/test_name_utils.py
-- [ ] T018 [P] Write tests for `project_detector`: finds root when `[tool.scaffold-ca-python]` exists in parent pyproject.toml, raises `ScaffoldError` when not found, fallback to CA directory layout in tests/core/test_project_detector.py
-- [ ] T019 [P] Write tests for `FileWriter`: atomic create via `os.replace`, dry-run emits no disk writes, `DeleteFile` removes path+mirror, rollback on render error leaves no partial files in tests/core/test_file_writer.py
-- [ ] T020 [P] Write tests for `TemplateRenderer`: loads templates via `importlib.resources.files`, renders a fixture template with a `ProjectContext`, raises on missing template name in tests/core/test_template_renderer.py
+- [X] T017 [P] Write tests for `name_utils`: `to_snake_case`, `to_pascal_case`, `validate_name` regex accept/reject cases and normalisation in tests/core/test_name_utils.py
+- [X] T018 [P] Write tests for `project_detector`: finds root when `[tool.scaffold-ca-python]` exists in parent pyproject.toml, raises `ScaffoldError` when not found, fallback to CA directory layout in tests/core/test_project_detector.py
+- [X] T019 [P] Write tests for `FileWriter`: atomic create via `os.replace`, dry-run emits no disk writes, `DeleteFile` removes path+mirror, rollback on render error leaves no partial files in tests/core/test_file_writer.py
+- [X] T020 [P] Write tests for `TemplateRenderer`: loads templates via `importlib.resources.files`, renders a fixture template with a `ProjectContext`, raises on missing template name in tests/core/test_template_renderer.py
 
 ### Core Implementations
 
-- [ ] T021 [P] Implement `to_snake_case`, `to_pascal_case`, and `validate_name` (raises `ScaffoldError` on regex mismatch) in src/scaffold_ca_python/core/name_utils.py
-- [ ] T022 [P] Implement `find_project_root`: walk `cwd` upward checking for `pyproject.toml` containing `[tool.scaffold-ca-python]`; fallback to CA directory markers; raise `ScaffoldError` if neither found in src/scaffold_ca_python/core/project_detector.py
-- [ ] T023 Implement `FileWriter` with `execute(operations: list[FileOperation], dry_run: bool)`: real mode uses tempdir staging + `os.replace` (R-06); dry-run mode returns preview list without touching disk in src/scaffold_ca_python/core/file_writer.py
-- [ ] T024 Implement `TemplateRenderer` with `importlib.resources.files("scaffold_ca_python.templates")` Jinja2 loader (R-05) and `render(template_name: str, context: BaseModel) -> str` using `context.model_dump()` spread (R-07) in src/scaffold_ca_python/core/template_renderer.py
+- [X] T021 [P] Implement `to_snake_case`, `to_pascal_case`, and `validate_name` (raises `ScaffoldError` on regex mismatch) in src/scaffold_ca_python/core/name_utils.py
+- [X] T022 [P] Implement `find_project_root`: walk `cwd` upward checking for `pyproject.toml` containing `[tool.scaffold-ca-python]`; fallback to CA directory markers; raise `ScaffoldError` if neither found in src/scaffold_ca_python/core/project_detector.py
+- [X] T023 Implement `FileWriter` with `execute(operations: list[FileOperation], dry_run: bool)`: real mode uses tempdir staging + `os.replace` (R-06); dry-run mode returns preview list without touching disk in src/scaffold_ca_python/core/file_writer.py
+- [X] T024 Implement `TemplateRenderer` with `importlib.resources.files("scaffold_ca_python.templates")` Jinja2 loader (R-05) and `render(template_name: str, context: BaseModel) -> str` using `context.model_dump()` spread (R-07) in src/scaffold_ca_python/core/template_renderer.py
 
 **Checkpoint**: `pytest tests/models/ tests/core/` passes at 100%. Foundation is solid — user story implementation can now begin.
 
@@ -87,21 +87,21 @@
 
 ### Tests for User Story 1 *(write BEFORE implementation)*
 
-- [ ] T025 [P] [US1] Write tests for `ca`/`generate-project` command via Typer `CliRunner`: success creates all layer dirs + 6 config files, `--dry-run` writes nothing to disk, duplicate project name exits code 1 in tests/commands/test_generate_project.py
+- [X] T025 [P] [US1] Write tests for `ca`/`generate-project` command via Typer `CliRunner`: success creates all layer dirs + 6 config files, `--dry-run` writes nothing to disk, duplicate project name exits code 1 in tests/commands/test_generate_project.py
 
 ### Templates for User Story 1
 
-- [ ] T026 [P] [US1] Create `project/pyproject_toml.jinja2` rendering a `pyproject.toml` with `[tool.scaffold-ca-python]` metadata section in src/scaffold_ca_python/templates/project/
-- [ ] T027 [P] [US1] Create `project/README.jinja2` with async-first project description placeholder in src/scaffold_ca_python/templates/project/
-- [ ] T028 [P] [US1] Create `project/gitignore.jinja2` with standard Python, venv, coverage, and IDE patterns in src/scaffold_ca_python/templates/project/
-- [ ] T029 [P] [US1] Create `project/ruff_toml.jinja2` rendering to `ruff.toml` in generated projects (line-length=120, target-version=py313, select rules) in src/scaffold_ca_python/templates/project/
-- [ ] T030 [P] [US1] Create `project/mypy_ini.jinja2` rendering to `mypy.ini` in generated projects (`strict = True`, `python_version = 3.13`) in src/scaffold_ca_python/templates/project/
-- [ ] T031 [P] [US1] Create `project/layer_init.jinja2` reusable template for every layer `__init__.py` stub in src/scaffold_ca_python/templates/project/
+- [X] T026 [P] [US1] Create `project/pyproject_toml.jinja2` rendering a `pyproject.toml` with `[tool.scaffold-ca-python]` metadata section in src/scaffold_ca_python/templates/project/
+- [X] T027 [P] [US1] Create `project/README.jinja2` with async-first project description placeholder in src/scaffold_ca_python/templates/project/
+- [X] T028 [P] [US1] Create `project/gitignore.jinja2` with standard Python, venv, coverage, and IDE patterns in src/scaffold_ca_python/templates/project/
+- [X] T029 [P] [US1] Create `project/ruff_toml.jinja2` rendering to `ruff.toml` in generated projects (line-length=120, target-version=py313, select rules) in src/scaffold_ca_python/templates/project/
+- [X] T030 [P] [US1] Create `project/mypy_ini.jinja2` rendering to `mypy.ini` in generated projects (`strict = True`, `python_version = 3.13`) in src/scaffold_ca_python/templates/project/
+- [X] T031 [P] [US1] Create `project/layer_init.jinja2` reusable template for every layer `__init__.py` stub in src/scaffold_ca_python/templates/project/
 
 ### Implementation for User Story 1
 
-- [ ] T032 [US1] Implement `_generate_project_impl(name, package, dry_run)`: build `ProjectContext`, render all project templates, stage 6-layer directory tree + config files, delegate to `FileWriter` in src/scaffold_ca_python/commands/generate_project.py
-- [ ] T033 [US1] Register `ca` (hidden alias) and `generate-project` commands using the dual-wrapper pattern (R-01) via `register(app)` in src/scaffold_ca_python/commands/generate_project.py; call `register(app)` in src/scaffold_ca_python/cli.py
+- [X] T032 [US1] Implement `_generate_project_impl(name, package, dry_run)`: build `ProjectContext`, render all project templates, stage 6-layer directory tree + config files, delegate to `FileWriter` in src/scaffold_ca_python/commands/generate_project.py
+- [X] T033 [US1] Register `ca` (hidden alias) and `generate-project` commands using the dual-wrapper pattern (R-01) via `register(app)` in src/scaffold_ca_python/commands/generate_project.py; call `register(app)` in src/scaffold_ca_python/cli.py
 
 **Checkpoint**: `scaffold ca --name OrderService --package com.acme` on an empty dir produces a complete skeleton. `scaffold ca --dry-run` prints the file tree and writes nothing. Running `scaffold ca` twice on the same dir exits 1.
 
