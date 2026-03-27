@@ -1,0 +1,73 @@
+"""Model Context Protocol server entry point."""
+
+from __future__ import annotations
+
+
+# ---------------------------------------------------------------------------
+# Tools
+# ---------------------------------------------------------------------------
+
+
+async def list_tools() -> list[dict[str, object]]:
+    """Return the list of tools exposed by this MCP server."""
+    return [
+        {
+            "name": "example_tool",
+            "description": "Replace with your actual tool definition.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "input": {"type": "string", "description": "Tool input."},
+                },
+                "required": ["input"],
+            },
+        }
+    ]
+
+
+async def call_tool(name: str, arguments: dict[str, object]) -> list[dict[str, object]]:
+    """Dispatch a tool call to the matching handler.
+
+    Args:
+        name: Name of the tool to invoke.
+        arguments: Tool input arguments.
+
+    Returns:
+        A list of MCP content blocks.
+
+    Raises:
+        ValueError: When no handler exists for *name*.
+    """
+    if name == "example_tool":
+        return [{"type": "text", "text": f"TODO: implement {name}"}]
+    raise ValueError(f"Unknown tool: {name}")
+
+
+# ---------------------------------------------------------------------------
+# Resources
+# ---------------------------------------------------------------------------
+
+
+async def list_resources() -> list[dict[str, object]]:
+    """Return the list of resources exposed by this MCP server."""
+    return []
+
+
+async def read_resource(uri: str) -> str:
+    """Return the content of a resource by URI."""
+    raise NotImplementedError(f"Resource not implemented: {uri}")
+
+
+# ---------------------------------------------------------------------------
+# Prompts
+# ---------------------------------------------------------------------------
+
+
+async def list_prompts() -> list[dict[str, object]]:
+    """Return the list of prompt templates exposed by this MCP server."""
+    return []
+
+
+async def get_prompt(name: str, arguments: dict[str, object] | None = None) -> dict[str, object]:
+    """Return a rendered prompt template."""
+    raise NotImplementedError(f"Prompt not implemented: {name}")

@@ -2,6 +2,7 @@ import typer
 
 from scaffold_ca_python.commands import (
     generate_driven_adapter,
+    generate_entry_point,
     generate_model,
     generate_project,
     generate_use_case,
@@ -18,4 +19,5 @@ generate_project.register(app)
 generate_model.register(app)
 generate_use_case.register(app)
 generate_driven_adapter.register(app)
+generate_entry_point.register(app)
 

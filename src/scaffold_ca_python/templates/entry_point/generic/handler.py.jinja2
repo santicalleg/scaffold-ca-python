@@ -1,0 +1,31 @@
+"""Generic async entry-point handler for {{ project.name }}."""
+
+from __future__ import annotations
+
+{% if enable_kafka %}
+# Kafka consumer stub — replace with your actual broker configuration.
+# from aiokafka import AIOKafkaConsumer
+{% endif %}
+
+
+class EntryPoint:
+    """Generic async entry point.
+
+    Replace the body of :meth:`run` with your actual startup / handler logic.
+    """
+
+{% if enable_kafka %}
+    async def consume(self, topic: str) -> None:
+        """Consume messages from a Kafka topic."""
+        # consumer = AIOKafkaConsumer(topic, bootstrap_servers="localhost:9092")
+        # await consumer.start()
+        raise NotImplementedError("Wire in your Kafka consumer here.")
+
+{% endif %}
+    async def run(self) -> None:
+        """Start the entry-point processing loop.
+
+        Raises:
+            NotImplementedError: Replace with your implementation.
+        """
+        raise NotImplementedError

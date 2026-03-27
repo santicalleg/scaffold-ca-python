@@ -1,0 +1,32 @@
+"""APIRouter with async route stubs.
+{% if routes %}
+Generated from OpenAPI spec — {{ routes | length }} route(s) detected.
+{% endif %}
+"""
+
+from __future__ import annotations
+
+from fastapi import APIRouter
+{% if routes %}
+from {{ project.python_package }}.infrastructure.entry_points.restapi.schemas import (
+    ExampleRequest,
+    ExampleResponse,
+)
+{% endif %}
+
+router = APIRouter()
+{% if routes %}
+{% for path, method in routes %}
+
+@router.{{ method }}("{{ path }}")
+async def {{ method }}_{{ path | replace("/", "_") | replace("-", "_") | trim("_") }}() -> dict[str, str]:
+    """Handle {{ method.upper() }} {{ path }}."""
+    raise NotImplementedError
+{% endfor %}
+{% else %}
+
+@router.get("/example")
+async def example_route() -> dict[str, str]:
+    """Replace with your actual route logic."""
+    return {"message": "Hello from {{ project.name }}"}
+{% endif %}

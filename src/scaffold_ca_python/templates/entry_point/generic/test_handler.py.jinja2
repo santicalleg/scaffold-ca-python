@@ -1,0 +1,14 @@
+"""Tests for the generic entry point."""
+
+from __future__ import annotations
+
+import pytest
+
+from {{ project.python_package }}.infrastructure.entry_points.generic.entry_point import EntryPoint
+
+
+@pytest.mark.asyncio
+async def test_entry_point_run_raises_not_implemented() -> None:
+    ep = EntryPoint()
+    with pytest.raises(NotImplementedError):
+        await ep.run()

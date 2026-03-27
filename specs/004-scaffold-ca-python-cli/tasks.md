@@ -186,19 +186,19 @@
 
 ### Tests for User Story 5 *(write BEFORE implementation)*
 
-- [ ] T050 [P] [US5] Write tests for `gep`/`generate-entry-point` via CliRunner: all 4 types produce correct file sets, `--swagger path/to/spec.yaml` reads the file and injects route count into context, `--enable-kafka` flag included in agent templates, `--enable-mcp-client` flag included, duplicate dir exits 1, no-project-root exits 1 in tests/commands/test_generate_entry_point.py
+- [X] T050 [P] [US5] Write tests for `gep`/`generate-entry-point` via CliRunner: all 4 types produce correct file sets, `--swagger path/to/spec.yaml` reads the file and injects route count into context, `--enable-kafka` flag included in agent templates, `--enable-mcp-client` flag included, duplicate dir exits 1, no-project-root exits 1 in tests/commands/test_generate_entry_point.py
 
 ### Templates for User Story 5
 
-- [ ] T051 [P] [US5] Create `entry_point/restapi/` templates: `__init__.py.jinja2`, `main.py.jinja2` (FastAPI app factory), `router.py.jinja2` (APIRouter with async example route), `health.py.jinja2` (`/health` endpoint), `schemas.py.jinja2` (request/response Pydantic models; also used when `--swagger` injects generated schemas), `test_router.py.jinja2` in src/scaffold_ca_python/templates/entry_point/restapi/
-- [ ] T052 [P] [US5] Create `entry_point/agent/` templates: `__init__.py.jinja2`, `agent.py.jinja2` (A2A async handler stub with optional Kafka consumer block, optional MCP client block gated on Jinja2 `if enable_kafka` / `if enable_mcp_client`), `card.py.jinja2` (AgentCard definition), `test_agent.py.jinja2` in src/scaffold_ca_python/templates/entry_point/agent/
-- [ ] T053 [P] [US5] Create `entry_point/mcp/` templates: `__init__.py.jinja2`, `server.py.jinja2` (MCP server stubs for tools, resources, prompts), `test_server.py.jinja2` in src/scaffold_ca_python/templates/entry_point/mcp/
-- [ ] T054 [P] [US5] Create `entry_point/generic/` templates: `__init__.py.jinja2`, `handler.py.jinja2` (empty async handler), `test_handler.py.jinja2` in src/scaffold_ca_python/templates/entry_point/generic/
+- [X] T051 [P] [US5] Create `entry_point/restapi/` templates: `__init__.py.jinja2`, `main.py.jinja2` (FastAPI app factory), `router.py.jinja2` (APIRouter with async example route), `health.py.jinja2` (`/health` endpoint), `schemas.py.jinja2` (request/response Pydantic models; also used when `--swagger` injects generated schemas), `test_router.py.jinja2` in src/scaffold_ca_python/templates/entry_point/restapi/
+- [X] T052 [P] [US5] Create `entry_point/agent/` templates: `__init__.py.jinja2`, `agent.py.jinja2` (A2A async handler stub with optional Kafka consumer block, optional MCP client block gated on Jinja2 `if enable_kafka` / `if enable_mcp_client`), `card.py.jinja2` (AgentCard definition), `test_agent.py.jinja2` in src/scaffold_ca_python/templates/entry_point/agent/
+- [X] T053 [P] [US5] Create `entry_point/mcp/` templates: `__init__.py.jinja2`, `server.py.jinja2` (MCP server stubs for tools, resources, prompts), `test_server.py.jinja2` in src/scaffold_ca_python/templates/entry_point/mcp/
+- [X] T054 [P] [US5] Create `entry_point/generic/` templates: `__init__.py.jinja2`, `handler.py.jinja2` (empty async handler), `test_handler.py.jinja2` in src/scaffold_ca_python/templates/entry_point/generic/
 
 ### Implementation for User Story 5
 
-- [ ] T055 [US5] Implement `_generate_entry_point_impl(type_, swagger, enable_kafka, enable_mcp_client, dry_run)`: parse `--swagger` file (json/pyyaml) and inject `routes` into Jinja2 context if provided, build `ModuleContext(layer=Layer.ENTRY_POINTS, subtype=type_)`, pass `enable_kafka`/`enable_mcp_client` booleans in context dict, dispatch template set by type, delegate to `FileWriter` in src/scaffold_ca_python/commands/generate_entry_point.py
-- [ ] T056 [US5] Register `gep` (hidden alias) and `generate-entry-point` commands via `register(app)` in src/scaffold_ca_python/commands/generate_entry_point.py; call `register(app)` in src/scaffold_ca_python/cli.py
+- [X] T055 [US5] Implement `_generate_entry_point_impl(type_, swagger, enable_kafka, enable_mcp_client, dry_run)`: parse `--swagger` file (json/pyyaml) and inject `routes` into Jinja2 context if provided, build `ModuleContext(layer=Layer.ENTRY_POINTS, subtype=type_)`, pass `enable_kafka`/`enable_mcp_client` booleans in context dict, dispatch template set by type, delegate to `FileWriter` in src/scaffold_ca_python/commands/generate_entry_point.py
+- [X] T056 [US5] Register `gep` (hidden alias) and `generate-entry-point` commands via `register(app)` in src/scaffold_ca_python/commands/generate_entry_point.py; call `register(app)` in src/scaffold_ca_python/cli.py
 
 **Checkpoint**: `scaffold gep --type restapi` produces a syntactically valid FastAPI app. `scaffold gep --type agent --enable-kafka` includes a Kafka consumer block. `scaffold vs` on the project still exits 0.
 

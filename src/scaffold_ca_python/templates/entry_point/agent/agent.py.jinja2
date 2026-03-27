@@ -1,0 +1,49 @@
+"""A2A async agent handler stub."""
+
+from __future__ import annotations
+
+{% if enable_kafka %}
+# Kafka consumer stub — replace with your actual broker configuration.
+# from aiokafka import AIOKafkaConsumer
+{% endif %}
+{% if enable_mcp_client %}
+# MCP tool-call client stub — replace with your actual MCP client.
+# from mcp import ClientSession
+{% endif %}
+
+
+class {{ project.name }}Agent:
+    """Agent-to-Agent (A2A) protocol handler for {{ project.name }}.
+
+    Implement :meth:`run` to handle incoming agent task requests.
+    """
+
+{% if enable_kafka %}
+    async def consume(self, topic: str) -> None:
+        """Consume messages from a Kafka topic."""
+        # consumer = AIOKafkaConsumer(topic, bootstrap_servers="localhost:9092")
+        # await consumer.start()
+        raise NotImplementedError("Wire in your Kafka consumer here.")
+
+{% endif %}
+{% if enable_mcp_client %}
+    async def call_tool(self, tool_name: str, arguments: dict[str, object]) -> object:
+        """Invoke a tool via the MCP client."""
+        # async with ClientSession(...) as session:
+        #     return await session.call_tool(tool_name, arguments)
+        raise NotImplementedError("Wire in your MCP client here.")
+
+{% endif %}
+    async def run(self, task: dict[str, object]) -> dict[str, object]:
+        """Handle an incoming A2A task.
+
+        Args:
+            task: The incoming task payload.
+
+        Returns:
+            The agent response payload.
+
+        Raises:
+            NotImplementedError: Replace with your task handling logic.
+        """
+        raise NotImplementedError
