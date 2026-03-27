@@ -1,0 +1,27 @@
+"""Async HTTP client adapter using httpx."""
+
+from __future__ import annotations
+
+import httpx
+
+
+class RestConsumerAdapter:
+    """Async REST consumer adapter.
+
+    Wraps :class:`httpx.AsyncClient` to provide a thin, testable HTTP boundary.
+    Replace the placeholder methods with your actual API calls.
+    """
+
+    def __init__(self, base_url: str = "", timeout: float = 10.0) -> None:
+        self._base_url = base_url
+        self._timeout = timeout
+
+    async def get(self, path: str, **kwargs: object) -> httpx.Response:
+        """Perform an async GET request."""
+        async with httpx.AsyncClient(base_url=self._base_url, timeout=self._timeout) as client:
+            return await client.get(path, **kwargs)
+
+    async def post(self, path: str, **kwargs: object) -> httpx.Response:
+        """Perform an async POST request."""
+        async with httpx.AsyncClient(base_url=self._base_url, timeout=self._timeout) as client:
+            return await client.post(path, **kwargs)

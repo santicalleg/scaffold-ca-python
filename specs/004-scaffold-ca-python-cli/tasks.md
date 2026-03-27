@@ -159,18 +159,18 @@
 
 ### Tests for User Story 4 *(write BEFORE implementation)*
 
-- [ ] T044 [P] [US4] Write tests for `gda`/`generate-driven-adapter` via CliRunner: `rest-consumer` type, `secrets` type, `generic` type success, `generic` without `--name` exits 1, duplicate adapter directory exits 1, no-project-root exits 1 in tests/commands/test_generate_driven_adapter.py
+- [X] T044 [P] [US4] Write tests for `gda`/`generate-driven-adapter` via CliRunner: `rest-consumer` type, `secrets` type, `generic` type success, `generic` without `--name` exits 1, duplicate adapter directory exits 1, no-project-root exits 1 in tests/commands/test_generate_driven_adapter.py
 
 ### Templates for User Story 4
 
-- [ ] T045 [P] [US4] Create `driven_adapter/rest_consumer/` templates: `__init__.py.jinja2`, `rest_consumer.py.jinja2` (async `httpx.AsyncClient` adapter), `test_rest_consumer.py.jinja2` (pytest stub with `respx` mock placeholder) in src/scaffold_ca_python/templates/driven_adapter/rest_consumer/
-- [ ] T046 [P] [US4] Create `driven_adapter/secrets/` templates: `__init__.py.jinja2`, `secrets_adapter.py.jinja2` (async secrets-store interface), `test_secrets_adapter.py.jinja2` in src/scaffold_ca_python/templates/driven_adapter/secrets/
-- [ ] T047 [P] [US4] Create `driven_adapter/generic/` templates: `__init__.py.jinja2`, `adapter.py.jinja2` (empty async adapter using `class_name`), `test_adapter.py.jinja2` in src/scaffold_ca_python/templates/driven_adapter/generic/
+- [X] T045 [P] [US4] Create `driven_adapter/rest_consumer/` templates: `__init__.py.jinja2`, `rest_consumer.py.jinja2` (async `httpx.AsyncClient` adapter), `test_rest_consumer.py.jinja2` (pytest stub with `respx` mock placeholder) in src/scaffold_ca_python/templates/driven_adapter/rest_consumer/
+- [X] T046 [P] [US4] Create `driven_adapter/secrets/` templates: `__init__.py.jinja2`, `secrets_adapter.py.jinja2` (async secrets-store interface), `test_secrets_adapter.py.jinja2` in src/scaffold_ca_python/templates/driven_adapter/secrets/
+- [X] T047 [P] [US4] Create `driven_adapter/generic/` templates: `__init__.py.jinja2`, `adapter.py.jinja2` (empty async adapter using `class_name`), `test_adapter.py.jinja2` in src/scaffold_ca_python/templates/driven_adapter/generic/
 
 ### Implementation for User Story 4
 
-- [ ] T048 [US4] Implement `_generate_driven_adapter_impl(type_, name, dry_run)`: validate `--name` required for `generic` type (exit 1 with hint if missing), dispatch template set by type, build `ModuleContext(layer=Layer.DRIVEN_ADAPTERS)`, delegate to `FileWriter` in src/scaffold_ca_python/commands/generate_driven_adapter.py
-- [ ] T049 [US4] Register `gda` (hidden alias) and `generate-driven-adapter` commands via `register(app)` in src/scaffold_ca_python/commands/generate_driven_adapter.py; call `register(app)` in src/scaffold_ca_python/cli.py
+- [X] T048 [US4] Implement `_generate_driven_adapter_impl(type_, name, dry_run)`: validate `--name` required for `generic` type (exit 1 with hint if missing), dispatch template set by type, build `ModuleContext(layer=Layer.DRIVEN_ADAPTERS)`, delegate to `FileWriter` in src/scaffold_ca_python/commands/generate_driven_adapter.py
+- [X] T049 [US4] Register `gda` (hidden alias) and `generate-driven-adapter` commands via `register(app)` in src/scaffold_ca_python/commands/generate_driven_adapter.py; call `register(app)` in src/scaffold_ca_python/cli.py
 
 **Checkpoint**: All three adapter types create correct file structures. `gda --type generic` without `--name` exits 1 with a readable hint. `vs` on the generated project still exits 0 (adapters live in infrastructure, correct layer).
 
