@@ -1,6 +1,6 @@
 import typer
 
-from scaffold_ca_python.commands import generate_project
+from scaffold_ca_python.commands import generate_model, generate_project, generate_use_case
 
 app = typer.Typer(
     name="scaffold-ca-python",
@@ -10,4 +10,6 @@ app = typer.Typer(
 )
 
 generate_project.register(app)
+generate_model.register(app)
+generate_use_case.register(app)
 

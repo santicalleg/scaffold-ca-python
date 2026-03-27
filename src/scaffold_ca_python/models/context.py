@@ -17,8 +17,8 @@ def _to_snake_case(name: str) -> str:
 
 
 def _to_pascal_case(name: str) -> str:
-    """Convert snake_case or mixed name to PascalCase."""
-    return "".join(word.capitalize() for word in re.split(r"[_\s]+", name) if word)
+    """Convert snake_case or mixed name to PascalCase (preserves inner case)."""
+    return "".join(word[0].upper() + word[1:] for word in re.split(r"[_\s]+", name) if word)
 
 
 class ProjectContext(BaseModel):

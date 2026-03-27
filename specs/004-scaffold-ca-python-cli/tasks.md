@@ -119,31 +119,31 @@
 
 ### Tests for User Story 2 *(write BEFORE implementation)*
 
-- [ ] T034 [P] [US2] Write tests for `gm`/`generate-model` via CliRunner: success creates model file + test mirror in correct paths, `--dry-run` writes nothing, duplicate name exits 1, no-project-root exits 1 in tests/commands/test_generate_model.py
+- [X] T034 [P] [US2] Write tests for `gm`/`generate-model` via CliRunner: success creates model file + test mirror in correct paths, `--dry-run` writes nothing, duplicate name exits 1, no-project-root exits 1 in tests/commands/test_generate_model.py
 
 ### Templates for User Story 2
 
-- [ ] T035 [P] [US2] Create `model/model.py.jinja2`: Pydantic v2 `BaseModel` subclass with `class_name` and docstring placeholder in src/scaffold_ca_python/templates/model/
-- [ ] T036 [P] [US2] Create `model/test_model.py.jinja2`: pytest stub with one `test_<module_name>_can_be_instantiated` test in src/scaffold_ca_python/templates/model/
+- [X] T035 [P] [US2] Create `model/model.py.jinja2`: Pydantic v2 `BaseModel` subclass with `class_name` and docstring placeholder in src/scaffold_ca_python/templates/model/
+- [X] T036 [P] [US2] Create `model/test_model.py.jinja2`: pytest stub with one `test_<module_name>_can_be_instantiated` test in src/scaffold_ca_python/templates/model/
 
 ### Implementation for User Story 2
 
-- [ ] T037 [US2] Implement `_generate_model_impl(name, dry_run)`: build `ModuleContext(layer=Layer.DOMAIN_MODEL)`, render `model.py.jinja2` + `test_model.py.jinja2`, delegate to `FileWriter` in src/scaffold_ca_python/commands/generate_model.py
-- [ ] T038 [US2] Register `gm` (hidden alias) and `generate-model` commands via `register(app)` in src/scaffold_ca_python/commands/generate_model.py; call `register(app)` in src/scaffold_ca_python/cli.py
+- [X] T037 [US2] Implement `_generate_model_impl(name, dry_run)`: build `ModuleContext(layer=Layer.DOMAIN_MODEL)`, render `model.py.jinja2` + `test_model.py.jinja2`, delegate to `FileWriter` in src/scaffold_ca_python/commands/generate_model.py
+- [X] T038 [US2] Register `gm` (hidden alias) and `generate-model` commands via `register(app)` in src/scaffold_ca_python/commands/generate_model.py; call `register(app)` in src/scaffold_ca_python/cli.py
 
 ### Tests for User Story 3 *(write BEFORE implementation)*
 
-- [ ] T039 [P] [US3] Write tests for `guc`/`generate-use-case` via CliRunner: success creates `<name>_use_case.py` + test mirror, `--dry-run` writes nothing, duplicate exits 1, no-project-root exits 1 in tests/commands/test_generate_use_case.py
+- [X] T039 [P] [US3] Write tests for `guc`/`generate-use-case` via CliRunner: success creates `<name>_use_case.py` + test mirror, `--dry-run` writes nothing, duplicate exits 1, no-project-root exits 1 in tests/commands/test_generate_use_case.py
 
 ### Templates for User Story 3
 
-- [ ] T040 [P] [US3] Create `use_case/use_case.py.jinja2`: async use case class with `__init__(self)` accepting injected port arguments and `async def execute(self) -> None: raise NotImplementedError` in src/scaffold_ca_python/templates/use_case/
-- [ ] T041 [P] [US3] Create `use_case/test_use_case.py.jinja2`: pytest async stub with `pytest.mark.asyncio` decorator and one pending test in src/scaffold_ca_python/templates/use_case/
+- [X] T040 [P] [US3] Create `use_case/use_case.py.jinja2`: async use case class with `__init__(self)` accepting injected port arguments and `async def execute(self) -> None: raise NotImplementedError` in src/scaffold_ca_python/templates/use_case/
+- [X] T041 [P] [US3] Create `use_case/test_use_case.py.jinja2`: pytest async stub with `pytest.mark.asyncio` decorator and one pending test in src/scaffold_ca_python/templates/use_case/
 
 ### Implementation for User Story 3
 
-- [ ] T042 [US3] Implement `_generate_use_case_impl(name, dry_run)`: build `ModuleContext(layer=Layer.DOMAIN_USECASE)` with `module_name = "<snake>_use_case"`, render templates, delegate to `FileWriter` in src/scaffold_ca_python/commands/generate_use_case.py
-- [ ] T043 [US3] Register `guc` (hidden alias) and `generate-use-case` commands via `register(app)` in src/scaffold_ca_python/commands/generate_use_case.py; call `register(app)` in src/scaffold_ca_python/cli.py
+- [X] T042 [US3] Implement `_generate_use_case_impl(name, dry_run)`: build `ModuleContext(layer=Layer.DOMAIN_USECASE)` with `module_name = "<snake>_use_case"`, render templates, delegate to `FileWriter` in src/scaffold_ca_python/commands/generate_use_case.py
+- [X] T043 [US3] Register `guc` (hidden alias) and `generate-use-case` commands via `register(app)` in src/scaffold_ca_python/commands/generate_use_case.py; call `register(app)` in src/scaffold_ca_python/cli.py
 
 **Checkpoint**: US-2 — `scaffold gm --name Order` creates both files; `pytest tests/domain/model/` discovers the stub. US-3 — `scaffold guc --name PlaceOrder` creates both files; `pytest tests/domain/usecase/` discovers the async stub.
 
