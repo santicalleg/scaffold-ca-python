@@ -3,9 +3,12 @@ import typer
 from scaffold_ca_python.commands import (
     generate_driven_adapter,
     generate_entry_point,
+    generate_helper,
     generate_model,
+    generate_pipeline,
     generate_project,
     generate_use_case,
+    validate_structure,
 )
 
 app = typer.Typer(
@@ -20,4 +23,7 @@ generate_model.register(app)
 generate_use_case.register(app)
 generate_driven_adapter.register(app)
 generate_entry_point.register(app)
+generate_helper.register(app)
+generate_pipeline.register(app)
+validate_structure.register(app)
 

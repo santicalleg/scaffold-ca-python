@@ -1,0 +1,28 @@
+trigger:
+  branches:
+    include:
+      - main
+      - master
+
+pool:
+  vmImage: "ubuntu-latest"
+
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: "3.13"
+    displayName: "Set up Python 3.13"
+
+  - script: |
+      pip install uv
+      uv sync --all-extras
+    displayName: "Install dependencies"
+
+  - script: uv run ruff check src/ tests/
+    displayName: "Lint (ruff)"
+
+  - script: uv run mypy src/
+    displayName: "Type check (mypy)"
+
+  - script: uv run pytest --cov=src/ --cov-fail-under=80
+    displayName: "Test (pytest + coverage)"

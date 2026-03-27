@@ -214,14 +214,14 @@
 
 ### Tests for User Story 6 *(write BEFORE implementation)*
 
-- [ ] T057 [P] [US6] Write unit tests for `StructureValidator`: clean project fixture returns `ValidationReport(violations=[])`, domain→infrastructure violation returns `Violation` with correct `source_file`, `line_number`, `import_statement`, `source_layer`, `target_layer`; intra-layer imports do not raise violations in tests/core/test_structure_validator.py
-- [ ] T058 [P] [US6] Write integration tests for `vs`/`validate-structure` command via CliRunner: exits 0 on clean project, exits 1 on project with known violation, `--dry-run` produces the same output and exit code as a normal run (since `vs` is read-only, `--dry-run` is a no-op per spec US-9 scenario 3), Rich table output contains file path and line number in tests/commands/test_validate_structure.py
+- [X] T057 [P] [US6] Write unit tests for `StructureValidator`: clean project fixture returns `ValidationReport(violations=[])`, domain→infrastructure violation returns `Violation` with correct `source_file`, `line_number`, `import_statement`, `source_layer`, `target_layer`; intra-layer imports do not raise violations in tests/core/test_structure_validator.py
+- [X] T058 [P] [US6] Write integration tests for `vs`/`validate-structure` command via CliRunner: exits 0 on clean project, exits 1 on project with known violation, `--dry-run` produces the same output and exit code as a normal run (since `vs` is read-only, `--dry-run` is a no-op per spec US-9 scenario 3), Rich table output contains file path and line number in tests/commands/test_validate_structure.py
 
 ### Implementation for User Story 6
 
-- [ ] T059 [US6] Implement `StructureValidator.validate(project_root: Path) -> ValidationReport`: walk `src/` recursively, `ast.parse()` each `.py` file, walk `ast.Import` and `ast.ImportFrom` nodes (R-08), map module prefix to `Layer`, check against `FORBIDDEN_IMPORTS` dict, collect `Violation` for each breach in src/scaffold_ca_python/core/structure_validator.py
-- [ ] T060 [US6] Implement `validate_structure` command: call `StructureValidator.validate()`, render Rich `Table` with violation rows (file, line, import, hint), print success panel or violation table, `raise typer.Exit(code=1)` when `not report.passed` (R-04) in src/scaffold_ca_python/commands/validate_structure.py
-- [ ] T061 [US6] Register `vs` (hidden alias) and `validate-structure` commands via `register(app)` in src/scaffold_ca_python/commands/validate_structure.py; call `register(app)` in src/scaffold_ca_python/cli.py
+- [X] T059 [US6] Implement `StructureValidator.validate(project_root: Path) -> ValidationReport`: walk `src/` recursively, `ast.parse()` each `.py` file, walk `ast.Import` and `ast.ImportFrom` nodes (R-08), map module prefix to `Layer`, check against `FORBIDDEN_IMPORTS` dict, collect `Violation` for each breach in src/scaffold_ca_python/core/structure_validator.py
+- [X] T060 [US6] Implement `validate_structure` command: call `StructureValidator.validate()`, render Rich `Table` with violation rows (file, line, import, hint), print success panel or violation table, `raise typer.Exit(code=1)` when `not report.passed` (R-04) in src/scaffold_ca_python/commands/validate_structure.py
+- [X] T061 [US6] Register `vs` (hidden alias) and `validate-structure` commands via `register(app)` in src/scaffold_ca_python/commands/validate_structure.py; call `register(app)` in src/scaffold_ca_python/cli.py
 
 **Checkpoint**: `scaffold vs` on a clean project: exits 0, prints "✓ Validated N files — no violations found." Introducing a domain→infrastructure import: exits 1, table identifies the exact violation with a resolution hint. Usable as a CI gate.
 
@@ -239,30 +239,30 @@
 
 ### Tests for User Story 7 *(write BEFORE implementation)*
 
-- [ ] T062 [P] [US7] Write tests for `gh`/`generate-helper` via CliRunner: success creates `infrastructure/helpers/<name>/` dir with implementation file + `__init__.py` + test mirror, `--dry-run` writes nothing, duplicate exits 1, no-project-root exits 1 in tests/commands/test_generate_helper.py
+- [X] T062 [P] [US7] Write tests for `gh`/`generate-helper` via CliRunner: success creates `infrastructure/helpers/<name>/` dir with implementation file + `__init__.py` + test mirror, `--dry-run` writes nothing, duplicate exits 1, no-project-root exits 1 in tests/commands/test_generate_helper.py
 
 ### Templates for User Story 7
 
-- [ ] T063 [P] [US7] Create `helper/` templates: `__init__.py.jinja2`, `helper.py.jinja2` (empty class stub using `class_name`), `test_helper.py.jinja2` (pytest stub) in src/scaffold_ca_python/templates/helper/
+- [X] T063 [P] [US7] Create `helper/` templates: `__init__.py.jinja2`, `helper.py.jinja2` (empty class stub using `class_name`), `test_helper.py.jinja2` (pytest stub) in src/scaffold_ca_python/templates/helper/
 
 ### Implementation for User Story 7
 
-- [ ] T064 [US7] Implement `_generate_helper_impl(name, dry_run)`: build `ModuleContext(layer=Layer.HELPERS)`, create `infrastructure/helpers/<module_name>/` subdirectory, render three templates, delegate to `FileWriter` in src/scaffold_ca_python/commands/generate_helper.py
-- [ ] T065 [US7] Register `gh` (hidden alias) and `generate-helper` commands via `register(app)` in src/scaffold_ca_python/commands/generate_helper.py; call `register(app)` in src/scaffold_ca_python/cli.py
+- [X] T064 [US7] Implement `_generate_helper_impl(name, dry_run)`: build `ModuleContext(layer=Layer.HELPERS)`, create `infrastructure/helpers/<module_name>/` subdirectory, render three templates, delegate to `FileWriter` in src/scaffold_ca_python/commands/generate_helper.py
+- [X] T065 [US7] Register `gh` (hidden alias) and `generate-helper` commands via `register(app)` in src/scaffold_ca_python/commands/generate_helper.py; call `register(app)` in src/scaffold_ca_python/cli.py
 
 ### Tests for User Story 8 *(write BEFORE implementation)*
 
-- [ ] T066 [P] [US8] Write tests for `gpipe`/`generate-pipeline` via CliRunner: `github` provider creates `.github/workflows/ci.yml`, `azure` provider creates `azure-pipelines.yml`, missing `--provider` exits 1 with resolution hint listing both providers, duplicate pipeline file exits 1 in tests/commands/test_generate_pipeline.py
+- [X] T066 [P] [US8] Write tests for `gpipe`/`generate-pipeline` via CliRunner: `github` provider creates `.github/workflows/ci.yml`, `azure` provider creates `azure-pipelines.yml`, missing `--provider` exits 1 with resolution hint listing both providers, duplicate pipeline file exits 1 in tests/commands/test_generate_pipeline.py
 
 ### Templates for User Story 8
 
-- [ ] T067 [P] [US8] Create `pipeline/github/ci.yml.jinja2`: GitHub Actions workflow with `ruff check`, `mypy src/`, `pytest --cov --cov-fail-under=80` steps using `project.python_version` in src/scaffold_ca_python/templates/pipeline/github/
-- [ ] T068 [P] [US8] Create `pipeline/azure/azure_pipelines.yml.jinja2`: Azure Pipelines YAML with equivalent lint, type-check, and coverage-gated test steps in src/scaffold_ca_python/templates/pipeline/azure/
+- [X] T067 [P] [US8] Create `pipeline/github/ci.yml.jinja2`: GitHub Actions workflow with `ruff check`, `mypy src/`, `pytest --cov --cov-fail-under=80` steps using `project.python_version` in src/scaffold_ca_python/templates/pipeline/github/
+- [X] T068 [P] [US8] Create `pipeline/azure/azure_pipelines.yml.jinja2`: Azure Pipelines YAML with equivalent lint, type-check, and coverage-gated test steps in src/scaffold_ca_python/templates/pipeline/azure/
 
 ### Implementation for User Story 8
 
-- [ ] T069 [US8] Implement `_generate_pipeline_impl(provider, dry_run)`: validate provider is one of `{github, azure}`, resolve output path (`.github/workflows/ci.yml` vs `azure-pipelines.yml`), detect conflict, render template with `ProjectContext`, delegate to `FileWriter` in src/scaffold_ca_python/commands/generate_pipeline.py
-- [ ] T070 [US8] Register `gpipe` (hidden alias) and `generate-pipeline` commands via `register(app)` in src/scaffold_ca_python/commands/generate_pipeline.py; call `register(app)` in src/scaffold_ca_python/cli.py
+- [X] T069 [US8] Implement `_generate_pipeline_impl(provider, dry_run)`: validate provider is one of `{github, azure}`, resolve output path (`.github/workflows/ci.yml` vs `azure-pipelines.yml`), detect conflict, render template with `ProjectContext`, delegate to `FileWriter` in src/scaffold_ca_python/commands/generate_pipeline.py
+- [X] T070 [US8] Register `gpipe` (hidden alias) and `generate-pipeline` commands via `register(app)` in src/scaffold_ca_python/commands/generate_pipeline.py; call `register(app)` in src/scaffold_ca_python/cli.py
 
 **Checkpoint**: US-7 — `scaffold gh --name Metrics` creates correct helper structure; `vs` still exits 0. US-8 — `scaffold gpipe --provider github` creates a valid YAML; running without `--provider` shows both valid options.
 
