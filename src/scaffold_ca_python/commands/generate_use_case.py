@@ -63,7 +63,8 @@ def _generate_use_case_impl(name: str, dry_run: bool) -> None:
         existing = src_path if src_path.exists() else test_path
         console.print(
             f"[red]Error:[/red] File '{existing.relative_to(project_root)}' already exists. "
-            "Use --force to overwrite."
+            "Use --force to overwrite.\n"
+            "[dim]Hint:[/dim] Choose a different name or remove the existing file first."
         )
         raise typer.Exit(code=1)
 
@@ -90,19 +91,24 @@ def _generate_use_case_impl(name: str, dry_run: bool) -> None:
         console.print(tree)
         return
 
-    writer.execute(operations, dry_run=False)
+    created = writer.execute(operations, dry_run=False)
     console.print(
-        f"[green]✓[/green] Use case [bold]{module_ctx.class_name}UseCase[/bold] created."
+        f"[green]✓[/green] Use case [bold]{module_ctx.class_name}UseCase[/bold] created. "
+        f"Created {len(created)} file(s)."
     )
 
 
 def register(app: typer.Typer) -> None:
     """Register guc / generate-use-case commands onto *app*."""
 
-    @app.command("generate-use-case", help="Scaffold an async use case class and test stub.")
+    @app.command(
+        "generate-use-case",
+        help="Scaffold an async use case class and test stub.",
+        epilog="Example: scaffold guc --name CreateOrder",
+    )
     def generate_use_case(
-        name: Annotated[str, typer.Option("--name", help="Use case name.")],
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
+        name: Annotated[str, typer.Option("--name", help="Use case name (PascalCase).", rich_help_panel="Required")],
+        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview without writing.", rich_help_panel="Options", show_default=True)] = False,
     ) -> None:
         """Scaffold an async use case inside domain/usecase/."""
         _generate_use_case_impl(name, dry_run)

@@ -80,7 +80,8 @@ def _generate_driven_adapter_impl(type_: str, name: str | None, dry_run: bool) -
     # --- Duplicate guard ---
     if src_dir.exists():
         console.print(
-            f"[red]Error:[/red] Directory '{src_dir.relative_to(project_root)}/' already exists."
+            f"[red]Error:[/red] Directory '{src_dir.relative_to(project_root)}/' already exists.\n"
+            "[dim]Hint:[/dim] Choose a different name or remove the existing directory first."
         )
         raise typer.Exit(code=1) from None
 
@@ -95,9 +96,10 @@ def _generate_driven_adapter_impl(type_: str, name: str | None, dry_run: bool) -
         console.print(tree)
         return
 
-    writer.execute(operations, dry_run=False)
+    created = writer.execute(operations, dry_run=False)
     console.print(
-        f"[green]✓[/green] Driven adapter [bold]{subdir}[/bold] created."
+        f"[green]✓[/green] Driven adapter [bold]{subdir}[/bold] created. "
+        f"Created {len(created)} file(s)."
     )
 
 
@@ -189,11 +191,15 @@ def _build_operations(
 def register(app: typer.Typer) -> None:
     """Register gda / generate-driven-adapter commands onto *app*."""
 
-    @app.command("generate-driven-adapter", help="Scaffold a driven adapter and test stub.")
+    @app.command(
+        "generate-driven-adapter",
+        help="Scaffold a driven adapter and test stub.",
+        epilog="Examples: scaffold gda --type rest-consumer | scaffold gda --type generic --name MyAdapter",
+    )
     def generate_driven_adapter(
-        type_: Annotated[str, typer.Option("--type", help="Adapter type: rest-consumer, secrets, generic.")],
-        name: Annotated[str | None, typer.Option("--name", help="Adapter name (required for generic).")] = None,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
+        type_: Annotated[str, typer.Option("--type", help="Adapter type: rest-consumer, secrets, generic.", rich_help_panel="Required")],
+        name: Annotated[str | None, typer.Option("--name", help="Adapter name (required for --type generic).", rich_help_panel="Options")] = None,
+        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview without writing.", rich_help_panel="Options", show_default=True)] = False,
     ) -> None:
         """Scaffold a driven adapter inside infrastructure/driven_adapters/."""
         _generate_driven_adapter_impl(type_, name, dry_run)

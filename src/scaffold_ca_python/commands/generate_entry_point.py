@@ -94,7 +94,8 @@ def _generate_entry_point_impl(
     # --- Duplicate guard ---
     if src_dir.exists():
         console.print(
-            f"[red]Error:[/red] Directory '{src_dir.relative_to(project_root)}/' already exists."
+            f"[red]Error:[/red] Directory '{src_dir.relative_to(project_root)}/' already exists.\n"
+            "[dim]Hint:[/dim] Choose a different type or remove the existing directory first."
         )
         raise typer.Exit(code=1) from None
 
@@ -115,9 +116,10 @@ def _generate_entry_point_impl(
         console.print(tree)
         return
 
-    writer.execute(operations, dry_run=False)
+    created = writer.execute(operations, dry_run=False)
     console.print(
-        f"[green]✓[/green] Entry point [bold]{subdir}[/bold] created."
+        f"[green]✓[/green] Entry point [bold]{subdir}[/bold] created. "
+        f"Created {len(created)} file(s)."
     )
 
 
@@ -199,17 +201,21 @@ def _parse_swagger(path: Path) -> list[tuple[str, str]]:
 def register(app: typer.Typer) -> None:
     """Register gep / generate-entry-point commands onto *app*."""
 
-    @app.command("generate-entry-point", help="Scaffold an entry-point adapter and test stub.")
+    @app.command(
+        "generate-entry-point",
+        help="Scaffold an entry-point adapter and test stub.",
+        epilog="Example: scaffold gep --type restapi",
+    )
     def generate_entry_point(
-        type_: Annotated[str, typer.Option("--type", help=_TYPE_HELP)],
-        swagger: Annotated[str | None, typer.Option("--swagger", help=_SWAGGER_HELP)] = None,
+        type_: Annotated[str, typer.Option("--type", help=_TYPE_HELP, rich_help_panel="Required")],
+        swagger: Annotated[str | None, typer.Option("--swagger", help=_SWAGGER_HELP, rich_help_panel="Options")] = None,
         enable_kafka: Annotated[
-            bool, typer.Option("--enable-kafka/--no-enable-kafka", help=_KAFKA_HELP)
+            bool, typer.Option("--enable-kafka/--no-enable-kafka", help=_KAFKA_HELP, rich_help_panel="Options", show_default=True)
         ] = False,
         enable_mcp_client: Annotated[
-            bool, typer.Option("--enable-mcp-client/--no-enable-mcp-client", help=_MCP_CLIENT_HELP)
+            bool, typer.Option("--enable-mcp-client/--no-enable-mcp-client", help=_MCP_CLIENT_HELP, rich_help_panel="Options", show_default=True)
         ] = False,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
+        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview without writing.", rich_help_panel="Options", show_default=True)] = False,
     ) -> None:
         """Scaffold an entry point inside infrastructure/entry_points/."""
         _generate_entry_point_impl(type_, swagger, enable_kafka, enable_mcp_client, dry_run)

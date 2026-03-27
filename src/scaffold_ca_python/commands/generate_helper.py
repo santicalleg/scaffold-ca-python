@@ -49,7 +49,8 @@ def _generate_helper_impl(name: str, dry_run: bool) -> None:
 
     if src_dir.exists():
         console.print(
-            f"[red]Error:[/red] Directory '{src_dir.relative_to(project_root)}/' already exists."
+            f"[red]Error:[/red] Directory '{src_dir.relative_to(project_root)}/' already exists.\n"
+            "[dim]Hint:[/dim] Choose a different name or remove the existing directory first."
         )
         raise typer.Exit(code=1) from None
 
@@ -81,19 +82,24 @@ def _generate_helper_impl(name: str, dry_run: bool) -> None:
         console.print(tree)
         return
 
-    writer.execute(operations, dry_run=False)
+    created = writer.execute(operations, dry_run=False)
     console.print(
-        f"[green]✓[/green] Helper [bold]{module_ctx.class_name}[/bold] created."
+        f"[green]✓[/green] Helper [bold]{module_ctx.class_name}[/bold] created. "
+        f"Created {len(created)} file(s)."
     )
 
 
 def register(app: typer.Typer) -> None:
     """Register gh / generate-helper commands onto *app*."""
 
-    @app.command("generate-helper", help="Scaffold a helper utility class and test stub.")
+    @app.command(
+        "generate-helper",
+        help="Scaffold a helper utility class and test stub.",
+        epilog="Example: scaffold gh --name DateUtils",
+    )
     def generate_helper(
-        name: Annotated[str, typer.Option("--name", help="Helper name.")],
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
+        name: Annotated[str, typer.Option("--name", help="Helper name (PascalCase).", rich_help_panel="Required")],
+        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview without writing.", rich_help_panel="Options", show_default=True)] = False,
     ) -> None:
         """Scaffold a helper inside infrastructure/helpers/."""
         _generate_helper_impl(name, dry_run)

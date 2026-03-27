@@ -62,7 +62,8 @@ def _generate_model_impl(name: str, dry_run: bool) -> None:
         existing = src_path if src_path.exists() else test_path
         console.print(
             f"[red]Error:[/red] File '{existing.relative_to(project_root)}' already exists. "
-            "Use --force to overwrite."
+            "Use --force to overwrite.\n"
+            "[dim]Hint:[/dim] Choose a different name or remove the existing file first."
         )
         raise typer.Exit(code=1)
 
@@ -89,19 +90,24 @@ def _generate_model_impl(name: str, dry_run: bool) -> None:
         console.print(tree)
         return
 
-    writer.execute(operations, dry_run=False)
+    created = writer.execute(operations, dry_run=False)
     console.print(
-        f"[green]✓[/green] Model [bold]{module_ctx.class_name}[/bold] created."
+        f"[green]✓[/green] Model [bold]{module_ctx.class_name}[/bold] created. "
+        f"Created {len(created)} file(s)."
     )
 
 
 def register(app: typer.Typer) -> None:
     """Register gm / generate-model commands onto *app*."""
 
-    @app.command("generate-model", help="Scaffold a Pydantic v2 domain model and test stub.")
+    @app.command(
+        "generate-model",
+        help="Scaffold a Pydantic v2 domain model and test stub.",
+        epilog="Example: scaffold gm --name Order",
+    )
     def generate_model(
-        name: Annotated[str, typer.Option("--name", help="Model name.")],
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
+        name: Annotated[str, typer.Option("--name", help="Model name (PascalCase).", rich_help_panel="Required")],
+        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview without writing.", rich_help_panel="Options", show_default=True)] = False,
     ) -> None:
         """Scaffold a domain model class inside domain/model/."""
         _generate_model_impl(name, dry_run)

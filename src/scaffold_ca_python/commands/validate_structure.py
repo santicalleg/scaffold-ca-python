@@ -71,11 +71,15 @@ def _validate_structure_impl(dry_run: bool) -> None:
 def register(app: typer.Typer) -> None:
     """Register vs / validate-structure commands onto *app*."""
 
-    @app.command("validate-structure", help="Scan src/ for Clean Architecture import violations.")
+    @app.command(
+        "validate-structure",
+        help="Scan src/ for Clean Architecture import violations.",
+        epilog="Example: scaffold vs",
+    )
     def validate_structure(
         dry_run: Annotated[
             bool,
-            typer.Option("--dry-run/--no-dry-run", help="Print results but always exit 0."),
+            typer.Option("--dry-run/--no-dry-run", help="Print results but always exit 0.", rich_help_panel="Options", show_default=True),
         ] = False,
     ) -> None:
         """Validate Clean Architecture layer boundaries in the current project."""

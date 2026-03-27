@@ -71,7 +71,8 @@ def _generate_pipeline_impl(provider: str | None, dry_run: bool) -> None:
     if out_path.exists():
         console.print(
             f"[red]Error:[/red] '{display_name}' already exists at "
-            f"'{out_path.relative_to(project_root)}'. Use --force to overwrite."
+            f"'{out_path.relative_to(project_root)}'. Use --force to overwrite.\n"
+            "[dim]Hint:[/dim] Remove the existing file first or choose a different provider."
         )
         raise typer.Exit(code=1) from None
 
@@ -91,19 +92,24 @@ def _generate_pipeline_impl(provider: str | None, dry_run: bool) -> None:
         console.print(tree)
         return
 
-    writer.execute(operations, dry_run=False)
+    created = writer.execute(operations, dry_run=False)
     console.print(
-        f"[green]✓[/green] Pipeline [bold]{display_name}[/bold] created."
+        f"[green]✓[/green] Pipeline [bold]{display_name}[/bold] created. "
+        f"Created {len(created)} file(s)."
     )
 
 
 def register(app: typer.Typer) -> None:
     """Register gpipe / generate-pipeline commands onto *app*."""
 
-    @app.command("generate-pipeline", help="Scaffold a CI/CD pipeline configuration file.")
+    @app.command(
+        "generate-pipeline",
+        help="Scaffold a CI/CD pipeline configuration file.",
+        epilog="Example: scaffold gpipe --provider github",
+    )
     def generate_pipeline(
-        provider: Annotated[str | None, typer.Option("--provider", help="Pipeline provider (github, azure).")] = None,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
+        provider: Annotated[str | None, typer.Option("--provider", help="Pipeline provider (github, azure).", rich_help_panel="Required")] = None,
+        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview without writing.", rich_help_panel="Options", show_default=True)] = False,
     ) -> None:
         """Scaffold a CI/CD pipeline file for the specified provider."""
         _generate_pipeline_impl(provider, dry_run)

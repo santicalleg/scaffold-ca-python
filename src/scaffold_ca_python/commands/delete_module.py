@@ -104,7 +104,10 @@ def _delete_module_impl(name: str, confirm: bool, dry_run: bool) -> None:
     targets = _find_module_targets(project_root, snake)
 
     if not targets:
-        console.print(f"[red]Error:[/red] No module named '{snake}' found in project.")
+        console.print(
+            f"[red]Error:[/red] No module named '{snake}' found in project.\n"
+            "[dim]Hint:[/dim] Check spelling with 'scaffold vs' to list modules."
+        )
         raise typer.Exit(code=1) from None
 
     # Collect all paths to delete
@@ -147,11 +150,15 @@ def _delete_module_impl(name: str, confirm: bool, dry_run: bool) -> None:
 def register(app: typer.Typer) -> None:
     """Register dm / delete-module commands onto *app*."""
 
-    @app.command("delete-module", help="Safely remove a module and its test mirror.")
+    @app.command(
+        "delete-module",
+        help="Safely remove a module and its test mirror.",
+        epilog="Example: scaffold dm --name Order --confirm",
+    )
     def delete_module(
-        name: Annotated[str, typer.Option("--name", help="Module name to delete.")],
-        confirm: Annotated[bool, typer.Option("--confirm/--no-confirm")] = False,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
+        name: Annotated[str, typer.Option("--name", help="Module name to delete.", rich_help_panel="Required")],
+        confirm: Annotated[bool, typer.Option("--confirm/--no-confirm", help="Actually perform deletion.", rich_help_panel="Options", show_default=True)] = False,
+        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview without writing.", rich_help_panel="Options", show_default=True)] = False,
     ) -> None:
         """Preview or delete a previously generated module."""
         _delete_module_impl(name, confirm, dry_run)

@@ -1,0 +1,50 @@
+"""Template rendering tests for project/ group (T083)."""
+
+import importlib.resources
+
+from scaffold_ca_python.core.template_renderer import TemplateRenderer
+from scaffold_ca_python.models.context import ProjectContext
+
+renderer = TemplateRenderer()
+
+
+def _ctx() -> ProjectContext:
+    return ProjectContext(name="MyApp", package="com.example")
+
+
+def _tmpl(name: str) -> str:
+    return (
+        importlib.resources.files("scaffold_ca_python.templates")
+        .joinpath(name)
+        .read_text(encoding="utf-8")
+    )
+
+
+def test_pyproject_toml_has_scaffold_section() -> None:
+    out = renderer.render_string(_tmpl("project/pyproject_toml.jinja2"), _ctx().model_dump())
+    assert "[tool.scaffold-ca-python]" in out
+
+
+def test_pyproject_toml_has_correct_package_name() -> None:
+    out = renderer.render_string(_tmpl("project/pyproject_toml.jinja2"), _ctx().model_dump())
+    assert "my_app" in out
+
+
+def test_pyproject_toml_has_python_313_target() -> None:
+    out = renderer.render_string(_tmpl("project/pyproject_toml.jinja2"), _ctx().model_dump())
+    assert "3.13" in out
+
+
+def test_readme_contains_project_name() -> None:
+    out = renderer.render_string(_tmpl("project/README.jinja2"), _ctx().model_dump())
+    assert "MyApp" in out
+
+
+def test_gitignore_contains_venv() -> None:
+    out = renderer.render_string(_tmpl("project/gitignore.jinja2"), _ctx().model_dump())
+    assert ".venv" in out
+
+
+def test_layer_init_renders() -> None:
+    out = renderer.render_string(_tmpl("project/layer_init.jinja2"), _ctx().model_dump())
+    assert isinstance(out, str)

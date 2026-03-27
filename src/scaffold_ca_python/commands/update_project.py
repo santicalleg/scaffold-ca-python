@@ -64,9 +64,13 @@ def _update_project_impl(dry_run: bool) -> None:
 def register(app: typer.Typer) -> None:
     """Register up / update-project commands onto *app*."""
 
-    @app.command("update-project", help="Update project dependencies via uv lock --upgrade + uv sync.")
+    @app.command(
+        "update-project",
+        help="Update project dependencies via uv lock --upgrade + uv sync.",
+        epilog="Example: scaffold up --dry-run",
+    )
     def update_project(
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
+        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview commands without running.", rich_help_panel="Options", show_default=True)] = False,
     ) -> None:
         """Update dependencies using uv."""
         _update_project_impl(dry_run)

@@ -48,7 +48,8 @@ def _generate_project_impl(
     if target_dir.exists():
         console.print(
             f"[red]Error:[/red] Directory '{python_pkg}/' already exists. "
-            "Aborting to prevent data loss."
+            "Aborting to prevent data loss.\n"
+            "[dim]Hint:[/dim] Choose a different project name or remove the existing directory first."
         )
         raise typer.Exit(code=1)
 
@@ -94,18 +95,25 @@ def _generate_project_impl(
         console.print(tree)
         return
 
-    writer.execute(operations, dry_run=False)
-    console.print(f"[green]✓[/green] Project [bold]{python_pkg}/[/bold] created successfully.")
+    created = writer.execute(operations, dry_run=False)
+    console.print(
+        f"[green]✓[/green] Project [bold]{python_pkg}/[/bold] created successfully. "
+        f"Created {len(created)} file(s)."
+    )
 
 
 def register(app: typer.Typer) -> None:
     """Register ca / generate-project commands onto *app*."""
 
-    @app.command("generate-project", help="Scaffold a new Clean Architecture Python project.")
+    @app.command(
+        "generate-project",
+        help="Scaffold a new Clean Architecture Python project.",
+        epilog="Example: scaffold ca --name OrderService",
+    )
     def generate_project(
-        name: Annotated[str, typer.Option("--name", help="Project name (PascalCase or snake_case).")],
-        package: Annotated[str, typer.Option("--package", help="Dot-notation package identifier.")] = "com.example",
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview files without writing.")] = False,
+        name: Annotated[str, typer.Option("--name", help="Project name (PascalCase or snake_case).", rich_help_panel="Required")],
+        package: Annotated[str, typer.Option("--package", help="Dot-notation package identifier.", rich_help_panel="Options", show_default=True)] = "com.example",
+        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview files without writing.", rich_help_panel="Options", show_default=True)] = False,
     ) -> None:
         """Scaffold a complete Clean Architecture Python project."""
         _generate_project_impl(name, package, dry_run)
