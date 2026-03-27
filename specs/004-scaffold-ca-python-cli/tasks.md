@@ -280,21 +280,21 @@
 
 ### Tests for User Story 9 *(write BEFORE implementation)*
 
-- [ ] T071 [P] [US9] Write tests for `dm`/`delete-module` via CliRunner: default (no `--confirm`) prints preview with both file paths and writes nothing, `--confirm` deletes module dir + test mirror, `--dry-run --confirm` combined shows preview with no deletions (`--dry-run` takes precedence per spec US-9 scenario 4), module name not found exits 1, `__init__.py` containing orphan import logs a resolution hint in tests/commands/test_delete_module.py
+- [X] T071 [P] [US9] Write tests for `dm`/`delete-module` via CliRunner: default (no `--confirm`) prints preview with both file paths and writes nothing, `--confirm` deletes module dir + test mirror, `--dry-run --confirm` combined shows preview with no deletions (`--dry-run` takes precedence per spec US-9 scenario 4), module name not found exits 1, `__init__.py` containing orphan import logs a resolution hint in tests/commands/test_delete_module.py
 
 ### Implementation for User Story 9
 
-- [ ] T072 [US9] Implement `_delete_module_impl(name, confirm, dry_run)`: search all 5 layer paths for `<module_name>` (files and dirs), collect `DeleteFile` operations for module + test mirror, detect orphan `__init__.py` imports and emit warning hint, default to preview-only unless `confirm=True`, delegate to `FileWriter` in src/scaffold_ca_python/commands/delete_module.py
-- [ ] T073 [US9] Register `dm` (hidden alias) and `delete-module` commands via `register(app)` in src/scaffold_ca_python/commands/delete_module.py; call `register(app)` in src/scaffold_ca_python/cli.py
+- [X] T072 [US9] Implement `_delete_module_impl(name, confirm, dry_run)`: search all 5 layer paths for `<module_name>` (files and dirs), collect `DeleteFile` operations for module + test mirror, detect orphan `__init__.py` imports and emit warning hint, default to preview-only unless `confirm=True`, delegate to `FileWriter` in src/scaffold_ca_python/commands/delete_module.py
+- [X] T073 [US9] Register `dm` (hidden alias) and `delete-module` commands via `register(app)` in src/scaffold_ca_python/commands/delete_module.py; call `register(app)` in src/scaffold_ca_python/cli.py
 
 ### Tests for User Story 10 *(write BEFORE implementation)*
 
-- [ ] T074 [P] [US10] Write tests for `up`/`update-project` via CliRunner: `--dry-run` prints both `uv` commands without calling `subprocess`, success path calls `subprocess.run` with correct argument lists (no `shell=True`), `uv` not on PATH exits 1, `uv lock` non-zero exit surfaces as exit 2 in tests/commands/test_update_project.py
+- [X] T074 [P] [US10] Write tests for `up`/`update-project` via CliRunner: `--dry-run` prints both `uv` commands without calling `subprocess`, success path calls `subprocess.run` with correct argument lists (no `shell=True`), `uv` not on PATH exits 1, `uv lock` non-zero exit surfaces as exit 2 in tests/commands/test_update_project.py
 
 ### Implementation for User Story 10
 
-- [ ] T075 [US10] Implement `_update_project_impl(dry_run)`: detect project root via `find_project_root`, run `subprocess.run(["uv", "lock", "--upgrade"], check=True, cwd=root)` then `subprocess.run(["uv", "sync"], check=True, cwd=root)` (R-09, no `shell=True`), catch `FileNotFoundError` for missing `uv` and `CalledProcessError` for failures in src/scaffold_ca_python/commands/update_project.py
-- [ ] T076 [US10] Register `up` (hidden alias) and `update-project` commands via `register(app)` in src/scaffold_ca_python/commands/update_project.py; call `register(app)` in src/scaffold_ca_python/cli.py
+- [X] T075 [US10] Implement `_update_project_impl(dry_run)`: detect project root via `find_project_root`, run `subprocess.run(["uv", "lock", "--upgrade"], check=True, cwd=root)` then `subprocess.run(["uv", "sync"], check=True, cwd=root)` (R-09, no `shell=True`), catch `FileNotFoundError` for missing `uv` and `CalledProcessError` for failures in src/scaffold_ca_python/commands/update_project.py
+- [X] T076 [US10] Register `up` (hidden alias) and `update-project` commands via `register(app)` in src/scaffold_ca_python/commands/update_project.py; call `register(app)` in src/scaffold_ca_python/cli.py
 
 **Checkpoint**: `scaffold dm --name SomeModel` (on a scaffolded project with a generated model) shows correct two-file preview. `scaffold dm --name SomeModel --confirm` deletes both. `scaffold up --dry-run` prints two `uv` commands.
 

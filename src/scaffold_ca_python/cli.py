@@ -1,6 +1,7 @@
 import typer
 
 from scaffold_ca_python.commands import (
+    delete_module,
     generate_driven_adapter,
     generate_entry_point,
     generate_helper,
@@ -8,6 +9,7 @@ from scaffold_ca_python.commands import (
     generate_pipeline,
     generate_project,
     generate_use_case,
+    update_project,
     validate_structure,
 )
 
@@ -25,5 +27,7 @@ generate_driven_adapter.register(app)
 generate_entry_point.register(app)
 generate_helper.register(app)
 generate_pipeline.register(app)
+delete_module.register(app)
+update_project.register(app)
 validate_structure.register(app)
 
