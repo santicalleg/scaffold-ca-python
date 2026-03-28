@@ -35,6 +35,28 @@ def test_pyproject_toml_has_python_313_target() -> None:
     assert "3.13" in out
 
 
+def test_pyproject_toml_has_ruff_lint_section() -> None:
+    out = renderer.render_string(_tmpl("project/pyproject_toml.jinja2"), _ctx().model_dump())
+    assert "[tool.ruff.lint]" in out
+
+
+def test_pyproject_toml_has_per_file_ignores() -> None:
+    out = renderer.render_string(_tmpl("project/pyproject_toml.jinja2"), _ctx().model_dump())
+    assert "per-file-ignores" in out
+
+
+def test_pyproject_toml_no_standalone_package_key() -> None:
+    out = renderer.render_string(_tmpl("project/pyproject_toml.jinja2"), _ctx().model_dump())
+    # Ensure there's no bare `package = "..."` key (only python_package is acceptable)
+    import re
+    assert not re.search(r'(?<![a-z_])package = "', out)
+
+
+def test_python_version_renders_313() -> None:
+    out = renderer.render_string(_tmpl("project/python_version.jinja2"), _ctx().model_dump())
+    assert "3.13" in out
+
+
 def test_readme_contains_project_name() -> None:
     out = renderer.render_string(_tmpl("project/README.jinja2"), _ctx().model_dump())
     assert "MyApp" in out

@@ -3,7 +3,10 @@ name = "{{ python_package }}"
 version = "0.1.0"
 description = "Clean Architecture Python project"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "dependency-injector>=4.41",
+    "pydantic-settings>=2.0",
+]
 
 [project.scripts]
 {{ python_package }} = "{{ python_package }}.main:main"
@@ -14,14 +17,19 @@ build-backend = "hatchling.build"
 
 [tool.scaffold-ca-python]
 name = "{{ name }}"
-package = "{{ package }}"
 python_package = "{{ python_package }}"
 created_at = "{{ created_at }}"
 
 [tool.ruff]
 line-length = 120
 target-version = "py313"
+
+[tool.ruff.lint]
 select = ["E", "F", "I", "UP", "ANN"]
+ignore = ["ANN101", "ANN102"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ANN"]
 
 [tool.mypy]
 python_version = "3.13"

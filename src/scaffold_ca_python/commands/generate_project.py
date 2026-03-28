@@ -65,10 +65,14 @@ def _generate_project_impl(
          renderer.render_string(_tmpl("project/README.jinja2"), ctx_dict))
     _add(operations, target_dir / ".gitignore",
          renderer.render_string(_tmpl("project/gitignore.jinja2"), ctx_dict))
-    _add(operations, target_dir / ".ruff.toml",
-         renderer.render_string(_tmpl("project/ruff_toml.jinja2"), ctx_dict))
     _add(operations, target_dir / "mypy.ini",
          renderer.render_string(_tmpl("project/mypy_ini.jinja2"), ctx_dict))
+    _add(operations, target_dir / "Dockerfile",
+         renderer.render_string(_tmpl("project/dockerfile.jinja2"), ctx_dict))
+    _add(operations, target_dir / ".dockerignore",
+         renderer.render_string(_tmpl("project/dockerignore.jinja2"), ctx_dict))
+    _add(operations, target_dir / ".python-version",
+         renderer.render_string(_tmpl("project/python_version.jinja2"), ctx_dict))
 
     # --- src/<pkg>/__init__.py ------------------------------------------------
     _add(operations, target_dir / "src" / python_pkg / "__init__.py",

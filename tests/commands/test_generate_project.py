@@ -43,6 +43,26 @@ def test_creates_config_files(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     assert (root / "README.md").exists()
     assert (root / ".gitignore").exists()
     assert (root / "mypy.ini").exists()
+    # US1: Docker and Python version files
+    assert (root / "Dockerfile").exists()
+    assert (root / ".dockerignore").exists()
+    assert (root / ".python-version").exists()
+    # US1: No .ruff.toml
+    assert not (root / ".ruff.toml").exists()
+
+
+def test_python_version_file_contains_version(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
+    content = (tmp_path / "my_project" / ".python-version").read_text()
+    assert "3.13" in content
+
+
+def test_pyproject_has_ruff_lint_section(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
+    content = (tmp_path / "my_project" / "pyproject.toml").read_text()
+    assert "[tool.ruff.lint]" in content
 
 
 def test_pyproject_contains_scaffold_section(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

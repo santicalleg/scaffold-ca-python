@@ -37,20 +37,20 @@
 
 ### Tests for US1 *(write first)*
 
-- [ ] T007 [P] [US1] Update tests/commands/test_generate_project.py: remove all `package=` arguments from `ProjectContext` constructions and CLI invocations; add assertions that `.dockerignore`, `.python-version`, `Dockerfile` are created; assert `.ruff.toml` is NOT created; assert `pyproject.toml` contains `[tool.ruff.lint]`; assert `--package` flag exits 1
+- [X] T007 [P] [US1] Update tests/commands/test_generate_project.py: remove all `package=` arguments from `ProjectContext` constructions and CLI invocations; add assertions that `.dockerignore`, `.python-version`, `Dockerfile` are created; assert `.ruff.toml` is NOT created; assert `pyproject.toml` contains `[tool.ruff.lint]`; assert `--package` flag exits 1
 
 ### Templates for US1
 
-- [ ] T008 [P] [US1] [US2] Update src/scaffold_ca_python/templates/project/pyproject_toml.jinja2: remove `package = "{{ package }}"` line from `[tool.scaffold-ca-python]`; expand `[tool.ruff]` to include `[tool.ruff.lint]` with `select`, `ignore`, and `[tool.ruff.lint.per-file-ignores]` sections; add `"dependency-injector>=4.41"` and `"pydantic-settings>=2.0"` to `[project.dependencies]` *(T015, T023, and T030 depend on this task completing first)*
-- [ ] T009 [P] [US1] Create src/scaffold_ca_python/templates/project/dockerfile.jinja2 — minimal multi-stage `python:3.13-slim` stub: `FROM python:3.13-slim AS base`, install uv, copy source, install deps, `CMD ["python", "-m", "{{ python_package }}"]`
-- [ ] T010 [P] [US1] Create src/scaffold_ca_python/templates/project/dockerignore.jinja2 — standard patterns: `.venv`, `__pycache__`, `*.pyc`, `*.pyo`, `.pytest_cache`, `.mypy_cache`, `dist/`, `.git`, `*.egg-info`
-- [ ] T011 [P] [US1] Create src/scaffold_ca_python/templates/project/python_version.jinja2 — renders `3.13\n` (single line, no Jinja2 variables needed)
-- [ ] T012 [P] [US1] Delete src/scaffold_ca_python/templates/project/ruff_toml.jinja2 (ruff config is now fully inline in pyproject_toml.jinja2)
+- [X] T008 [P] [US1] [US2] Update src/scaffold_ca_python/templates/project/pyproject_toml.jinja2: remove `package = "{{ package }}"` line from `[tool.scaffold-ca-python]`; expand `[tool.ruff]` to include `[tool.ruff.lint]` with `select`, `ignore`, and `[tool.ruff.lint.per-file-ignores]` sections; add `"dependency-injector>=4.41"` and `"pydantic-settings>=2.0"` to `[project.dependencies]` *(T015, T023, and T030 depend on this task completing first)*
+- [X] T009 [P] [US1] Create src/scaffold_ca_python/templates/project/dockerfile.jinja2 — minimal multi-stage `python:3.13-slim` stub: `FROM python:3.13-slim AS base`, install uv, copy source, install deps, `CMD ["python", "-m", "{{ python_package }}"]`
+- [X] T010 [P] [US1] Create src/scaffold_ca_python/templates/project/dockerignore.jinja2 — standard patterns: `.venv`, `__pycache__`, `*.pyc`, `*.pyo`, `.pytest_cache`, `.mypy_cache`, `dist/`, `.git`, `*.egg-info`
+- [X] T011 [P] [US1] Create src/scaffold_ca_python/templates/project/python_version.jinja2 — renders `3.13\n` (single line, no Jinja2 variables needed)
+- [X] T012 [P] [US1] Delete src/scaffold_ca_python/templates/project/ruff_toml.jinja2 (ruff config is now fully inline in pyproject_toml.jinja2)
 
 ### Implementation for US1
 
-- [ ] T013 [US1] Update `_generate_project_impl` in src/scaffold_ca_python/commands/generate_project.py: remove `package` parameter; remove `.ruff.toml` `_add` call; add `_add` calls for `Dockerfile`, `.dockerignore`, `.python-version`; update `ProjectContext(name=name)` (no `package`); update `register()` to remove `--package` from both `generate-project` and `ca` command wrappers
-- [ ] T014 [US1] (a) Update tests/templates/test_project_templates.py: assert `[tool.ruff.lint]` present and `package` key absent in rendered `pyproject_toml.jinja2` output; assert `python_version.jinja2` renders `3.13`. (b) Create tests/templates/test_docker_templates.py (new file): render `dockerfile.jinja2` and assert `FROM python:3.13-slim` and `python_package` variable present; render `dockerignore.jinja2` and assert `.venv` and `__pycache__` present
+- [X] T013 [US1] Update `_generate_project_impl` in src/scaffold_ca_python/commands/generate_project.py: remove `package` parameter; remove `.ruff.toml` `_add` call; add `_add` calls for `Dockerfile`, `.dockerignore`, `.python-version`; update `ProjectContext(name=name)` (no `package`); update `register()` to remove `--package` from both `generate-project` and `ca` command wrappers
+- [X] T014 [US1] (a) Update tests/templates/test_project_templates.py: assert `[tool.ruff.lint]` present and `package` key absent in rendered `pyproject_toml.jinja2` output; assert `python_version.jinja2` renders `3.13`. (b) Create tests/templates/test_docker_templates.py (new file): render `dockerfile.jinja2` and assert `FROM python:3.13-slim` and `python_package` variable present; render `dockerignore.jinja2` and assert `.venv` and `__pycache__` present
 
 **Checkpoint**: `scaffold ca --name OrderService` produces the full tree including Docker files. No `.ruff.toml` created. `scaffold ca --name OrderService --package x` exits 1. All US1 tests pass.
 
