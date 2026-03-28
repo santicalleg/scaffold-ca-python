@@ -12,43 +12,43 @@ from scaffold_ca_python.models.layer import Layer
 # ---------------------------------------------------------------------------
 
 def test_project_context_valid() -> None:
-    ctx = ProjectContext(name="MyProject", package="com.example")
+    ctx = ProjectContext(name="MyProject")
     assert ctx.name == "MyProject"
-    assert ctx.package == "com.example"
+    assert ctx.python_package == "my_project"
 
 
 def test_project_context_python_package_derived_from_name() -> None:
-    ctx = ProjectContext(name="MyProject", package="com.example")
+    ctx = ProjectContext(name="MyProject")
     assert ctx.python_package == "my_project"
 
 
 def test_project_context_python_package_with_numbers() -> None:
-    ctx = ProjectContext(name="Project2025", package="com.example")
+    ctx = ProjectContext(name="Project2025")
     assert ctx.python_package == "project2025"
 
 
 def test_project_context_name_must_start_with_letter() -> None:
     with pytest.raises(ValidationError):
-        ProjectContext(name="1Invalid", package="com.example")
+        ProjectContext(name="1Invalid")
 
 
 def test_project_context_name_rejects_spaces() -> None:
     with pytest.raises(ValidationError):
-        ProjectContext(name="My Project", package="com.example")
+        ProjectContext(name="My Project")
 
 
 def test_project_context_name_rejects_hyphens() -> None:
     with pytest.raises(ValidationError):
-        ProjectContext(name="my-project", package="com.example")
+        ProjectContext(name="my-project")
 
 
 def test_project_context_name_rejects_empty() -> None:
     with pytest.raises(ValidationError):
-        ProjectContext(name="", package="com.example")
+        ProjectContext(name="")
 
 
 def test_project_context_name_allows_underscores() -> None:
-    ctx = ProjectContext(name="My_Project", package="com.example")
+    ctx = ProjectContext(name="My_Project")
     assert ctx.name == "My_Project"
 
 
@@ -57,7 +57,7 @@ def test_project_context_name_allows_underscores() -> None:
 # ---------------------------------------------------------------------------
 
 def _make_project() -> ProjectContext:
-    return ProjectContext(name="MyProject", package="com.example")
+    return ProjectContext(name="MyProject")
 
 
 def test_module_context_valid() -> None:

@@ -10,7 +10,7 @@ renderer = TemplateRenderer()
 
 
 def _project() -> ProjectContext:
-    return ProjectContext(name="MyApp", package="com.example")
+    return ProjectContext(name="MyApp")
 
 
 def _ctx() -> ModuleContext:

@@ -11,6 +11,7 @@ class GeneratedFile(BaseModel):
     content: str
     template_name: str
     is_test: bool = False
+    overwrite: bool = False
 
 
 class CreateFile(BaseModel):

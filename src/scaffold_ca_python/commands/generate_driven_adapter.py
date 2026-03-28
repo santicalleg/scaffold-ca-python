@@ -226,7 +226,6 @@ def _load_project_context(root: Path) -> ProjectContext:
     section = data.get("tool", {}).get("scaffold-ca-python", {})
     return ProjectContext(
         name=section.get("name", root.name),
-        package=section.get("package", "com.example"),
     )
 
 

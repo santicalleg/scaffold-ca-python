@@ -112,3 +112,55 @@ def test_no_partial_files_on_failure(tmp_path: Path) -> None:
 
     # The good file should NOT be left behind (atomicity)
     assert not good.exists()
+
+
+# ---------------------------------------------------------------------------
+# overwrite flag
+# ---------------------------------------------------------------------------
+
+def _create_op_overwrite(path: Path, content: str = "# new") -> CreateFile:
+    gf = GeneratedFile(path=path, content=content, template_name="test.j2", overwrite=True)
+    return CreateFile(file=gf)
+
+
+def test_overwrite_true_replaces_existing_file(tmp_path: Path) -> None:
+    target = tmp_path / "main.py"
+    target.write_text("# original")
+
+    writer = FileWriter()
+    writer.execute([_create_op_overwrite(target, "# replaced")], dry_run=False)
+
+    assert target.read_text() == "# replaced"
+
+
+def test_overwrite_false_raises_on_existing_file(tmp_path: Path) -> None:
+    target = tmp_path / "existing.py"
+    target.write_text("# original")
+
+    writer = FileWriter()
+    with pytest.raises(FileExistsError):
+        writer.execute([_create_op(target)], dry_run=False)
+
+
+def test_overwrite_false_does_not_raise_when_file_absent(tmp_path: Path) -> None:
+    target = tmp_path / "new.py"
+    writer = FileWriter()
+    writer.execute([_create_op(target)], dry_run=False)
+    assert target.exists()
+
+
+def test_overwrite_true_creates_parent_dirs(tmp_path: Path) -> None:
+    target = tmp_path / "deep" / "nested" / "main.py"
+    writer = FileWriter()
+    writer.execute([_create_op_overwrite(target, "# hello")], dry_run=False)
+    assert target.read_text() == "# hello"
+
+
+def test_overwrite_dry_run_does_not_write(tmp_path: Path) -> None:
+    target = tmp_path / "main.py"
+    target.write_text("# original")
+
+    writer = FileWriter()
+    writer.execute([_create_op_overwrite(target, "# replaced")], dry_run=True)
+
+    assert target.read_text() == "# original"

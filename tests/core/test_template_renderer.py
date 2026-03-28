@@ -22,7 +22,7 @@ def renderer() -> TemplateRenderer:
 
 @pytest.fixture()
 def project_ctx() -> ProjectContext:
-    return ProjectContext(name="MyApp", package="com.example")
+    return ProjectContext(name="MyApp")
 
 
 @pytest.fixture()
@@ -63,11 +63,11 @@ def test_render_returns_string(renderer: TemplateRenderer, tmp_path: Path) -> No
 
 
 def test_render_string_with_project_context(renderer: TemplateRenderer, project_ctx: ProjectContext) -> None:
-    template_src = "project: {{ name }}, package: {{ package }}"
+    template_src = "project: {{ name }}, pkg: {{ python_package }}"
     ctx_dict = project_ctx.model_dump()
     result = renderer.render_string(template_src, ctx_dict)
     assert "MyApp" in result
-    assert "com.example" in result
+    assert "my_app" in result
 
 
 def test_render_string_with_module_context(renderer: TemplateRenderer, module_ctx: ModuleContext) -> None:

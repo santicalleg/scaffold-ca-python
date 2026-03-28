@@ -16,14 +16,14 @@ runner = CliRunner()
 
 def test_creates_project_directory(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "MyProject", "--package", "com.acme"], catch_exceptions=False)
+    result = runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (tmp_path / "my_project").is_dir()
 
 
 def test_creates_all_layer_directories(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "MyProject", "--package", "com.acme"], catch_exceptions=False)
+    result = runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
     assert result.exit_code == 0
     root = tmp_path / "my_project"
     assert (root / "src" / "my_project" / "application" / "__init__.py").exists()
@@ -36,30 +36,27 @@ def test_creates_all_layer_directories(tmp_path: Path, monkeypatch: pytest.Monke
 
 def test_creates_config_files(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "MyProject", "--package", "com.acme"], catch_exceptions=False)
+    result = runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
     assert result.exit_code == 0
     root = tmp_path / "my_project"
     assert (root / "pyproject.toml").exists()
     assert (root / "README.md").exists()
     assert (root / ".gitignore").exists()
-    assert (root / ".ruff.toml").exists()
     assert (root / "mypy.ini").exists()
 
 
 def test_pyproject_contains_scaffold_section(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    runner.invoke(app, ["ca", "--name", "MyProject", "--package", "com.acme"], catch_exceptions=False)
+    runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
     content = (tmp_path / "my_project" / "pyproject.toml").read_text()
     assert "[tool.scaffold-ca-python]" in content
     assert "MyProject" in content
 
 
-def test_package_defaults_to_com_example(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_package_flag_is_not_accepted(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "SimpleApp"], catch_exceptions=False)
-    assert result.exit_code == 0
-    content = (tmp_path / "simple_app" / "pyproject.toml").read_text()
-    assert "com.example" in content
+    result = runner.invoke(app, ["ca", "--name", "SimpleApp", "--package", "com.example"])
+    assert result.exit_code != 0
 
 
 def test_generate_project_alias_works(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

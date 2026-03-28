@@ -33,7 +33,6 @@ _LAYER_DIRS: list[tuple[str, str]] = [
 
 def _generate_project_impl(
     name: str,
-    package: str,
     dry_run: bool,
 ) -> None:
     try:
@@ -53,7 +52,7 @@ def _generate_project_impl(
         )
         raise typer.Exit(code=1)
 
-    ctx = ProjectContext(name=name, package=package)
+    ctx = ProjectContext(name=name)
     ctx_dict = ctx.model_dump()
     ctx_dict["created_at"] = datetime.now(tz=UTC).isoformat()
 
@@ -112,20 +111,18 @@ def register(app: typer.Typer) -> None:
     )
     def generate_project(
         name: Annotated[str, typer.Option("--name", help="Project name (PascalCase or snake_case).", rich_help_panel="Required")],
-        package: Annotated[str, typer.Option("--package", help="Dot-notation package identifier.", rich_help_panel="Options", show_default=True)] = "com.example",
         dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview files without writing.", rich_help_panel="Options", show_default=True)] = False,
     ) -> None:
         """Scaffold a complete Clean Architecture Python project."""
-        _generate_project_impl(name, package, dry_run)
+        _generate_project_impl(name, dry_run)
 
     @app.command("ca", hidden=True, help="Alias for generate-project.")
     def ca(
         name: Annotated[str, typer.Option("--name", help="Project name (PascalCase or snake_case).")],
-        package: Annotated[str, typer.Option("--package", help="Dot-notation package identifier.")] = "com.example",
         dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview files without writing.")] = False,
     ) -> None:
         """Alias for generate-project."""
-        _generate_project_impl(name, package, dry_run)
+        _generate_project_impl(name, dry_run)
 
 
 # ---------------------------------------------------------------------------

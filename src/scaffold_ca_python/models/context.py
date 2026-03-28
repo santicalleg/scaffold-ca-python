@@ -23,7 +23,6 @@ def _to_pascal_case(name: str) -> str:
 
 class ProjectContext(BaseModel):
     name: str
-    package: str
 
     @field_validator("name")
     @classmethod
