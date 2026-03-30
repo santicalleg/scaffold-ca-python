@@ -64,20 +64,20 @@
 
 ### Tests for US2 *(write first)*
 
-- [ ] T015 [P] [US2] Update tests/commands/test_generate_project.py: add assertions for the 5 DI config files being created (`application/config/__init__.py`, `config.py`, `driven_adapters_container.py`, `usecases_container.py`, `container.py`); assert generated `pyproject.toml` contains `dependency-injector` and `pydantic-settings` in `[project.dependencies]`
+- [X] T015 [P] [US2] Update tests/commands/test_generate_project.py: add assertions for the 5 DI config files being created (`application/config/__init__.py`, `config.py`, `driven_adapters_container.py`, `usecases_container.py`, `container.py`); assert generated `pyproject.toml` contains `dependency-injector` and `pydantic-settings` in `[project.dependencies]`
 
 ### Templates for US2
 
-- [ ] T016 [P] [US2] Create src/scaffold_ca_python/templates/project/application/config/__init__.py.jinja2 — empty module docstring stub: `"""DI configuration package."""\n`
-- [ ] T017 [P] [US2] Create src/scaffold_ca_python/templates/project/application/config/config.py.jinja2 — renders `Settings(BaseSettings)` with `ENV: str`, `LOG_LEVEL: str`, `SettingsConfigDict(env_file=".env")`, and `settings = Settings()` singleton
-- [ ] T018 [P] [US2] Create src/scaffold_ca_python/templates/project/application/config/driven_adapters_container.py.jinja2 — renders `DAContainer(containers.DeclarativeContainer)` with placeholder `providers.Singleton` stub; imports use `{{ python_package }}` namespace
-- [ ] T019 [P] [US2] Create src/scaffold_ca_python/templates/project/application/config/usecases_container.py.jinja2 — renders `UseCaseContainer(containers.DeclarativeContainer)` with `da_container = providers.DependenciesContainer()` and placeholder use-case `providers.Singleton`; imports use `{{ python_package }}` namespace
-- [ ] T020 [P] [US2] Create src/scaffold_ca_python/templates/project/application/config/container.py.jinja2 — renders `Container(containers.DeclarativeContainer)` wiring `DAContainer` and `UseCaseContainer` via `providers.Container`; imports use `{{ python_package }}` namespace
+- [X] T016 [P] [US2] Create src/scaffold_ca_python/templates/project/application/config/__init__.py.jinja2 — empty module docstring stub: `"""DI configuration package."""\n`
+- [X] T017 [P] [US2] Create src/scaffold_ca_python/templates/project/application/config/config.py.jinja2 — renders `Settings(BaseSettings)` with `ENV: str`, `LOG_LEVEL: str`, `SettingsConfigDict(env_file=".env")`, and `settings = Settings()` singleton
+- [X] T018 [P] [US2] Create src/scaffold_ca_python/templates/project/application/config/driven_adapters_container.py.jinja2 — renders `DAContainer(containers.DeclarativeContainer)` with placeholder `providers.Singleton` stub; imports use `{{ python_package }}` namespace
+- [X] T019 [P] [US2] Create src/scaffold_ca_python/templates/project/application/config/usecases_container.py.jinja2 — renders `UseCaseContainer(containers.DeclarativeContainer)` with `da_container = providers.DependenciesContainer()` and placeholder use-case `providers.Singleton`; imports use `{{ python_package }}` namespace
+- [X] T020 [P] [US2] Create src/scaffold_ca_python/templates/project/application/config/container.py.jinja2 — renders `Container(containers.DeclarativeContainer)` wiring `DAContainer` and `UseCaseContainer` via `providers.Container`; imports use `{{ python_package }}` namespace
 
 ### Implementation for US2
 
-- [ ] T021 [US2] Update `_generate_project_impl` in src/scaffold_ca_python/commands/generate_project.py: add `_add` calls for all 5 DI config files rendering from the new templates under `application/config/`
-- [ ] T022 [P] [US2] Create tests/templates/test_di_config_templates.py: render each of the 5 DI templates with a representative `ProjectContext`; assert `DAContainer` in `driven_adapters_container.py` output; assert `UseCaseContainer` and `DependenciesContainer` in `usecases_container.py` output; assert `Container` and two `providers.Container` wires in `container.py` output; assert `Settings` and `BaseSettings` in `config.py` output
+- [X] T021 [US2] Update `_generate_project_impl` in src/scaffold_ca_python/commands/generate_project.py: add `_add` calls for all 5 DI config files rendering from the new templates under `application/config/`
+- [X] T022 [P] [US2] Create tests/templates/test_di_config_templates.py: render each of the 5 DI templates with a representative `ProjectContext`; assert `DAContainer` in `driven_adapters_container.py` output; assert `UseCaseContainer` and `DependenciesContainer` in `usecases_container.py` output; assert `Container` and two `providers.Container` wires in `container.py` output; assert `Settings` and `BaseSettings` in `config.py` output
 
 **Checkpoint**: `scaffold ca --name OrderService` produces all 5 DI files. Each passes `python -m py_compile`. Tests pass.
 

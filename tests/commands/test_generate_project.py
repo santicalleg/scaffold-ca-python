@@ -65,6 +65,26 @@ def test_pyproject_has_ruff_lint_section(tmp_path: Path, monkeypatch: pytest.Mon
     assert "[tool.ruff.lint]" in content
 
 
+def test_creates_di_config_files(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    result = runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
+    assert result.exit_code == 0
+    cfg = tmp_path / "my_project" / "src" / "my_project" / "application" / "config"
+    assert (cfg / "__init__.py").exists()
+    assert (cfg / "config.py").exists()
+    assert (cfg / "driven_adapters_container.py").exists()
+    assert (cfg / "usecases_container.py").exists()
+    assert (cfg / "container.py").exists()
+
+
+def test_pyproject_has_di_dependencies(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
+    content = (tmp_path / "my_project" / "pyproject.toml").read_text()
+    assert "dependency-injector" in content
+    assert "pydantic-settings" in content
+
+
 def test_pyproject_contains_scaffold_section(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)

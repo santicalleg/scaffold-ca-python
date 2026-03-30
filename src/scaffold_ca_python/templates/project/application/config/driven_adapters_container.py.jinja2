@@ -1,0 +1,11 @@
+"""Driven-adapters DI container."""
+from dependency_injector import containers, providers
+
+
+class DAContainer(containers.DeclarativeContainer):
+    """Wire infrastructure driven-adapter singletons here."""
+
+    # Example:
+    # my_repo = providers.Singleton(
+    #     {{ python_package }}.infrastructure.driven_adapters.my_repo.MyRepo,
+    # )

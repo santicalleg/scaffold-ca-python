@@ -74,6 +74,21 @@ def _generate_project_impl(
     _add(operations, target_dir / ".python-version",
          renderer.render_string(_tmpl("project/python_version.jinja2"), ctx_dict))
 
+    # --- DI config files -----------------------------------------------------
+    _di_cfg = target_dir / "src" / python_pkg / "application" / "config"
+    for _fname in (
+        "__init__.py",
+        "config.py",
+        "driven_adapters_container.py",
+        "usecases_container.py",
+        "container.py",
+    ):
+        _add(
+            operations,
+            _di_cfg / _fname,
+            renderer.render_string(_tmpl(f"project/application/config/{_fname}.jinja2"), ctx_dict),
+        )
+
     # --- src/<pkg>/__init__.py ------------------------------------------------
     _add(operations, target_dir / "src" / python_pkg / "__init__.py",
          f'"""{name} package."""\n')
