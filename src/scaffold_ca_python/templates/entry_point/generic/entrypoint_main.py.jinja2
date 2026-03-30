@@ -1,0 +1,13 @@
+"""{{ name }} generic entrypoint."""
+import asyncio
+
+from {{ python_package }}.infrastructure.entry_points.generic.entry_point import run
+
+
+def main() -> None:
+    """Run the generic handler."""
+    asyncio.run(run())
+
+
+if __name__ == "__main__":
+    main()

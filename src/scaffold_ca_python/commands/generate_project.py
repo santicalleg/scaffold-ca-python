@@ -89,6 +89,10 @@ def _generate_project_impl(
             renderer.render_string(_tmpl(f"project/application/config/{_fname}.jinja2"), ctx_dict),
         )
 
+    # --- src/<pkg>/main.py ---------------------------------------------------
+    _add(operations, target_dir / "src" / python_pkg / "main.py",
+         renderer.render_string(_tmpl("project/main.py.jinja2"), ctx_dict))
+
     # --- src/<pkg>/__init__.py ------------------------------------------------
     _add(operations, target_dir / "src" / python_pkg / "__init__.py",
          f'"""{name} package."""\n')

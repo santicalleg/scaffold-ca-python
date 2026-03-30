@@ -1,0 +1,13 @@
+"""{{ name }} agent entrypoint."""
+import asyncio
+
+from {{ python_package }}.infrastructure.entry_points.agent.agent import run
+
+
+def main() -> None:
+    """Start the agent runner."""
+    asyncio.run(run())
+
+
+if __name__ == "__main__":
+    main()

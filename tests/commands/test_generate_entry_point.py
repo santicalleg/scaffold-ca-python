@@ -350,3 +350,54 @@ def test_no_project_root_exits_1(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     monkeypatch.chdir(tmp_path)
     result = runner.invoke(app, ["gep", "--type", "restapi"])
     assert result.exit_code == 1
+
+
+# ---------------------------------------------------------------------------
+# US3: main.py overwritten + warning
+# ---------------------------------------------------------------------------
+
+
+def test_restapi_overwrites_main_py(project_root: Path) -> None:
+    main_py = project_root / "src" / "my_app" / "main.py"
+    assert main_py.exists(), "scaffold ca must create main.py first"
+    original = main_py.read_text()
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    updated = main_py.read_text()
+    assert updated != original
+    assert "uvicorn" in updated
+
+
+def test_agent_overwrites_main_py(project_root: Path) -> None:
+    main_py = project_root / "src" / "my_app" / "main.py"
+    runner.invoke(app, ["gep", "--type", "agent"], catch_exceptions=False)
+    content = main_py.read_text()
+    assert "def main" in content
+    assert "asyncio" in content
+
+
+def test_mcp_overwrites_main_py(project_root: Path) -> None:
+    main_py = project_root / "src" / "my_app" / "main.py"
+    runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
+    content = main_py.read_text()
+    assert "def main" in content
+    assert "asyncio" in content
+
+
+def test_generic_overwrites_main_py(project_root: Path) -> None:
+    main_py = project_root / "src" / "my_app" / "main.py"
+    runner.invoke(app, ["gep", "--type", "generic"], catch_exceptions=False)
+    content = main_py.read_text()
+    assert "def main" in content
+    assert "asyncio" in content
+
+
+def test_gep_prints_main_py_warning(project_root: Path) -> None:
+    result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    assert "main.py" in result.output
+
+
+def test_dry_run_does_not_overwrite_main_py(project_root: Path) -> None:
+    main_py = project_root / "src" / "my_app" / "main.py"
+    original = main_py.read_text()
+    runner.invoke(app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False)
+    assert main_py.read_text() == original

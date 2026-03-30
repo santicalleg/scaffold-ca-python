@@ -91,22 +91,22 @@
 
 ### Tests for US3 *(write first)*
 
-- [ ] T023 [P] [US3] Update tests/commands/test_generate_project.py: add assertion that `src/<pkg>/main.py` is created; assert it defines `def main`; assert `pyproject.toml` `[project.scripts]` entry exists with format `<python_package> = "<python_package>.main:main"`
-- [ ] T024 [P] [US3] Update tests/commands/test_generate_entry_point.py: for each of the 4 types, assert `main.py` is overwritten after `scaffold gep`; assert the overwritten content is type-appropriate (e.g., `uvicorn` for restapi, agent runner for agent); assert a warning message is printed to stdout
+- [X] T023 [P] [US3] Update tests/commands/test_generate_project.py: add assertion that `src/<pkg>/main.py` is created; assert it defines `def main`; assert `pyproject.toml` `[project.scripts]` entry exists with format `<python_package> = "<python_package>.main:main"`
+- [X] T024 [P] [US3] Update tests/commands/test_generate_entry_point.py: for each of the 4 types, assert `main.py` is overwritten after `scaffold gep`; assert the overwritten content is type-appropriate (e.g., `uvicorn` for restapi, agent runner for agent); assert a warning message is printed to stdout
 
 ### Templates for US3
 
-- [ ] T025 [P] [US3] Create src/scaffold_ca_python/templates/project/main.py.jinja2 — default entrypoint: `def main() -> None: print("Hello, World!")` plus `if __name__ == "__main__": main()`
-- [ ] T026 [P] [US3] Create src/scaffold_ca_python/templates/entry_point/restapi/entrypoint_main.py.jinja2 — `uvicorn.run("{{ python_package }}.infrastructure.entry_points.restapi.main:app", host="0.0.0.0", port=8000, reload=False)` wrapped in `def main() -> None`
-- [ ] T027 [P] [US3] Create src/scaffold_ca_python/templates/entry_point/agent/entrypoint_main.py.jinja2 — runs the agent entry-point's async `run()` via `asyncio.run()`, wrapped in `def main() -> None`
-- [ ] T028 [P] [US3] Create src/scaffold_ca_python/templates/entry_point/mcp/entrypoint_main.py.jinja2 — starts the MCP server, wrapped in `def main() -> None`
-- [ ] T029 [P] [US3] Create src/scaffold_ca_python/templates/entry_point/generic/entrypoint_main.py.jinja2 — calls generic handler `run()` via `asyncio.run()`, wrapped in `def main() -> None`
+- [X] T025 [P] [US3] Create src/scaffold_ca_python/templates/project/main.py.jinja2 — default entrypoint: `def main() -> None: print("Hello, World!")` plus `if __name__ == "__main__": main()`
+- [X] T026 [P] [US3] Create src/scaffold_ca_python/templates/entry_point/restapi/entrypoint_main.py.jinja2 — `uvicorn.run("{{ python_package }}.infrastructure.entry_points.restapi.main:app", host="0.0.0.0", port=8000, reload=False)` wrapped in `def main() -> None`
+- [X] T027 [P] [US3] Create src/scaffold_ca_python/templates/entry_point/agent/entrypoint_main.py.jinja2 — runs the agent entry-point's async `run()` via `asyncio.run()`, wrapped in `def main() -> None`
+- [X] T028 [P] [US3] Create src/scaffold_ca_python/templates/entry_point/mcp/entrypoint_main.py.jinja2 — starts the MCP server, wrapped in `def main() -> None`
+- [X] T029 [P] [US3] Create src/scaffold_ca_python/templates/entry_point/generic/entrypoint_main.py.jinja2 — calls generic handler `run()` via `asyncio.run()`, wrapped in `def main() -> None`
 
 ### Implementation for US3
 
-- [ ] T030 [US3] Update `_generate_project_impl` in src/scaffold_ca_python/commands/generate_project.py: add `_add` call rendering `project/main.py.jinja2` to `src/<pkg>/main.py`; ensure `pyproject_toml.jinja2` already has the `[project.scripts]` entry (verify in T008)
-- [ ] T031 [US3] Update `_generate_entry_point_impl` in src/scaffold_ca_python/commands/generate_entry_point.py: after successful file generation, print `[yellow]⚠[/yellow] main.py will be replaced with <type> entrypoint.`; render `entry_point/<type>/entrypoint_main.py.jinja2`; write to `src/<pkg>/main.py` using `CreateFile` with `overwrite=True` on the `GeneratedFile`
-- [ ] T032 [P] [US3] Create tests/templates/test_entrypoint_main_templates.py (new file): render each of the 4 `entry_point/<type>/entrypoint_main.py.jinja2` templates with a representative `ProjectContext`; assert `def main` present in each; assert type-appropriate import (`uvicorn` for restapi, `asyncio` for agent/mcp/generic)
+- [X] T030 [US3] Update `_generate_project_impl` in src/scaffold_ca_python/commands/generate_project.py: add `_add` call rendering `project/main.py.jinja2` to `src/<pkg>/main.py`; ensure `pyproject_toml.jinja2` already has the `[project.scripts]` entry (verify in T008)
+- [X] T031 [US3] Update `_generate_entry_point_impl` in src/scaffold_ca_python/commands/generate_entry_point.py: after successful file generation, print `[yellow]⚠[/yellow] main.py will be replaced with <type> entrypoint.`; render `entry_point/<type>/entrypoint_main.py.jinja2`; write to `src/<pkg>/main.py` using `CreateFile` with `overwrite=True` on the `GeneratedFile`
+- [X] T032 [P] [US3] Create tests/templates/test_entrypoint_main_templates.py (new file): render each of the 4 `entry_point/<type>/entrypoint_main.py.jinja2` templates with a representative `ProjectContext`; assert `def main` present in each; assert type-appropriate import (`uvicorn` for restapi, `asyncio` for agent/mcp/generic)
 
 **Checkpoint**: `scaffold ca --name X` creates `main.py`. `scaffold gep --type restapi` overwrites it with uvicorn runner. Warning printed. All US3 tests pass.
 

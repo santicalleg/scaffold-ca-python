@@ -85,6 +85,24 @@ def test_pyproject_has_di_dependencies(tmp_path: Path, monkeypatch: pytest.Monke
     assert "pydantic-settings" in content
 
 
+def test_creates_main_py(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    result = runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
+    assert result.exit_code == 0
+    main_py = tmp_path / "my_project" / "src" / "my_project" / "main.py"
+    assert main_py.exists()
+    content = main_py.read_text()
+    assert "def main" in content
+
+
+def test_pyproject_has_scripts_entry(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
+    content = (tmp_path / "my_project" / "pyproject.toml").read_text()
+    assert "[project.scripts]" in content
+    assert "my_project.main:main" in content
+
+
 def test_pyproject_contains_scaffold_section(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)

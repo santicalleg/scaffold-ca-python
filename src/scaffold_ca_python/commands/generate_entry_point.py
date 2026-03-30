@@ -122,6 +122,19 @@ def _generate_entry_point_impl(
         f"Created {len(created)} file(s)."
     )
 
+    # --- Overwrite main.py with type-specific entrypoint --------------------
+    main_py = project_root / "src" / pkg / "main.py"
+    console.print(f"[yellow]⚠[/yellow] main.py will be replaced with {type_} entrypoint.")
+    main_tpl = _tmpl(f"entry_point/{type_}/entrypoint_main.py.jinja2")
+    main_content = renderer.render_string(main_tpl, {**module_ctx.model_dump(), "routes": routes})
+    overwrite_op = CreateFile(file=GeneratedFile(
+        path=main_py,
+        content=main_content,
+        template_name=f"entry_point/{type_}/entrypoint_main.py.jinja2",
+        overwrite=True,
+    ))
+    writer.execute([overwrite_op], dry_run=False)
+
 
 def _build_operations(
     type_: str,
