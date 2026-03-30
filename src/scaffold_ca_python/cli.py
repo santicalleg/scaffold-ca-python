@@ -18,6 +18,7 @@ app = typer.Typer(
     help="Scaffold production-ready Clean Architecture Python projects.",
     add_completion=False,
     no_args_is_help=True,
+    rich_markup_mode="rich",
 )
 
 generate_project.register(app)

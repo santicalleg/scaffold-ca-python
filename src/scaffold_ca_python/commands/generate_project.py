@@ -125,14 +125,14 @@ def _generate_project_impl(
 
 
 def register(app: typer.Typer) -> None:
-    """Register ca / generate-project commands onto *app*."""
+    """Register clean-architecture / ca commands onto *app*."""
 
     @app.command(
-        "generate-project",
-        help="Scaffold a new Clean Architecture Python project.",
-        epilog="Example: scaffold ca --name OrderService",
+        "clean-architecture",
+        help="Scaffold a new CA project. Alias: ca",
+        epilog="Example: scaffold clean-architecture --name OrderService",
     )
-    def generate_project(
+    def clean_architecture(
         name: Annotated[
             str,
             typer.Option(
@@ -154,13 +154,36 @@ def register(app: typer.Typer) -> None:
         """Scaffold a complete Clean Architecture Python project."""
         _generate_project_impl(name, dry_run)
 
-    @app.command("ca", hidden=True, help="Alias for generate-project.")
+    @app.command("ca", hidden=True, help="Scaffold a new CA project. Alias: ca",
+                 epilog="Example: scaffold clean-architecture --name OrderService")
     def ca(
-        name: Annotated[str, typer.Option("--name", help="Project name (PascalCase or snake_case).")],
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview files without writing.")] = False,
+        name: Annotated[str, typer.Option("--name", help="Project name (PascalCase or snake_case).",
+                                          rich_help_panel="Required")],
+        dry_run: Annotated[
+            bool,
+            typer.Option(
+                "--dry-run/--no-dry-run",
+                help="Preview files without writing.",
+                rich_help_panel="Options",
+                show_default=True,
+            ),
+        ] = False,
     ) -> None:
-        """Alias for generate-project."""
+        """Scaffold a complete Clean Architecture Python project."""
         _generate_project_impl(name, dry_run)
+
+    @app.command("generate-project", hidden=True, deprecated=True,
+                 help="Renamed — use clean-architecture instead.")
+    def generate_project_tombstone(
+        name: Annotated[str | None, typer.Option("--name", help="Project name.")] = None,
+        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
+    ) -> None:
+        """Tombstone: generate-project has been renamed to clean-architecture."""
+        console.print(
+            "[red]Error:[/red] 'generate-project' has been renamed. "
+            "Use 'clean-architecture' (alias: ca) instead."
+        )
+        raise typer.Exit(1)
 
 
 # ---------------------------------------------------------------------------

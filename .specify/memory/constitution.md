@@ -34,6 +34,19 @@ None — all placeholders resolved.
 
 ---
 
+### Amendment v2.0.2 (2026-03-26) — PATCH
+**Type**: PATCH — command rename; no semantic change to governance.
+
+**Changes**:
+- Principle III `generate-project` command renamed to `clean-architecture` per feature 007
+  (CLI usability enhancements). The `ca` short alias is unchanged. The old `generate-project`
+  name is a deprecated tombstone that exits 1 with a migration hint.
+
+**Templates updated**: None — rename is surface-level only; no downstream template or
+artifact structure was affected.
+
+---
+
 ### Amendment v2.0.1 (2026-03-26) — PATCH
 **Type**: PATCH — wording clarification only; no semantic change to governance.
 
@@ -50,7 +63,7 @@ or artifact structure was affected.
 
 # scaffold-ca-python Constitution
 
-**Version**: 2.0.1 | **Ratified**: 2026-03-25 | **Last amended**: 2026-03-26
+**Version**: 2.0.2 | **Ratified**: 2026-03-25 | **Last amended**: 2026-03-26
 
 ## Core Principles
 
@@ -109,7 +122,7 @@ for Python idioms:
 
 | Command | Alias | Purpose |
 |---|---|---|
-| `generate-project` | `ca` | Scaffold full CA project (async-only, pyproject.toml, Pydantic v2 domain models — no sync mode, no opt-out) |
+| `clean-architecture` | `ca` | Scaffold full CA project (async-only, pyproject.toml, Pydantic v2 domain models — no sync mode, no opt-out) |
 | `generate-model` | `gm` | Domain model class in `domain/model/` |
 | `generate-use-case` | `guc` | Use-case class in `domain/usecase/` |
 | `generate-driven-adapter` | `gda` | Driven adapter; types: `rest-consumer`, `secrets`, `generic` |

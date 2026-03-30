@@ -117,11 +117,72 @@ def test_package_flag_is_not_accepted(tmp_path: Path, monkeypatch: pytest.Monkey
     assert result.exit_code != 0
 
 
-def test_generate_project_alias_works(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+# ---------------------------------------------------------------------------
+# US1: clean-architecture command (T003)
+# ---------------------------------------------------------------------------
+
+def test_clean_architecture_creates_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["generate-project", "--name", "AliasTest"], catch_exceptions=False)
+    result = runner.invoke(app, ["clean-architecture", "--name", "Demo"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (tmp_path / "alias_test").is_dir()
+    assert (tmp_path / "demo").is_dir()
+
+
+def test_clean_architecture_dry_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    result = runner.invoke(app, ["clean-architecture", "--dry-run", "--name", "Demo"], catch_exceptions=False)
+    assert result.exit_code == 0
+    assert not (tmp_path / "demo").exists()
+
+
+def test_clean_architecture_help_contains_options() -> None:
+    result = runner.invoke(app, ["clean-architecture", "--help"])
+    assert result.exit_code == 0
+    assert "--name" in result.output
+    assert "--dry-run" in result.output
+
+
+def test_ca_help_identical_to_clean_architecture_help() -> None:
+    """SC-004: ca --help must match clean-architecture --help in all content.
+
+    The Usage line inherently shows the invoked command name (Typer behaviour),
+    so we normalise that line before comparing.
+    """
+    r_ca = runner.invoke(app, ["ca", "--help"])
+    r_clean = runner.invoke(app, ["clean-architecture", "--help"])
+
+    def _normalise(output: str) -> str:
+        lines = output.splitlines()
+        return "\n".join(
+            line.replace(" ca ", " <CMD> ").replace(" clean-architecture ", " <CMD> ").rstrip()
+            if "Usage:" in line else line.rstrip()
+            for line in lines
+        )
+
+    assert _normalise(r_ca.output) == _normalise(r_clean.output)
+
+
+# ---------------------------------------------------------------------------
+# US1: ca alias and generate-project tombstone (T004)
+# ---------------------------------------------------------------------------
+
+def test_ca_alias_creates_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    result = runner.invoke(app, ["ca", "--name", "Demo"], catch_exceptions=False)
+    assert result.exit_code == 0
+    assert (tmp_path / "demo").is_dir()
+
+
+def test_generate_project_tombstone_exits_1() -> None:
+    result = runner.invoke(app, ["generate-project", "--name", "Demo"])
+    assert result.exit_code == 1
+    assert "clean-architecture" in result.output
+
+
+def test_generate_project_tombstone_exits_1_no_args() -> None:
+    result = runner.invoke(app, ["generate-project"])
+    assert result.exit_code == 1
+    assert "clean-architecture" in result.output
 
 
 def test_creates_tests_init(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
