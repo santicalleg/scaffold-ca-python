@@ -120,13 +120,13 @@
 
 ### Tests for US4 *(write first)*
 
-- [ ] T033 [P] [US4] Update tests/commands/test_generate_entry_point.py: for each type with non-empty `_DEP_MAP`, assert `pyproject.toml` gains the expected packages; assert running the same command twice does not duplicate packages; assert `--dry-run` does NOT modify `pyproject.toml` but prints the packages; assert `main.py` is NOT modified after `gep --type restapi --dry-run` (FR-016); assert package injection is skipped (no error) when `pyproject.toml` is absent (outside CA project — existing exit-1 path covers this)
-- [ ] T034 [P] [US4] Update tests/commands/test_generate_driven_adapter.py: for `rest-consumer` assert `httpx` added; for `secrets` assert `boto3` added; for `generic` assert no packages added; assert idempotency; assert `--dry-run` does not write
+- [X] T033 [P] [US4] Update tests/commands/test_generate_entry_point.py: for each type with non-empty `_DEP_MAP`, assert `pyproject.toml` gains the expected packages; assert running the same command twice does not duplicate packages; assert `--dry-run` does NOT modify `pyproject.toml` but prints the packages; assert `main.py` is NOT modified after `gep --type restapi --dry-run` (FR-016); assert package injection is skipped (no error) when `pyproject.toml` is absent (outside CA project — existing exit-1 path covers this)
+- [X] T034 [P] [US4] Update tests/commands/test_generate_driven_adapter.py: for `rest-consumer` assert `httpx` added; for `secrets` assert `boto3` added; for `generic` assert no packages added; assert idempotency; assert `--dry-run` does not write
 
 ### Implementation for US4
 
-- [ ] T035 [US4] Add `_DEP_MAP: dict[str, list[str]]` to src/scaffold_ca_python/commands/generate_entry_point.py: `{"restapi": ["fastapi>=0.100", "uvicorn[standard]>=0.20"], "agent": ["a2a-sdk>=0.1"], "mcp": ["mcp>=1.0"], "generic": []}`; call `inject_dependencies` (real) or `dry_run_inject` + print (dry-run) after successful file generation; print `[green]✓[/green] Added X, Y to [project.dependencies].` when packages are added
-- [ ] T036 [US4] Add `_DEP_MAP: dict[str, list[str]]` to src/scaffold_ca_python/commands/generate_driven_adapter.py: `{"rest-consumer": ["httpx>=0.27"], "secrets": ["boto3>=1.34"], "generic": []}`; call `inject_dependencies` / `dry_run_inject` after successful file generation; print confirmation when packages are added
+- [X] T035 [US4] Add `_DEP_MAP: dict[str, list[str]]` to src/scaffold_ca_python/commands/generate_entry_point.py: `{"restapi": ["fastapi>=0.100", "uvicorn[standard]>=0.20"], "agent": ["a2a-sdk>=0.1"], "mcp": ["mcp>=1.0"], "generic": []}`; call `inject_dependencies` (real) or `dry_run_inject` + print (dry-run) after successful file generation; print `[green]✓[/green] Added X, Y to [project.dependencies].` when packages are added
+- [X] T036 [US4] Add `_DEP_MAP: dict[str, list[str]]` to src/scaffold_ca_python/commands/generate_driven_adapter.py: `{"rest-consumer": ["httpx>=0.27"], "secrets": ["boto3>=1.34"], "generic": []}`; call `inject_dependencies` / `dry_run_inject` after successful file generation; print confirmation when packages are added
 
 **Checkpoint**: All US4 acceptance scenarios pass. Idempotency confirmed. `--dry-run` never writes. Tests pass.
 

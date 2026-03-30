@@ -401,3 +401,51 @@ def test_dry_run_does_not_overwrite_main_py(project_root: Path) -> None:
     original = main_py.read_text()
     runner.invoke(app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False)
     assert main_py.read_text() == original
+
+
+# ---------------------------------------------------------------------------
+# US4: Auto-inject dependencies
+# ---------------------------------------------------------------------------
+
+
+def test_restapi_injects_fastapi_and_uvicorn(project_root: Path) -> None:
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    content = (project_root / "pyproject.toml").read_text()
+    assert "fastapi" in content
+    assert "uvicorn" in content
+
+
+def test_agent_injects_a2a_sdk(project_root: Path) -> None:
+    runner.invoke(app, ["gep", "--type", "agent"], catch_exceptions=False)
+    content = (project_root / "pyproject.toml").read_text()
+    assert "a2a-sdk" in content
+
+
+def test_mcp_injects_mcp(project_root: Path) -> None:
+    runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
+    content = (project_root / "pyproject.toml").read_text()
+    assert "mcp" in content
+
+
+def test_restapi_inject_is_idempotent(project_root: Path) -> None:
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    # Remove both src and test dirs so gep can execute a second time
+    import shutil
+    shutil.rmtree(project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "restapi")
+    shutil.rmtree(project_root / "tests" / "infrastructure" / "entry_points" / "restapi", ignore_errors=True)
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    content = (project_root / "pyproject.toml").read_text()
+    assert content.count("fastapi") == 1
+
+
+def test_dry_run_does_not_inject_deps(project_root: Path) -> None:
+    original = (project_root / "pyproject.toml").read_text()
+    runner.invoke(app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False)
+    assert (project_root / "pyproject.toml").read_text() == original
+
+
+def test_dry_run_prints_deps_to_inject(project_root: Path) -> None:
+    result = runner.invoke(
+        app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False
+    )
+    assert "fastapi" in result.output or "uvicorn" in result.output

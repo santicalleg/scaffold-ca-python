@@ -288,3 +288,58 @@ def test_no_project_root_exits_1(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     monkeypatch.chdir(tmp_path)
     result = runner.invoke(app, ["gda", "--type", "rest-consumer"])
     assert result.exit_code == 1
+
+
+# ---------------------------------------------------------------------------
+# US4: Auto-inject dependencies
+# ---------------------------------------------------------------------------
+
+
+def test_rest_consumer_injects_httpx(project_root: Path) -> None:
+    runner.invoke(app, ["gda", "--type", "rest-consumer"], catch_exceptions=False)
+    content = (project_root / "pyproject.toml").read_text()
+    assert "httpx" in content
+
+
+def test_secrets_injects_boto3(project_root: Path) -> None:
+    runner.invoke(app, ["gda", "--type", "secrets"], catch_exceptions=False)
+    content = (project_root / "pyproject.toml").read_text()
+    assert "boto3" in content
+
+
+def test_generic_injects_nothing(project_root: Path) -> None:
+    original = (project_root / "pyproject.toml").read_text()
+    runner.invoke(
+        app, ["gda", "--type", "generic", "--name", "CacheStore"], catch_exceptions=False
+    )
+    assert (project_root / "pyproject.toml").read_text() == original
+
+
+def test_rest_consumer_inject_is_idempotent(project_root: Path) -> None:
+    runner.invoke(app, ["gda", "--type", "rest-consumer"], catch_exceptions=False)
+    import shutil
+    shutil.rmtree(
+        project_root / "src" / "my_app" / "infrastructure" / "driven_adapters" / "rest_consumer"
+    )
+    shutil.rmtree(
+        project_root / "tests" / "infrastructure" / "driven_adapters" / "rest_consumer",
+        ignore_errors=True,
+    )
+    runner.invoke(app, ["gda", "--type", "rest-consumer"], catch_exceptions=False)
+    content = (project_root / "pyproject.toml").read_text()
+    assert content.count("httpx") == 1
+
+
+def test_dry_run_does_not_inject_deps(project_root: Path) -> None:
+    original = (project_root / "pyproject.toml").read_text()
+    runner.invoke(
+        app, ["gda", "--type", "rest-consumer", "--dry-run"], catch_exceptions=False
+    )
+    assert (project_root / "pyproject.toml").read_text() == original
+
+
+def test_dry_run_prints_deps_to_inject(project_root: Path) -> None:
+    result = runner.invoke(
+        app, ["gda", "--type", "rest-consumer", "--dry-run"], catch_exceptions=False
+    )
+    assert "httpx" in result.output

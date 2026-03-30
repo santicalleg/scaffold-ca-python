@@ -16,6 +16,7 @@ from rich.tree import Tree
 from scaffold_ca_python.core.file_writer import FileWriter
 from scaffold_ca_python.core.name_utils import ScaffoldError
 from scaffold_ca_python.core.project_detector import find_project_root
+from scaffold_ca_python.core.pyproject_writer import dry_run_inject, inject_dependencies
 from scaffold_ca_python.core.template_renderer import TemplateRenderer
 from scaffold_ca_python.models.context import ModuleContext, ProjectContext
 from scaffold_ca_python.models.file_operation import CreateFile, FileOperation, GeneratedFile
@@ -27,6 +28,12 @@ writer = FileWriter()
 
 _ALLOWED_TYPES = ("restapi", "agent", "mcp", "generic")
 _TYPE_HELP = "Entry-point type: restapi, agent, mcp, generic."
+_DEP_MAP: dict[str, list[str]] = {
+    "restapi": ["fastapi>=0.100", "uvicorn[standard]>=0.20"],
+    "agent": ["a2a-sdk>=0.1"],
+    "mcp": ["mcp>=1.0"],
+    "generic": [],
+}
 _SWAGGER_HELP = "Path to OpenAPI YAML/JSON (restapi only)."
 _KAFKA_HELP = "Add async Kafka consumer stub."
 _MCP_CLIENT_HELP = "Add MCP tool-call client stub."
@@ -108,12 +115,20 @@ def _generate_entry_point_impl(
 
     operations = _build_operations(type_, src_dir, test_dir, ctx_dict)
 
+    deps = _DEP_MAP.get(type_, [])
+
     if dry_run:
         preview = writer.execute(operations, dry_run=True)
         tree = Tree(f"[bold]{subdir}[/bold] (dry run)")
         for p in sorted(preview):
             tree.add(str(p.relative_to(project_root)))
         console.print(tree)
+        if deps:
+            would_add = dry_run_inject(project_root, deps)
+            if would_add:
+                console.print(
+                    f"[dim]Would add to [project.dependencies]: {', '.join(would_add)}[/dim]"
+                )
         return
 
     created = writer.execute(operations, dry_run=False)
@@ -121,6 +136,14 @@ def _generate_entry_point_impl(
         f"[green]✓[/green] Entry point [bold]{subdir}[/bold] created. "
         f"Created {len(created)} file(s)."
     )
+
+    # --- Inject dependencies ------------------------------------------------
+    if deps:
+        added = inject_dependencies(project_root, deps)
+        if added:
+            console.print(
+                f"[green]✓[/green] Added {', '.join(added)} to [project.dependencies]."
+            )
 
     # --- Overwrite main.py with type-specific entrypoint --------------------
     main_py = project_root / "src" / pkg / "main.py"

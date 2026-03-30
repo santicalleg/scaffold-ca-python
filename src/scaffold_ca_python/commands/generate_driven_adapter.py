@@ -14,6 +14,7 @@ from rich.tree import Tree
 from scaffold_ca_python.core.file_writer import FileWriter
 from scaffold_ca_python.core.name_utils import ScaffoldError, to_snake_case, validate_name
 from scaffold_ca_python.core.project_detector import find_project_root
+from scaffold_ca_python.core.pyproject_writer import dry_run_inject, inject_dependencies
 from scaffold_ca_python.core.template_renderer import TemplateRenderer
 from scaffold_ca_python.models.context import ModuleContext, ProjectContext
 from scaffold_ca_python.models.file_operation import CreateFile, FileOperation, GeneratedFile
@@ -24,6 +25,12 @@ renderer = TemplateRenderer()
 writer = FileWriter()
 
 _ALLOWED_TYPES = ("rest-consumer", "secrets", "generic")
+
+_DEP_MAP: dict[str, list[str]] = {
+    "rest-consumer": ["httpx>=0.27"],
+    "secrets": ["boto3>=1.34"],
+    "generic": [],
+}
 
 
 def _generate_driven_adapter_impl(type_: str, name: str | None, dry_run: bool) -> None:  # noqa: ANN001
@@ -88,12 +95,20 @@ def _generate_driven_adapter_impl(type_: str, name: str | None, dry_run: bool) -
     ctx_dict = module_ctx.model_dump()
     operations = _build_operations(type_, subdir, src_dir, test_dir, ctx_dict)
 
+    deps = _DEP_MAP.get(type_, [])
+
     if dry_run:
         preview = writer.execute(operations, dry_run=True)
         tree = Tree(f"[bold]{subdir}[/bold] (dry run)")
         for p in sorted(preview):
             tree.add(str(p.relative_to(project_root)))
         console.print(tree)
+        if deps:
+            would_add = dry_run_inject(project_root, deps)
+            if would_add:
+                console.print(
+                    f"[dim]Would add to [project.dependencies]: {', '.join(would_add)}[/dim]"
+                )
         return
 
     created = writer.execute(operations, dry_run=False)
@@ -101,6 +116,14 @@ def _generate_driven_adapter_impl(type_: str, name: str | None, dry_run: bool) -
         f"[green]✓[/green] Driven adapter [bold]{subdir}[/bold] created. "
         f"Created {len(created)} file(s)."
     )
+
+    # --- Inject dependencies ------------------------------------------------
+    if deps:
+        added = inject_dependencies(project_root, deps)
+        if added:
+            console.print(
+                f"[green]✓[/green] Added {', '.join(added)} to [project.dependencies]."
+            )
 
 
 def _build_operations(
