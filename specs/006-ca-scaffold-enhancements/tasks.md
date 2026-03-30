@@ -134,12 +134,12 @@
 
 ## Final Phase: Polish & Regression
 
-- [ ] T037 [P] Run `uv run ruff check src/ tests/` and fix any new lint errors introduced by changes (unused imports after `package` removal, etc.)
-- [ ] T038 [P] Run `uv run mypy src/` and fix any new type errors (especially around `ProjectContext` without `package`, `GeneratedFile.overwrite`, and `pyproject_writer.py` signatures)
-- [ ] T039 Update tests/commands/test_workflow.py (E2E workflow test): remove any `package=` references; assert the workflow still exits 0 end-to-end; assert `main.py` is present after `ca` step; assert `mypy.ini` is present after `ca` step (FR-017 continuity)
-- [ ] T040 Update tests/commands/test_dry_run_checksum.py: verify `ca` dry-run checksum still passes after the new files are in scope
-- [ ] T041 [P] Run `uv run pytest -q --benchmark-disable` and confirm all existing tests pass (no regression on T001–T092); fix any broken tests caused by `package` removal
-- [ ] T042 [P] Write idempotency integration test in tests/commands/test_generate_entry_point.py: scaffold a project, run `gep --type restapi` twice, assert `pyproject.toml` contains exactly one `fastapi` entry (SC-005 / FR-015)
+- [X] T037 [P] Run `uv run ruff check src/ tests/` and fix any new lint errors introduced by changes (unused imports after `package` removal, etc.)
+- [X] T038 [P] Run `uv run mypy src/` and fix any new type errors (especially around `ProjectContext` without `package`, `GeneratedFile.overwrite`, and `pyproject_writer.py` signatures)
+- [X] T039 Update tests/commands/test_workflow.py (E2E workflow test): remove any `package=` references; assert the workflow still exits 0 end-to-end; assert `main.py` is present after `ca` step; assert `mypy.ini` is present after `ca` step (FR-017 continuity)
+- [X] T040 Update tests/commands/test_dry_run_checksum.py: verify `ca` dry-run checksum still passes after the new files are in scope
+- [X] T041 [P] Run `uv run pytest -q --benchmark-disable` and confirm all existing tests pass (no regression on T001–T092); fix any broken tests caused by `package` removal
+- [X] T042 [P] Write idempotency integration test in tests/commands/test_generate_entry_point.py: scaffold a project, run `gep --type restapi` twice, assert `pyproject.toml` contains exactly one `fastapi` entry (SC-005 / FR-015)
 
 **Checkpoint**: `uv run pytest -q --benchmark-disable` passes with ≥80% coverage. `ruff` and `mypy` exit 0. No regression on previously passing tests.
 
