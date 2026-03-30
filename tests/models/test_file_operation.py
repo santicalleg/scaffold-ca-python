@@ -7,7 +7,6 @@ from pydantic import ValidationError
 
 from scaffold_ca_python.models.file_operation import CreateFile, DeleteFile, FileOperation, GeneratedFile
 
-
 # ---------------------------------------------------------------------------
 # GeneratedFile
 # ---------------------------------------------------------------------------

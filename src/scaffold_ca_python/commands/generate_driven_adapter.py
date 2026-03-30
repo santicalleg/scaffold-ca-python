@@ -220,9 +220,31 @@ def register(app: typer.Typer) -> None:
         epilog="Examples: scaffold gda --type rest-consumer | scaffold gda --type generic --name MyAdapter",
     )
     def generate_driven_adapter(
-        type_: Annotated[str, typer.Option("--type", help="Adapter type: rest-consumer, secrets, generic.", rich_help_panel="Required")],
-        name: Annotated[str | None, typer.Option("--name", help="Adapter name (required for --type generic).", rich_help_panel="Options")] = None,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview without writing.", rich_help_panel="Options", show_default=True)] = False,
+        type_: Annotated[
+            str,
+            typer.Option(
+                "--type",
+                help="Adapter type: rest-consumer, secrets, generic.",
+                rich_help_panel="Required",
+            ),
+        ],
+        name: Annotated[
+            str | None,
+            typer.Option(
+                "--name",
+                help="Adapter name (required for --type generic).",
+                rich_help_panel="Options",
+            ),
+        ] = None,
+        dry_run: Annotated[
+            bool,
+            typer.Option(
+                "--dry-run/--no-dry-run",
+                help="Preview without writing.",
+                rich_help_panel="Options",
+                show_default=True,
+            ),
+        ] = False,
     ) -> None:
         """Scaffold a driven adapter inside infrastructure/driven_adapters/."""
         _generate_driven_adapter_impl(type_, name, dry_run)

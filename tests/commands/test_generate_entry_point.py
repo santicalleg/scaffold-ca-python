@@ -449,3 +449,27 @@ def test_dry_run_prints_deps_to_inject(project_root: Path) -> None:
         app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False
     )
     assert "fastapi" in result.output or "uvicorn" in result.output
+
+
+# ---------------------------------------------------------------------------
+# SC-005 / FR-015: Idempotency integration test (T042)
+# ---------------------------------------------------------------------------
+
+
+def test_gep_restapi_twice_has_exactly_one_fastapi_entry(project_root: Path) -> None:
+    """Running gep --type restapi twice must not duplicate fastapi in pyproject.toml."""
+    import shutil
+
+    # First run
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    # Remove generated dirs so gep can run again without hitting the duplicate guard
+    shutil.rmtree(project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "restapi")
+    shutil.rmtree(
+        project_root / "tests" / "infrastructure" / "entry_points" / "restapi",
+        ignore_errors=True,
+    )
+    # Second run
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+
+    content = (project_root / "pyproject.toml").read_text()
+    assert content.count("fastapi") == 1

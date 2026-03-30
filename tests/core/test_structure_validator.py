@@ -9,7 +9,6 @@ import pytest
 from scaffold_ca_python.core.structure_validator import StructureValidator
 from scaffold_ca_python.models.layer import Layer
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

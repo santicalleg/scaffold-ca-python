@@ -70,7 +70,15 @@ def register(app: typer.Typer) -> None:
         epilog="Example: scaffold up --dry-run",
     )
     def update_project(
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview commands without running.", rich_help_panel="Options", show_default=True)] = False,
+        dry_run: Annotated[
+            bool,
+            typer.Option(
+                "--dry-run/--no-dry-run",
+                help="Preview commands without running.",
+                rich_help_panel="Options",
+                show_default=True,
+            ),
+        ] = False,
     ) -> None:
         """Update dependencies using uv."""
         _update_project_impl(dry_run)

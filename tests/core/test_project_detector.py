@@ -1,13 +1,11 @@
 """Tests for project_detector: find_project_root (T018)."""
 
-import textwrap
 from pathlib import Path
 
 import pytest
 
-from scaffold_ca_python.core.project_detector import find_project_root
 from scaffold_ca_python.core.name_utils import ScaffoldError
-
+from scaffold_ca_python.core.project_detector import find_project_root
 
 # ---------------------------------------------------------------------------
 # Helpers

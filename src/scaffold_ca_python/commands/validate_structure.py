@@ -79,7 +79,12 @@ def register(app: typer.Typer) -> None:
     def validate_structure(
         dry_run: Annotated[
             bool,
-            typer.Option("--dry-run/--no-dry-run", help="Print results but always exit 0.", rich_help_panel="Options", show_default=True),
+            typer.Option(
+                "--dry-run/--no-dry-run",
+                help="Print results but always exit 0.",
+                rich_help_panel="Options",
+                show_default=True,
+            ),
         ] = False,
     ) -> None:
         """Validate Clean Architecture layer boundaries in the current project."""

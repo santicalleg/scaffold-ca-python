@@ -133,8 +133,23 @@ def register(app: typer.Typer) -> None:
         epilog="Example: scaffold ca --name OrderService",
     )
     def generate_project(
-        name: Annotated[str, typer.Option("--name", help="Project name (PascalCase or snake_case).", rich_help_panel="Required")],
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview files without writing.", rich_help_panel="Options", show_default=True)] = False,
+        name: Annotated[
+            str,
+            typer.Option(
+                "--name",
+                help="Project name (PascalCase or snake_case).",
+                rich_help_panel="Required",
+            ),
+        ],
+        dry_run: Annotated[
+            bool,
+            typer.Option(
+                "--dry-run/--no-dry-run",
+                help="Preview files without writing.",
+                rich_help_panel="Options",
+                show_default=True,
+            ),
+        ] = False,
     ) -> None:
         """Scaffold a complete Clean Architecture Python project."""
         _generate_project_impl(name, dry_run)

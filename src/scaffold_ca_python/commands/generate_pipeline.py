@@ -108,8 +108,23 @@ def register(app: typer.Typer) -> None:
         epilog="Example: scaffold gpipe --provider github",
     )
     def generate_pipeline(
-        provider: Annotated[str | None, typer.Option("--provider", help="Pipeline provider (github, azure).", rich_help_panel="Required")] = None,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview without writing.", rich_help_panel="Options", show_default=True)] = False,
+        provider: Annotated[
+            str | None,
+            typer.Option(
+                "--provider",
+                help="Pipeline provider (github, azure).",
+                rich_help_panel="Required",
+            ),
+        ] = None,
+        dry_run: Annotated[
+            bool,
+            typer.Option(
+                "--dry-run/--no-dry-run",
+                help="Preview without writing.",
+                rich_help_panel="Options",
+                show_default=True,
+            ),
+        ] = False,
     ) -> None:
         """Scaffold a CI/CD pipeline file for the specified provider."""
         _generate_pipeline_impl(provider, dry_run)

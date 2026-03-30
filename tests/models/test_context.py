@@ -6,7 +6,6 @@ from pydantic import ValidationError
 from scaffold_ca_python.models.context import ModuleContext, ProjectContext
 from scaffold_ca_python.models.layer import Layer
 
-
 # ---------------------------------------------------------------------------
 # ProjectContext
 # ---------------------------------------------------------------------------

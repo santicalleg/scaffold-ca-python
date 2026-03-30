@@ -107,8 +107,19 @@ def register(app: typer.Typer) -> None:
         epilog="Example: scaffold guc --name CreateOrder",
     )
     def generate_use_case(
-        name: Annotated[str, typer.Option("--name", help="Use case name (PascalCase).", rich_help_panel="Required")],
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview without writing.", rich_help_panel="Options", show_default=True)] = False,
+        name: Annotated[
+            str,
+            typer.Option("--name", help="Use case name (PascalCase).", rich_help_panel="Required"),
+        ],
+        dry_run: Annotated[
+            bool,
+            typer.Option(
+                "--dry-run/--no-dry-run",
+                help="Preview without writing.",
+                rich_help_panel="Options",
+                show_default=True,
+            ),
+        ] = False,
     ) -> None:
         """Scaffold an async use case inside domain/usecase/."""
         _generate_use_case_impl(name, dry_run)

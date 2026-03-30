@@ -4,7 +4,6 @@ import pytest
 
 from scaffold_ca_python.core.name_utils import ScaffoldError, to_pascal_case, to_snake_case, validate_name
 
-
 # ---------------------------------------------------------------------------
 # to_snake_case
 # ---------------------------------------------------------------------------

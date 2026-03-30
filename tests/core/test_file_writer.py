@@ -1,13 +1,11 @@
 """Tests for FileWriter: atomic writes, dry-run, delete, rollback (T019)."""
 
-import os
 from pathlib import Path
 
 import pytest
 
 from scaffold_ca_python.core.file_writer import FileWriter
 from scaffold_ca_python.models.file_operation import CreateFile, DeleteFile, GeneratedFile
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -56,7 +54,7 @@ def test_creates_multiple_files_atomically(tmp_path: Path) -> None:
 def test_dry_run_does_not_write_files(tmp_path: Path) -> None:
     target = tmp_path / "should_not_exist.py"
     writer = FileWriter()
-    result = writer.execute([_create_op(target)], dry_run=True)
+    writer.execute([_create_op(target)], dry_run=True)
     assert not target.exists()
 
 

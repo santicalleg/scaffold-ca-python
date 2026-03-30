@@ -157,8 +157,24 @@ def register(app: typer.Typer) -> None:
     )
     def delete_module(
         name: Annotated[str, typer.Option("--name", help="Module name to delete.", rich_help_panel="Required")],
-        confirm: Annotated[bool, typer.Option("--confirm/--no-confirm", help="Actually perform deletion.", rich_help_panel="Options", show_default=True)] = False,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview without writing.", rich_help_panel="Options", show_default=True)] = False,
+        confirm: Annotated[
+            bool,
+            typer.Option(
+                "--confirm/--no-confirm",
+                help="Actually perform deletion.",
+                rich_help_panel="Options",
+                show_default=True,
+            ),
+        ] = False,
+        dry_run: Annotated[
+            bool,
+            typer.Option(
+                "--dry-run/--no-dry-run",
+                help="Preview without writing.",
+                rich_help_panel="Options",
+                show_default=True,
+            ),
+        ] = False,
     ) -> None:
         """Preview or delete a previously generated module."""
         _delete_module_impl(name, confirm, dry_run)

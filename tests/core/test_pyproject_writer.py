@@ -7,7 +7,6 @@ import pytest
 
 from scaffold_ca_python.core.pyproject_writer import dry_run_inject, inject_dependencies
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------

@@ -1,15 +1,13 @@
 """Tests for TemplateRenderer: Jinja2 template loading and rendering (T020)."""
 
-import textwrap
 from pathlib import Path
 
 import pytest
 
-from scaffold_ca_python.core.template_renderer import TemplateRenderer
 from scaffold_ca_python.core.name_utils import ScaffoldError
-from scaffold_ca_python.models.context import ProjectContext, ModuleContext
+from scaffold_ca_python.core.template_renderer import TemplateRenderer
+from scaffold_ca_python.models.context import ModuleContext, ProjectContext
 from scaffold_ca_python.models.layer import Layer
-
 
 # ---------------------------------------------------------------------------
 # Fixtures

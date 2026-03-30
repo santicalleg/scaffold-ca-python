@@ -98,8 +98,18 @@ def register(app: typer.Typer) -> None:
         epilog="Example: scaffold gh --name DateUtils",
     )
     def generate_helper(
-        name: Annotated[str, typer.Option("--name", help="Helper name (PascalCase).", rich_help_panel="Required")],
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run", help="Preview without writing.", rich_help_panel="Options", show_default=True)] = False,
+        name: Annotated[
+            str, typer.Option("--name", help="Helper name (PascalCase).", rich_help_panel="Required")
+        ],
+        dry_run: Annotated[
+            bool,
+            typer.Option(
+                "--dry-run/--no-dry-run",
+                help="Preview without writing.",
+                rich_help_panel="Options",
+                show_default=True,
+            ),
+        ] = False,
     ) -> None:
         """Scaffold a helper inside infrastructure/helpers/."""
         _generate_helper_impl(name, dry_run)

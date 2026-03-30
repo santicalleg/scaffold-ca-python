@@ -60,7 +60,7 @@ def test_gm_performance(benchmark: pytest.fixture, bench_project: Path) -> None:
         src.unlink(missing_ok=True)
         test.unlink(missing_ok=True)
 
-    result = benchmark.pedantic(run, iterations=1, rounds=3)  # type: ignore[func-returns-value]
+    benchmark.pedantic(run, iterations=1, rounds=3)  # type: ignore[func-returns-value]
     if benchmark.stats is not None:
         assert benchmark.stats["mean"] < 3.0  # type: ignore[index]
 
