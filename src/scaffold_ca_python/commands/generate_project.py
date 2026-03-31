@@ -133,6 +133,7 @@ def register(app: typer.Typer) -> None:
         epilog="Example: scaffold clean-architecture --name OrderService",
     )
     def clean_architecture(
+        ctx: typer.Context,
         name: Annotated[
             str,
             typer.Option(
@@ -140,7 +141,7 @@ def register(app: typer.Typer) -> None:
                 help="Project name (PascalCase or snake_case).",
                 rich_help_panel="Required",
             ),
-        ],
+        ] = None,
         dry_run: Annotated[
             bool,
             typer.Option(
@@ -152,13 +153,17 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Scaffold a complete Clean Architecture Python project."""
+        if name is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _generate_project_impl(name, dry_run)
 
     @app.command("ca", hidden=True, help="Scaffold a new CA project. Alias: ca",
                  epilog="Example: scaffold clean-architecture --name OrderService")
     def ca(
+        ctx: typer.Context,
         name: Annotated[str, typer.Option("--name", help="Project name (PascalCase or snake_case).",
-                                          rich_help_panel="Required")],
+                                          rich_help_panel="Required")] = None,
         dry_run: Annotated[
             bool,
             typer.Option(
@@ -170,21 +175,10 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Scaffold a complete Clean Architecture Python project."""
+        if name is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _generate_project_impl(name, dry_run)
-
-    @app.command("generate-project", hidden=True, deprecated=True,
-                 help="Renamed — use clean-architecture instead.")
-    def generate_project_tombstone(
-        name: Annotated[str | None, typer.Option("--name", help="Project name.")] = None,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
-    ) -> None:
-        """Tombstone: generate-project has been renamed to clean-architecture."""
-        console.print(
-            "[red]Error:[/red] 'generate-project' has been renamed. "
-            "Use 'clean-architecture' (alias: ca) instead."
-        )
-        raise typer.Exit(1)
-
 
 # ---------------------------------------------------------------------------
 # Helpers
