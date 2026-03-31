@@ -120,6 +120,7 @@ def register(app: typer.Typer) -> None:
         epilog=_GPIPE_EPILOG,
     )
     def generate_pipeline(
+        ctx: typer.Context,
         provider: Annotated[
             str | None,
             typer.Option(
@@ -139,14 +140,21 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Scaffold a CI/CD pipeline file for the specified provider."""
+        if provider is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _generate_pipeline_impl(provider, dry_run)
 
     @app.command("gpipe", hidden=True, help="Alias for generate-pipeline.", epilog=_GPIPE_EPILOG)
     def gpipe(
+        ctx: typer.Context,
         provider: Annotated[str | None, typer.Option("--provider", help="Pipeline provider (github, azure).")] = None,
         dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
     ) -> None:
         """Alias for generate-pipeline."""
+        if provider is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _generate_pipeline_impl(provider, dry_run)
 
 

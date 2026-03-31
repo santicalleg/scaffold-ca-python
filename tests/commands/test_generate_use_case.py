@@ -98,3 +98,18 @@ def test_no_project_root_exits_1(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     monkeypatch.chdir(tmp_path)
     result = runner.invoke(app, ["guc", "--name", "CreateOrder"])
     assert result.exit_code == 1
+
+
+# ---------------------------------------------------------------------------
+# US3: no-args → help (T018)
+# ---------------------------------------------------------------------------
+
+
+def test_guc_no_args_exits_0() -> None:
+    result = runner.invoke(app, ["guc"])
+    assert result.exit_code == 0
+
+
+def test_guc_no_args_shows_name_option() -> None:
+    result = runner.invoke(app, ["guc"])
+    assert "--name" in result.output

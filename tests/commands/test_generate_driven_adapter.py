@@ -366,3 +366,18 @@ def test_gda_help_contains_custom_adapter_description() -> None:
     result = runner.invoke(app, ["gda", "--help"])
     assert result.exit_code == 0
     assert "Custom adapter" in result.output
+
+
+# ---------------------------------------------------------------------------
+# US3: no-args → help (T019)
+# ---------------------------------------------------------------------------
+
+
+def test_gda_no_args_exits_0() -> None:
+    result = runner.invoke(app, ["gda"])
+    assert result.exit_code == 0
+
+
+def test_gda_no_args_shows_type_option() -> None:
+    result = runner.invoke(app, ["gda"])
+    assert "--type" in result.output

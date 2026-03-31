@@ -28,3 +28,18 @@ def test_root_help_alias_visible_in_description() -> None:
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
     assert "ca" in result.output
+
+
+# ---------------------------------------------------------------------------
+# US3: root no-args behaviour (T017)
+# ---------------------------------------------------------------------------
+
+
+def test_root_no_args_exits_0() -> None:
+    result = runner.invoke(app, [])
+    assert result.exit_code == 0
+
+
+def test_root_no_args_shows_usage() -> None:
+    result = runner.invoke(app, [])
+    assert "Usage" in result.output

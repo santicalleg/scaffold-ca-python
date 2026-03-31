@@ -98,9 +98,10 @@ def register(app: typer.Typer) -> None:
         epilog="Example: scaffold gh --name DateUtils",
     )
     def generate_helper(
+        ctx: typer.Context,
         name: Annotated[
-            str, typer.Option("--name", help="Helper name (PascalCase).", rich_help_panel="Required")
-        ],
+            str | None, typer.Option("--name", help="Helper name (PascalCase).", rich_help_panel="Required")
+        ] = None,
         dry_run: Annotated[
             bool,
             typer.Option(
@@ -112,14 +113,21 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Scaffold a helper inside infrastructure/helpers/."""
+        if name is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _generate_helper_impl(name, dry_run)
 
     @app.command("gh", hidden=True, help="Alias for generate-helper.")
     def gh(
-        name: Annotated[str, typer.Option("--name", help="Helper name.")],
+        ctx: typer.Context,
+        name: Annotated[str | None, typer.Option("--name", help="Helper name.")] = None,
         dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
     ) -> None:
         """Alias for generate-helper."""
+        if name is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _generate_helper_impl(name, dry_run)
 
 

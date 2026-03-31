@@ -107,10 +107,11 @@ def register(app: typer.Typer) -> None:
         epilog="Example: scaffold guc --name CreateOrder",
     )
     def generate_use_case(
+        ctx: typer.Context,
         name: Annotated[
-            str,
+            str | None,
             typer.Option("--name", help="Use case name (PascalCase).", rich_help_panel="Required"),
-        ],
+        ] = None,
         dry_run: Annotated[
             bool,
             typer.Option(
@@ -122,14 +123,21 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Scaffold an async use case inside domain/usecase/."""
+        if name is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _generate_use_case_impl(name, dry_run)
 
     @app.command("guc", hidden=True, help="Alias for generate-use-case.")
     def guc(
-        name: Annotated[str, typer.Option("--name", help="Use case name.")],
+        ctx: typer.Context,
+        name: Annotated[str | None, typer.Option("--name", help="Use case name.")] = None,
         dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
     ) -> None:
         """Alias for generate-use-case."""
+        if name is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _generate_use_case_impl(name, dry_run)
 
 

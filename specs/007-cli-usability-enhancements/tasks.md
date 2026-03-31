@@ -90,22 +90,22 @@
 
 ### Tests for User Story 3 *(write FIRST — must FAIL before implementation)*
 
-- [ ] T017 [US3] Add failing test for root no-args behaviour to `tests/commands/test_cli.py`: `scaffold-ca-python` (no args) exits 0, output contains `Usage`
-- [ ] T018 [P] [US3] Add failing no-args exit-0 tests to `tests/commands/test_generate_model.py` and `tests/commands/test_generate_use_case.py`: invoking `gm` / `guc` with no arguments exits 0 and output contains `--name`
-- [ ] T019 [P] [US3] Add failing no-args exit-0 tests to `tests/commands/test_generate_entry_point.py`, `tests/commands/test_generate_driven_adapter.py`, and `tests/commands/test_generate_pipeline.py`: invoking `gep` / `gda` / `gpipe` with no arguments exits 0
-- [ ] T020 [P] [US3] Add failing no-args exit-0 tests to `tests/commands/test_generate_helper.py`, `tests/commands/test_delete_module.py`, `tests/commands/test_validate_structure.py`, and `tests/commands/test_update_project.py`: invoking `gh` / `dm` / `vs` / `up` with no arguments exits 0
+- [X] T017 [US3] Add failing test for root no-args behaviour to `tests/commands/test_cli.py`: `scaffold-ca-python` (no args) exits 0, output contains `Usage`
+- [X] T018 [P] [US3] Add failing no-args exit-0 tests to `tests/commands/test_generate_model.py` and `tests/commands/test_generate_use_case.py`: invoking `gm` / `guc` with no arguments exits 0 and output contains `--name`
+- [X] T019 [P] [US3] Add failing no-args exit-0 tests to `tests/commands/test_generate_entry_point.py`, `tests/commands/test_generate_driven_adapter.py`, and `tests/commands/test_generate_pipeline.py`: invoking `gep` / `gda` / `gpipe` with no arguments exits 0
+- [X] T020 [P] [US3] Add failing no-args exit-0 tests to `tests/commands/test_generate_helper.py`, `tests/commands/test_delete_module.py`, `tests/commands/test_validate_structure.py`, and `tests/commands/test_update_project.py`: invoking `gh` / `dm` / `vs` / `up` with no arguments exits 0
 
 ### Implementation for User Story 3
 
-- [ ] T021 [US3] Replace `no_args_is_help=True` on root `typer.Typer(...)` with `@app.callback(invoke_without_command=True)` callback that prints `ctx.get_help()` and raises `typer.Exit(0)` when no subcommand is given in `src/scaffold_ca_python/cli.py`
-- [ ] T022 [P] [US3] Add `ctx: typer.Context` first parameter and change `--name` from required (`typer.Option(...)`) to optional (`typer.Option(None, ...)`) with early-exit guard in the `register()` function of `src/scaffold_ca_python/commands/generate_model.py`
-- [ ] T023 [P] [US3] Add `ctx: typer.Context` first parameter and change `--name` to optional with early-exit guard in the `register()` function of `src/scaffold_ca_python/commands/generate_use_case.py`
-- [ ] T024 [P] [US3] Add `ctx: typer.Context` first parameter and change `--type` to optional with early-exit guard in the `register()` function of `src/scaffold_ca_python/commands/generate_entry_point.py`
-- [ ] T025 [P] [US3] Add `ctx: typer.Context` first parameter and change `--type` to optional with early-exit guard in the `register()` function of `src/scaffold_ca_python/commands/generate_driven_adapter.py`
-- [ ] T026 [P] [US3] Add `ctx: typer.Context` first parameter and change `--provider` to optional with early-exit guard in the `register()` function of `src/scaffold_ca_python/commands/generate_pipeline.py`
-- [ ] T027 [P] [US3] Add `ctx: typer.Context` first parameter and change `--name` to optional with early-exit guard in the `register()` function of `src/scaffold_ca_python/commands/generate_helper.py`
-- [ ] T028 [P] [US3] Add `ctx: typer.Context` first parameter and change `--name` to optional with early-exit guard in the `register()` function of `src/scaffold_ca_python/commands/delete_module.py`; also add `ctx` guard to `src/scaffold_ca_python/commands/validate_structure.py` (no required options — guard outputs help when invoked bare); `update_project.py` requires no change (no required options, already exits cleanly)
-- [ ] T029 [US3] Run `uv run pytest tests/commands/ -q` — confirm all US3 no-args tests are green alongside all pre-existing tests
+- [X] T021 [US3] Replace `no_args_is_help=True` on root `typer.Typer(...)` with `@app.callback(invoke_without_command=True)` callback that prints `ctx.get_help()` and raises `typer.Exit(0)` when no subcommand is given in `src/scaffold_ca_python/cli.py`
+- [X] T022 [P] [US3] Add `ctx: typer.Context` first parameter and change `--name` from required (`typer.Option(...)`) to optional (`typer.Option(None, ...)`) with early-exit guard in the `register()` function of `src/scaffold_ca_python/commands/generate_model.py`
+- [X] T023 [P] [US3] Add `ctx: typer.Context` first parameter and change `--name` to optional with early-exit guard in the `register()` function of `src/scaffold_ca_python/commands/generate_use_case.py`
+- [X] T024 [P] [US3] Add `ctx: typer.Context` first parameter and change `--type` to optional with early-exit guard in the `register()` function of `src/scaffold_ca_python/commands/generate_entry_point.py`
+- [X] T025 [P] [US3] Add `ctx: typer.Context` first parameter and change `--type` to optional with early-exit guard in the `register()` function of `src/scaffold_ca_python/commands/generate_driven_adapter.py`
+- [X] T026 [P] [US3] Add `ctx: typer.Context` first parameter and change `--provider` to optional with early-exit guard in the `register()` function of `src/scaffold_ca_python/commands/generate_pipeline.py`
+- [X] T027 [P] [US3] Add `ctx: typer.Context` first parameter and change `--name` to optional with early-exit guard in the `register()` function of `src/scaffold_ca_python/commands/generate_helper.py`
+- [X] T028 [P] [US3] Add `ctx: typer.Context` first parameter and change `--name` to optional with early-exit guard in the `register()` function of `src/scaffold_ca_python/commands/delete_module.py`; also add `ctx` guard to `src/scaffold_ca_python/commands/validate_structure.py` (no required options — guard outputs help when invoked bare); `update_project.py` requires no change (no required options, already exits cleanly)
+- [X] T029 [US3] Run `uv run pytest tests/commands/ -q` — confirm all US3 no-args tests are green alongside all pre-existing tests
 
 **Checkpoint**: US3 fully functional — root and all subcommands exit 0 with help on no-args invocation.
 

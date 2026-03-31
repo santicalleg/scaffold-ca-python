@@ -117,9 +117,9 @@ def test_dry_run_azure_writes_nothing(project_root: Path) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_missing_provider_exits_1(project_root: Path) -> None:
+def test_missing_provider_exits_0_with_help(project_root: Path) -> None:
     result = runner.invoke(app, ["gpipe"], catch_exceptions=False)
-    assert result.exit_code == 1
+    assert result.exit_code == 0
 
 
 def test_missing_provider_error_hints_providers(project_root: Path) -> None:
@@ -183,3 +183,18 @@ def test_gpipe_help_contains_examples_section() -> None:
     result = runner.invoke(app, ["gpipe", "--help"])
     assert result.exit_code == 0
     assert "Examples" in result.output
+
+
+# ---------------------------------------------------------------------------
+# US3: no-args → help (T019)
+# ---------------------------------------------------------------------------
+
+
+def test_gpipe_no_args_exits_0() -> None:
+    result = runner.invoke(app, ["gpipe"])
+    assert result.exit_code == 0
+
+
+def test_gpipe_no_args_shows_provider_option() -> None:
+    result = runner.invoke(app, ["gpipe"])
+    assert "--provider" in result.output

@@ -130,3 +130,13 @@ def test_no_project_root_exits_1(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     monkeypatch.chdir(tmp_path)
     result = runner.invoke(app, ["vs"])
     assert result.exit_code == 1
+
+
+# ---------------------------------------------------------------------------
+# US3: no-args → help (T020)
+# ---------------------------------------------------------------------------
+
+
+def test_vs_no_args_exits_0(project_root: Path) -> None:
+    result = runner.invoke(app, ["vs"], catch_exceptions=False)
+    assert result.exit_code == 0

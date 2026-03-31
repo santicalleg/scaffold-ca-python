@@ -496,3 +496,18 @@ def test_gep_help_contains_examples_section() -> None:
     result = runner.invoke(app, ["gep", "--help"])
     assert result.exit_code == 0
     assert "Examples" in result.output
+
+
+# ---------------------------------------------------------------------------
+# US3: no-args → help (T019)
+# ---------------------------------------------------------------------------
+
+
+def test_gep_no_args_exits_0() -> None:
+    result = runner.invoke(app, ["gep"])
+    assert result.exit_code == 0
+
+
+def test_gep_no_args_shows_type_option() -> None:
+    result = runner.invoke(app, ["gep"])
+    assert "--type" in result.output

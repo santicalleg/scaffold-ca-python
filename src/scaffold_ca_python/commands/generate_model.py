@@ -106,9 +106,10 @@ def register(app: typer.Typer) -> None:
         epilog="Example: scaffold gm --name Order",
     )
     def generate_model(
+        ctx: typer.Context,
         name: Annotated[
-            str, typer.Option("--name", help="Model name (PascalCase).", rich_help_panel="Required")
-        ],
+            str | None, typer.Option("--name", help="Model name (PascalCase).", rich_help_panel="Required")
+        ] = None,
         dry_run: Annotated[
             bool,
             typer.Option(
@@ -120,14 +121,21 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Scaffold a domain model class inside domain/model/."""
+        if name is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _generate_model_impl(name, dry_run)
 
     @app.command("gm", hidden=True, help="Alias for generate-model.")
     def gm(
-        name: Annotated[str, typer.Option("--name", help="Model name.")],
+        ctx: typer.Context,
+        name: Annotated[str | None, typer.Option("--name", help="Model name.")] = None,
         dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
     ) -> None:
         """Alias for generate-model."""
+        if name is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _generate_model_impl(name, dry_run)
 
 

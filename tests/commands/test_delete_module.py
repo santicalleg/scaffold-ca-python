@@ -178,3 +178,18 @@ def test_no_project_root_error_message(tmp_path: Path, monkeypatch: pytest.Monke
     monkeypatch.chdir(tmp_path)
     result = runner.invoke(app, ["dm", "--name", "Order"], catch_exceptions=False)
     assert "scaffold ca" in result.output.lower()
+
+
+# ---------------------------------------------------------------------------
+# US3: no-args → help (T020)
+# ---------------------------------------------------------------------------
+
+
+def test_dm_no_args_exits_0() -> None:
+    result = runner.invoke(app, ["dm"])
+    assert result.exit_code == 0
+
+
+def test_dm_no_args_shows_name_option() -> None:
+    result = runner.invoke(app, ["dm"])
+    assert "--name" in result.output

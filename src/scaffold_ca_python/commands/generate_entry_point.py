@@ -256,7 +256,8 @@ def register(app: typer.Typer) -> None:
         epilog=_GEP_EPILOG,
     )
     def generate_entry_point(
-        type_: Annotated[str, typer.Option("--type", help=_TYPE_HELP, rich_help_panel="Required")],
+        ctx: typer.Context,
+        type_: Annotated[str | None, typer.Option("--type", help=_TYPE_HELP, rich_help_panel="Required")] = None,
         swagger: Annotated[
             str | None, typer.Option("--swagger", help=_SWAGGER_HELP, rich_help_panel="Options")
         ] = None,
@@ -289,11 +290,15 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Scaffold an entry point inside infrastructure/entry_points/."""
+        if type_ is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _generate_entry_point_impl(type_, swagger, enable_kafka, enable_mcp_client, dry_run)
 
     @app.command("gep", hidden=True, help="Alias for generate-entry-point.", epilog=_GEP_EPILOG)
     def gep(
-        type_: Annotated[str, typer.Option("--type", help=_TYPE_HELP)],
+        ctx: typer.Context,
+        type_: Annotated[str | None, typer.Option("--type", help=_TYPE_HELP)] = None,
         swagger: Annotated[str | None, typer.Option("--swagger", help=_SWAGGER_HELP)] = None,
         enable_kafka: Annotated[
             bool, typer.Option("--enable-kafka/--no-enable-kafka", help=_KAFKA_HELP)
@@ -304,6 +309,9 @@ def register(app: typer.Typer) -> None:
         dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
     ) -> None:
         """Alias for generate-entry-point."""
+        if type_ is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _generate_entry_point_impl(type_, swagger, enable_kafka, enable_mcp_client, dry_run)
 
 

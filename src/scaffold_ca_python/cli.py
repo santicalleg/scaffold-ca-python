@@ -17,7 +17,6 @@ app = typer.Typer(
     name="scaffold-ca-python",
     help="Scaffold production-ready Clean Architecture Python projects.",
     add_completion=False,
-    no_args_is_help=True,
     rich_markup_mode="rich",
 )
 
@@ -32,3 +31,9 @@ delete_module.register(app)
 update_project.register(app)
 validate_structure.register(app)
 
+
+@app.callback(invoke_without_command=True)
+def _main(ctx: typer.Context) -> None:
+    if ctx.invoked_subcommand is None:
+        typer.echo(ctx.get_help())
+        raise typer.Exit(0)

@@ -232,14 +232,15 @@ def register(app: typer.Typer) -> None:
         epilog=_GDA_EPILOG,
     )
     def generate_driven_adapter(
+        ctx: typer.Context,
         type_: Annotated[
-            str,
+            str | None,
             typer.Option(
                 "--type",
                 help="Adapter type: rest-consumer, secrets, generic.",
                 rich_help_panel="Required",
             ),
-        ],
+        ] = None,
         name: Annotated[
             str | None,
             typer.Option(
@@ -259,15 +260,22 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Scaffold a driven adapter inside infrastructure/driven_adapters/."""
+        if type_ is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _generate_driven_adapter_impl(type_, name, dry_run)
 
     @app.command("gda", hidden=True, help="Alias for generate-driven-adapter.", epilog=_GDA_EPILOG)
     def gda(
-        type_: Annotated[str, typer.Option("--type", help="Adapter type: rest-consumer, secrets, generic.")],
+        ctx: typer.Context,
+        type_: Annotated[str | None, typer.Option("--type", help="Adapter type: rest-consumer, secrets, generic.")] = None,
         name: Annotated[str | None, typer.Option("--name", help="Adapter name (required for generic).")] = None,
         dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
     ) -> None:
         """Alias for generate-driven-adapter."""
+        if type_ is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _generate_driven_adapter_impl(type_, name, dry_run)
 
 

@@ -156,7 +156,8 @@ def register(app: typer.Typer) -> None:
         epilog="Example: scaffold dm --name Order --confirm",
     )
     def delete_module(
-        name: Annotated[str, typer.Option("--name", help="Module name to delete.", rich_help_panel="Required")],
+        ctx: typer.Context,
+        name: Annotated[str | None, typer.Option("--name", help="Module name to delete.", rich_help_panel="Required")] = None,
         confirm: Annotated[
             bool,
             typer.Option(
@@ -177,13 +178,20 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Preview or delete a previously generated module."""
+        if name is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _delete_module_impl(name, confirm, dry_run)
 
     @app.command("dm", hidden=True, help="Alias for delete-module.")
     def dm(
-        name: Annotated[str, typer.Option("--name", help="Module name to delete.")],
+        ctx: typer.Context,
+        name: Annotated[str | None, typer.Option("--name", help="Module name to delete.")] = None,
         confirm: Annotated[bool, typer.Option("--confirm/--no-confirm")] = False,
         dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
     ) -> None:
         """Alias for delete-module."""
+        if name is None:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
         _delete_module_impl(name, confirm, dry_run)
