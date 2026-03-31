@@ -24,6 +24,18 @@ writer = FileWriter()
 
 _ALLOWED_PROVIDERS = ("github", "azure")
 
+_PROVIDER_HELP = "Pipeline provider (github, azure)."
+
+_GPIPE_EPILOG = (
+    "Providers:\n\n"
+    "  github    GitHub Actions (.github/workflows/ci.yml)\n"
+    "  azure     Azure Pipelines (azure-pipelines.yml)\n\n"
+    "Note: --provider is required.\n\n"
+    "Examples:\n\n"
+    "  scaffold gpipe --provider github\n"
+    "  scaffold gpipe --provider azure\n"
+)
+
 # Module-level option default needed with from __future__ import annotations
 _PROVIDER_DEFAULT: str | None = None
 
@@ -105,7 +117,7 @@ def register(app: typer.Typer) -> None:
     @app.command(
         "generate-pipeline",
         help="Scaffold a CI/CD pipeline configuration file.",
-        epilog="Example: scaffold gpipe --provider github",
+        epilog=_GPIPE_EPILOG,
     )
     def generate_pipeline(
         provider: Annotated[
@@ -129,7 +141,7 @@ def register(app: typer.Typer) -> None:
         """Scaffold a CI/CD pipeline file for the specified provider."""
         _generate_pipeline_impl(provider, dry_run)
 
-    @app.command("gpipe", hidden=True, help="Alias for generate-pipeline.")
+    @app.command("gpipe", hidden=True, help="Alias for generate-pipeline.", epilog=_GPIPE_EPILOG)
     def gpipe(
         provider: Annotated[str | None, typer.Option("--provider", help="Pipeline provider (github, azure).")] = None,
         dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,

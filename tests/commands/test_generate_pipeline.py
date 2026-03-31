@@ -160,3 +160,26 @@ def test_no_project_root_error_message(tmp_path: Path, monkeypatch: pytest.Monke
     monkeypatch.chdir(tmp_path)
     result = runner.invoke(app, ["gpipe", "--provider", "github"], catch_exceptions=False)
     assert "scaffold ca" in result.output.lower()
+
+
+# ---------------------------------------------------------------------------
+# US2: gpipe --help epilog
+# ---------------------------------------------------------------------------
+
+
+def test_gpipe_help_shows_provider_descriptions() -> None:
+    result = runner.invoke(app, ["gpipe", "--help"])
+    assert result.exit_code == 0
+    assert "GitHub Actions" in result.output
+
+
+def test_gpipe_help_notes_provider_required() -> None:
+    result = runner.invoke(app, ["gpipe", "--help"])
+    assert result.exit_code == 0
+    assert "--provider is required" in result.output
+
+
+def test_gpipe_help_contains_examples_section() -> None:
+    result = runner.invoke(app, ["gpipe", "--help"])
+    assert result.exit_code == 0
+    assert "Examples" in result.output

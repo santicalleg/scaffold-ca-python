@@ -26,6 +26,18 @@ writer = FileWriter()
 
 _ALLOWED_TYPES = ("rest-consumer", "secrets", "generic")
 
+_TYPE_HELP = "Adapter type: rest-consumer, secrets, generic."
+
+_GDA_EPILOG = (
+    "Types:\n\n"
+    "  rest-consumer    HTTP outbound client (httpx)\n"
+    "  secrets          AWS Secrets Manager (boto3)\n"
+    "  generic          Custom adapter (--name required)\n\n"
+    "Examples:\n\n"
+    "  scaffold gda --type rest-consumer\n"
+    "  scaffold gda --type generic --name MyAdapter\n"
+)
+
 _DEP_MAP: dict[str, list[str]] = {
     "rest-consumer": ["httpx>=0.27"],
     "secrets": ["boto3>=1.34"],
@@ -217,7 +229,7 @@ def register(app: typer.Typer) -> None:
     @app.command(
         "generate-driven-adapter",
         help="Scaffold a driven adapter and test stub.",
-        epilog="Examples: scaffold gda --type rest-consumer | scaffold gda --type generic --name MyAdapter",
+        epilog=_GDA_EPILOG,
     )
     def generate_driven_adapter(
         type_: Annotated[
@@ -249,7 +261,7 @@ def register(app: typer.Typer) -> None:
         """Scaffold a driven adapter inside infrastructure/driven_adapters/."""
         _generate_driven_adapter_impl(type_, name, dry_run)
 
-    @app.command("gda", hidden=True, help="Alias for generate-driven-adapter.")
+    @app.command("gda", hidden=True, help="Alias for generate-driven-adapter.", epilog=_GDA_EPILOG)
     def gda(
         type_: Annotated[str, typer.Option("--type", help="Adapter type: rest-consumer, secrets, generic.")],
         name: Annotated[str | None, typer.Option("--name", help="Adapter name (required for generic).")] = None,

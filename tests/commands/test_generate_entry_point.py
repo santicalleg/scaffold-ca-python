@@ -473,3 +473,26 @@ def test_gep_restapi_twice_has_exactly_one_fastapi_entry(project_root: Path) -> 
 
     content = (project_root / "pyproject.toml").read_text()
     assert content.count("fastapi") == 1
+
+
+# ---------------------------------------------------------------------------
+# US2: gep --help epilog
+# ---------------------------------------------------------------------------
+
+
+def test_gep_help_shows_type_descriptions() -> None:
+    result = runner.invoke(app, ["gep", "--help"])
+    assert result.exit_code == 0
+    assert "FastAPI" in result.output
+
+
+def test_gep_help_flags_agent_type_only() -> None:
+    result = runner.invoke(app, ["gep", "--help"])
+    assert result.exit_code == 0
+    assert "agent type only" in result.output
+
+
+def test_gep_help_contains_examples_section() -> None:
+    result = runner.invoke(app, ["gep", "--help"])
+    assert result.exit_code == 0
+    assert "Examples" in result.output

@@ -35,8 +35,21 @@ _DEP_MAP: dict[str, list[str]] = {
     "generic": [],
 }
 _SWAGGER_HELP = "Path to OpenAPI YAML/JSON (restapi only)."
-_KAFKA_HELP = "Add async Kafka consumer stub."
-_MCP_CLIENT_HELP = "Add MCP tool-call client stub."
+_KAFKA_HELP = "Add async Kafka consumer stub (agent type only)."
+_MCP_CLIENT_HELP = "Add MCP tool-call client stub (agent type only)."
+_GEP_EPILOG = (
+    "Types:\n\n"
+    "  restapi    FastAPI REST API entry point\n"
+    "  agent      A2A agent entry point\n"
+    "  mcp        MCP server entry point\n"
+    "  generic    Plain entry point\n\n"
+    "Notes: --enable-kafka and --enable-mcp-client are agent type only.\n\n"
+    "Examples:\n\n"
+    "  scaffold gep --type restapi\n"
+    "  scaffold gep --type agent --enable-kafka\n"
+    "  scaffold gep --type mcp\n"
+    "  scaffold gep --type generic\n"
+)
 
 
 def _generate_entry_point_impl(
@@ -240,7 +253,7 @@ def register(app: typer.Typer) -> None:
     @app.command(
         "generate-entry-point",
         help="Scaffold an entry-point adapter and test stub.",
-        epilog="Example: scaffold gep --type restapi",
+        epilog=_GEP_EPILOG,
     )
     def generate_entry_point(
         type_: Annotated[str, typer.Option("--type", help=_TYPE_HELP, rich_help_panel="Required")],
@@ -278,7 +291,7 @@ def register(app: typer.Typer) -> None:
         """Scaffold an entry point inside infrastructure/entry_points/."""
         _generate_entry_point_impl(type_, swagger, enable_kafka, enable_mcp_client, dry_run)
 
-    @app.command("gep", hidden=True, help="Alias for generate-entry-point.")
+    @app.command("gep", hidden=True, help="Alias for generate-entry-point.", epilog=_GEP_EPILOG)
     def gep(
         type_: Annotated[str, typer.Option("--type", help=_TYPE_HELP)],
         swagger: Annotated[str | None, typer.Option("--swagger", help=_SWAGGER_HELP)] = None,

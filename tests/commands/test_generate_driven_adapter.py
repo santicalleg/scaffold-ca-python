@@ -343,3 +343,26 @@ def test_dry_run_prints_deps_to_inject(project_root: Path) -> None:
         app, ["gda", "--type", "rest-consumer", "--dry-run"], catch_exceptions=False
     )
     assert "httpx" in result.output
+
+
+# ---------------------------------------------------------------------------
+# US2: gda --help epilog
+# ---------------------------------------------------------------------------
+
+
+def test_gda_help_shows_type_descriptions() -> None:
+    result = runner.invoke(app, ["gda", "--help"])
+    assert result.exit_code == 0
+    assert "httpx" in result.output
+
+
+def test_gda_help_notes_name_required_for_generic() -> None:
+    result = runner.invoke(app, ["gda", "--help"])
+    assert result.exit_code == 0
+    assert "--name required" in result.output
+
+
+def test_gda_help_contains_custom_adapter_description() -> None:
+    result = runner.invoke(app, ["gda", "--help"])
+    assert result.exit_code == 0
+    assert "Custom adapter" in result.output

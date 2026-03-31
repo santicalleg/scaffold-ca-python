@@ -67,16 +67,16 @@
 
 ### Tests for User Story 2 *(write FIRST — must FAIL before implementation)*
 
-- [ ] T010 [P] [US2] Write failing tests for `gep --help` epilog content in `tests/commands/test_generate_entry_point.py`: (a) output contains `restapi`, `agent`, `mcp`, `generic`, (b) output contains `agent type only` for `--enable-kafka` and `--enable-mcp-client`, (c) output contains `Examples`
-- [ ] T011 [P] [US2] Write failing tests for `gda --help` epilog content in `tests/commands/test_generate_driven_adapter.py`: (a) output contains `rest-consumer`, `secrets`, `generic`, (b) output contains `--name required` (or equivalent) for `generic` type, (c) output contains `Examples`
-- [ ] T012 [P] [US2] Write failing tests for `gpipe --help` epilog content in `tests/commands/test_generate_pipeline.py`: (a) output contains `github` and `azure`, (b) output contains `required` for `--provider`, (c) output contains `Examples`
+- [X] T010 [P] [US2] Write failing tests for `gep --help` epilog content in `tests/commands/test_generate_entry_point.py`: (a) output contains `restapi`, `agent`, `mcp`, `generic`, (b) output contains `agent type only` for `--enable-kafka` and `--enable-mcp-client`, (c) output contains `Examples`
+- [X] T011 [P] [US2] Write failing tests for `gda --help` epilog content in `tests/commands/test_generate_driven_adapter.py`: (a) output contains `rest-consumer`, `secrets`, `generic`, (b) output contains `--name required` (or equivalent) for `generic` type, (c) output contains `Examples`
+- [X] T012 [P] [US2] Write failing tests for `gpipe --help` epilog content in `tests/commands/test_generate_pipeline.py`: (a) output contains `github` and `azure`, (b) output contains `required` for `--provider`, (c) output contains `Examples`
 
 ### Implementation for User Story 2
 
-- [ ] T013 [US2] Update `_KAFKA_HELP`, `_MCP_CLIENT_HELP`, and `_TYPE_HELP` constants to include "(agent type only)" and type descriptions, and add `epilog=` with types table + Notes + Examples to `@app.command("generate-entry-point", ...)` in `src/scaffold_ca_python/commands/generate_entry_point.py`
-- [ ] T014 [P] [US2] Add `_TYPE_HELP` module-level constant and `epilog=` param with types table + Examples to `@app.command("generate-driven-adapter", ...)` in `src/scaffold_ca_python/commands/generate_driven_adapter.py`
-- [ ] T015 [P] [US2] Add `_PROVIDER_HELP` module-level constant and `epilog=` param with providers table + Examples to `@app.command("generate-pipeline", ...)` in `src/scaffold_ca_python/commands/generate_pipeline.py`
-- [ ] T016 [US2] Run `uv run pytest tests/commands/test_generate_entry_point.py tests/commands/test_generate_driven_adapter.py tests/commands/test_generate_pipeline.py -q` — confirm all US2 tests are green
+- [X] T013 [US2] Update `_KAFKA_HELP`, `_MCP_CLIENT_HELP`, and `_TYPE_HELP` constants to include "(agent type only)" and type descriptions, and add `epilog=` with types table + Notes + Examples to `@app.command("generate-entry-point", ...)` in `src/scaffold_ca_python/commands/generate_entry_point.py`
+- [X] T014 [P] [US2] Add `_TYPE_HELP` module-level constant and `epilog=` param with types table + Examples to `@app.command("generate-driven-adapter", ...)` in `src/scaffold_ca_python/commands/generate_driven_adapter.py`
+- [X] T015 [P] [US2] Add `_PROVIDER_HELP` module-level constant and `epilog=` param with providers table + Examples to `@app.command("generate-pipeline", ...)` in `src/scaffold_ca_python/commands/generate_pipeline.py`
+- [X] T016 [US2] Run `uv run pytest tests/commands/test_generate_entry_point.py tests/commands/test_generate_driven_adapter.py tests/commands/test_generate_pipeline.py -q` — confirm all US2 tests are green
 
 **Checkpoint**: US2 fully functional — `gep`, `gda`, `gpipe` help shows types/providers tables and examples.
 
