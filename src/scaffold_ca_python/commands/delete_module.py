@@ -157,7 +157,9 @@ def register(app: typer.Typer) -> None:
     )
     def delete_module(
         ctx: typer.Context,
-        name: Annotated[str | None, typer.Option("--name", help="Module name to delete.", rich_help_panel="Required")] = None,
+        name: Annotated[
+            str | None, typer.Option("--name", help="Module name to delete.", rich_help_panel="Required")
+        ] = None,
         confirm: Annotated[
             bool,
             typer.Option(

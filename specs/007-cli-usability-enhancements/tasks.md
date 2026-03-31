@@ -115,9 +115,9 @@
 
 **Purpose**: Linting, typing, coverage gate, and constitution amendment.
 
-- [ ] T030 [P] Run `uv run ruff check src/ tests/ --output-format=concise` — fix any E501/ANN/I001 issues introduced by `ctx: typer.Context` params and `str | None` type annotations
-- [ ] T031 [P] Run `uv run mypy src/` — fix any strict-mode issues from `Optional[str]` changes and `ctx` parameter types
-- [ ] T032 Run full suite `uv run pytest -q` — confirm ≥405 tests pass (SC-005) and ≥80% coverage gate passes
+- [X] T030 [P] Run `uv run ruff check src/ tests/ --output-format=concise` — fix any E501/ANN/I001 issues introduced by `ctx: typer.Context` params and `str | None` type annotations
+- [X] T031 [P] Run `uv run mypy src/` — fix any strict-mode issues from `Optional[str]` changes and `ctx` parameter types
+- [X] T032 Run full suite `uv run pytest -q` — confirm ≥405 tests pass (SC-005) and ≥80% coverage gate passes
 
 ---
 

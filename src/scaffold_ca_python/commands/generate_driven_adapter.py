@@ -268,7 +268,9 @@ def register(app: typer.Typer) -> None:
     @app.command("gda", hidden=True, help="Alias for generate-driven-adapter.", epilog=_GDA_EPILOG)
     def gda(
         ctx: typer.Context,
-        type_: Annotated[str | None, typer.Option("--type", help="Adapter type: rest-consumer, secrets, generic.")] = None,
+        type_: Annotated[
+            str | None, typer.Option("--type", help="Adapter type: rest-consumer, secrets, generic.")
+        ] = None,
         name: Annotated[str | None, typer.Option("--name", help="Adapter name (required for generic).")] = None,
         dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
     ) -> None:
