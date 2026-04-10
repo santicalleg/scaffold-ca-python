@@ -11,6 +11,7 @@ from scaffold_ca_python.models.file_operation import CreateFile, DeleteFile, Gen
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _create_op(path: Path, content: str = "# generated") -> CreateFile:
     gf = GeneratedFile(path=path, content=content, template_name="test.j2")
     return CreateFile(file=gf)
@@ -23,6 +24,7 @@ def _delete_op(path: Path) -> DeleteFile:
 # ---------------------------------------------------------------------------
 # Real-mode creation
 # ---------------------------------------------------------------------------
+
 
 def test_creates_file_on_disk(tmp_path: Path) -> None:
     target = tmp_path / "output.py"
@@ -51,6 +53,7 @@ def test_creates_multiple_files_atomically(tmp_path: Path) -> None:
 # Dry-run mode
 # ---------------------------------------------------------------------------
 
+
 def test_dry_run_does_not_write_files(tmp_path: Path) -> None:
     target = tmp_path / "should_not_exist.py"
     writer = FileWriter()
@@ -68,6 +71,7 @@ def test_dry_run_returns_preview_paths(tmp_path: Path) -> None:
 # ---------------------------------------------------------------------------
 # Delete operations
 # ---------------------------------------------------------------------------
+
 
 def test_delete_removes_existing_file(tmp_path: Path) -> None:
     target = tmp_path / "to_delete.py"
@@ -96,6 +100,7 @@ def test_delete_dry_run_does_not_remove_file(tmp_path: Path) -> None:
 # Rollback on error
 # ---------------------------------------------------------------------------
 
+
 def test_no_partial_files_on_failure(tmp_path: Path) -> None:
     """If one file in a batch has an unwritable parent, no files should be committed."""
     good = tmp_path / "good.py"
@@ -115,6 +120,7 @@ def test_no_partial_files_on_failure(tmp_path: Path) -> None:
 # ---------------------------------------------------------------------------
 # overwrite flag
 # ---------------------------------------------------------------------------
+
 
 def _create_op_overwrite(path: Path, content: str = "# new") -> CreateFile:
     gf = GeneratedFile(path=path, content=content, template_name="test.j2", overwrite=True)

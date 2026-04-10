@@ -43,27 +43,19 @@ _PROVIDER_DEFAULT: str | None = None
 def _generate_pipeline_impl(provider: str | None, dry_run: bool) -> None:
     # --- Validate provider presence ---
     if not provider:
-        console.print(
-            "[red]Error:[/red] --provider is required. "
-            f"Choose from: {', '.join(_ALLOWED_PROVIDERS)}."
-        )
+        console.print(f"[red]Error:[/red] --provider is required. Choose from: {', '.join(_ALLOWED_PROVIDERS)}.")
         raise typer.Exit(code=1) from None
 
     # --- Validate provider value ---
     if provider not in _ALLOWED_PROVIDERS:
-        console.print(
-            f"[red]Error:[/red] Unknown provider '{provider}'. "
-            f"Allowed: {', '.join(_ALLOWED_PROVIDERS)}."
-        )
+        console.print(f"[red]Error:[/red] Unknown provider '{provider}'. Allowed: {', '.join(_ALLOWED_PROVIDERS)}.")
         raise typer.Exit(code=1) from None
 
     # --- Locate project root ---
     try:
         project_root = find_project_root()
     except ScaffoldError:
-        console.print(
-            "[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first."
-        )
+        console.print("[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first.")
         raise typer.Exit(code=1) from None
 
     project_ctx = _load_project_context(project_root)
@@ -89,11 +81,13 @@ def _generate_pipeline_impl(provider: str | None, dry_run: bool) -> None:
         raise typer.Exit(code=1) from None
 
     operations: list[FileOperation] = [
-        CreateFile(file=GeneratedFile(
-            path=out_path,
-            content=renderer.render_string(_tmpl(template), ctx_dict),
-            template_name=template,
-        )),
+        CreateFile(
+            file=GeneratedFile(
+                path=out_path,
+                content=renderer.render_string(_tmpl(template), ctx_dict),
+                template_name=template,
+            )
+        ),
     ]
 
     if dry_run:
@@ -105,10 +99,7 @@ def _generate_pipeline_impl(provider: str | None, dry_run: bool) -> None:
         return
 
     created = writer.execute(operations, dry_run=False)
-    console.print(
-        f"[green]✓[/green] Pipeline [bold]{display_name}[/bold] created. "
-        f"Created {len(created)} file(s)."
-    )
+    console.print(f"[green]✓[/green] Pipeline [bold]{display_name}[/bold] created. Created {len(created)} file(s).")
 
 
 def register(app: typer.Typer) -> None:

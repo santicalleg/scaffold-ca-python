@@ -19,9 +19,7 @@ def _update_project_impl(dry_run: bool) -> None:
     try:
         project_root = find_project_root()
     except ScaffoldError:
-        console.print(
-            "[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first."
-        )
+        console.print("[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first.")
         raise typer.Exit(code=1) from None
 
     lock_cmd = ["uv", "lock", "--upgrade"]
@@ -37,8 +35,7 @@ def _update_project_impl(dry_run: bool) -> None:
         subprocess.run(lock_cmd, check=True, cwd=project_root)
     except FileNotFoundError:
         console.print(
-            "[red]Error:[/red] 'uv' is not installed or not on PATH. "
-            "Install it from https://docs.astral.sh/uv/"
+            "[red]Error:[/red] 'uv' is not installed or not on PATH. Install it from https://docs.astral.sh/uv/"
         )
         raise typer.Exit(code=1) from None
     except subprocess.CalledProcessError:
@@ -49,8 +46,7 @@ def _update_project_impl(dry_run: bool) -> None:
         subprocess.run(sync_cmd, check=True, cwd=project_root)
     except FileNotFoundError:
         console.print(
-            "[red]Error:[/red] 'uv' is not installed or not on PATH. "
-            "Install it from https://docs.astral.sh/uv/"
+            "[red]Error:[/red] 'uv' is not installed or not on PATH. Install it from https://docs.astral.sh/uv/"
         )
         raise typer.Exit(code=1) from None
     except subprocess.CalledProcessError:

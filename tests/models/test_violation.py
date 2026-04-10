@@ -21,6 +21,7 @@ def _make_violation() -> Violation:
 # Violation
 # ---------------------------------------------------------------------------
 
+
 def test_violation_fields_populated() -> None:
     v = _make_violation()
     assert v.source_file == Path("/tmp/project/domain/model/order.py")
@@ -39,6 +40,7 @@ def test_violation_line_number_is_one_based() -> None:
 # ---------------------------------------------------------------------------
 # ValidationReport
 # ---------------------------------------------------------------------------
+
 
 def test_validation_report_passed_when_no_violations() -> None:
     report = ValidationReport(

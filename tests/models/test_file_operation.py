@@ -11,6 +11,7 @@ from scaffold_ca_python.models.file_operation import CreateFile, DeleteFile, Fil
 # GeneratedFile
 # ---------------------------------------------------------------------------
 
+
 def test_generated_file_fields() -> None:
     gf = GeneratedFile(
         path=Path("/tmp/project/domain/model/order.py"),
@@ -42,6 +43,7 @@ def test_generated_file_requires_path() -> None:
 # CreateFile
 # ---------------------------------------------------------------------------
 
+
 def test_create_file_kind_discriminator() -> None:
     gf = GeneratedFile(
         path=Path("/tmp/x.py"),
@@ -62,6 +64,7 @@ def test_create_file_has_file_field() -> None:
 # DeleteFile
 # ---------------------------------------------------------------------------
 
+
 def test_delete_file_kind_discriminator() -> None:
     op = DeleteFile(path=Path("/tmp/x.py"))
     assert op.kind == "delete"
@@ -76,6 +79,7 @@ def test_delete_file_has_path_field() -> None:
 # ---------------------------------------------------------------------------
 # FileOperation union
 # ---------------------------------------------------------------------------
+
 
 def test_file_operation_is_union() -> None:
     gf = GeneratedFile(path=Path("/tmp/x.py"), content="", template_name="t.jinja2")

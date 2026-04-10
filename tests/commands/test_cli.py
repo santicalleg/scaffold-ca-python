@@ -11,6 +11,7 @@ runner = CliRunner()
 # US1: root --help listing (T005)
 # ---------------------------------------------------------------------------
 
+
 def test_root_help_shows_clean_architecture() -> None:
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0

@@ -89,25 +89,19 @@ def test_azure_pipeline_contains_pytest(project_root: Path) -> None:
 
 
 def test_dry_run_github_writes_nothing(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gpipe", "--provider", "github", "--dry-run"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["gpipe", "--provider", "github", "--dry-run"], catch_exceptions=False)
     assert result.exit_code == 0
     assert not (project_root / ".github" / "workflows" / "ci.yml").exists()
 
 
 def test_dry_run_github_prints_path(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gpipe", "--provider", "github", "--dry-run"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["gpipe", "--provider", "github", "--dry-run"], catch_exceptions=False)
     assert result.exit_code == 0
     assert "ci.yml" in result.output
 
 
 def test_dry_run_azure_writes_nothing(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gpipe", "--provider", "azure", "--dry-run"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["gpipe", "--provider", "azure", "--dry-run"], catch_exceptions=False)
     assert result.exit_code == 0
     assert not (project_root / "azure-pipelines.yml").exists()
 

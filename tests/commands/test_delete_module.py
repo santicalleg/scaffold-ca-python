@@ -99,9 +99,7 @@ def test_confirm_prints_deleted(project_root: Path) -> None:
 
 def test_dry_run_with_confirm_takes_precedence(project_root: Path) -> None:
     model_file = project_root / "src" / "my_app" / "domain" / "model" / "order.py"
-    result = runner.invoke(
-        app, ["dm", "--name", "Order", "--confirm", "--dry-run"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["dm", "--name", "Order", "--confirm", "--dry-run"], catch_exceptions=False)
     assert result.exit_code == 0
     assert model_file.exists()
 
@@ -112,24 +110,15 @@ def test_dry_run_with_confirm_takes_precedence(project_root: Path) -> None:
 
 
 def test_confirm_deletes_helper_dir(project_root_with_helper: Path) -> None:
-    result = runner.invoke(
-        app, ["dm", "--name", "LogHelper", "--confirm"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["dm", "--name", "LogHelper", "--confirm"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert not (
-        project_root_with_helper / "src" / "my_app" / "infrastructure" / "helpers" / "log_helper"
-    ).exists()
+    assert not (project_root_with_helper / "src" / "my_app" / "infrastructure" / "helpers" / "log_helper").exists()
 
 
 def test_confirm_deletes_helper_test_file(project_root_with_helper: Path) -> None:
     runner.invoke(app, ["dm", "--name", "LogHelper", "--confirm"], catch_exceptions=False)
     assert not (
-        project_root_with_helper
-        / "tests"
-        / "infrastructure"
-        / "helpers"
-        / "log_helper"
-        / "test_log_helper.py"
+        project_root_with_helper / "tests" / "infrastructure" / "helpers" / "log_helper" / "test_log_helper.py"
     ).exists()
 
 

@@ -58,12 +58,105 @@ def swagger_file(tmp_path: Path) -> Path:
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# US1 — application/app.py emitted (T002)
+# ---------------------------------------------------------------------------
+
+
+def test_restapi_creates_app_py(project_root: Path) -> None:
+    result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    assert result.exit_code == 0
+    assert (project_root / "src" / "my_app" / "application" / "app.py").exists()
+
+
+# ---------------------------------------------------------------------------
+# US2 — server.py is thin wrapper (T010)
+# ---------------------------------------------------------------------------
+
+
+def test_restapi_server_py_is_thin_wrapper(project_root: Path) -> None:
+    result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    assert result.exit_code == 0
+    content = (project_root / "src" / "my_app" / "server.py").read_text()
+    assert "FastAPI" not in content
+    meaningful_lines = [ln for ln in content.splitlines() if ln.strip() and not ln.strip().startswith("#")]
+    assert len(meaningful_lines) <= 5
+
+
+# ---------------------------------------------------------------------------
+# US3 — no main.py emitted for restapi (T015, T016, T016c)
+# ---------------------------------------------------------------------------
+
+
+def test_restapi_no_main_py(project_root: Path) -> None:
+    # main.py is created by scaffold ca; gep --type restapi must not create it if absent
+    (project_root / "src" / "my_app" / "main.py").unlink(missing_ok=True)
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    assert not (project_root / "src" / "my_app" / "main.py").exists()
+
+
+def test_restapi_dry_run_includes_app_py_not_main(project_root: Path) -> None:
+    result = runner.invoke(app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False)
+    assert result.exit_code == 0
+    assert "app.py" in result.output
+    # main.py must not appear as a created file in dry-run output
+    assert "main.py" not in result.output
+
+
+def test_restapi_gep_twice_does_not_overwrite_app_py(project_root: Path) -> None:
+    import shutil
+
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    app_py = project_root / "src" / "my_app" / "application" / "app.py"
+    original_content = app_py.read_text()
+
+    # Clean up so gep can run a second time
+    shutil.rmtree(project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api")
+    shutil.rmtree(project_root / "tests" / "infrastructure" / "entry_points" / "api", ignore_errors=True)
+    (project_root / "src" / "my_app" / "server.py").unlink(missing_ok=True)
+    (project_root / "tests" / "application" / "test_app.py").unlink(missing_ok=True)
+    app_py.unlink(missing_ok=True)
+
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    assert app_py.read_text() == original_content
+
+
+# ---------------------------------------------------------------------------
+# US4 — test files emitted by gep --type restapi (T018–T021)
+# ---------------------------------------------------------------------------
+
+
+def test_restapi_creates_test_app(project_root: Path) -> None:
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    assert (project_root / "tests" / "application" / "test_app.py").exists()
+
+
+def test_restapi_creates_test_server(project_root: Path) -> None:
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    assert (project_root / "tests" / "infrastructure" / "entry_points" / "api" / "v1" / "test_server.py").exists()
+
+
+def test_restapi_creates_test_exception_handler(project_root: Path) -> None:
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    assert (
+        project_root / "tests" / "infrastructure" / "entry_points" / "api" / "v1" / "test_exception_handler.py"
+    ).exists()
+
+
+def test_restapi_creates_test_schemas(project_root: Path) -> None:
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    assert (project_root / "tests" / "infrastructure" / "entry_points" / "api" / "v1" / "test_schemas.py").exists()
+
+
+# ---------------------------------------------------------------------------
+# Existing file-existence tests
+# ---------------------------------------------------------------------------
+
+
 def test_restapi_creates_init(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "__init__.py"
-    ).exists()
+    assert (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "__init__.py").exists()
 
 
 def test_restapi_creates_rest_controller(project_root: Path) -> None:
@@ -85,9 +178,7 @@ def test_restapi_creates_exception_handler(project_root: Path) -> None:
 def test_restapi_creates_schemas(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "schemas.py"
-    ).exists()
+    assert (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "schemas.py").exists()
 
 
 def test_restapi_creates_server_py(project_root: Path) -> None:
@@ -129,7 +220,8 @@ def test_restapi_dry_run_lists_all_planned_files_and_writes_nothing(project_root
 
 def test_swagger_injects_routes(project_root: Path, swagger_file: Path) -> None:
     result = runner.invoke(
-        app, ["gep", "--type", "restapi", "--swagger", str(swagger_file)],
+        app,
+        ["gep", "--type", "restapi", "--swagger", str(swagger_file)],
         catch_exceptions=False,
     )
     assert result.exit_code == 0
@@ -137,7 +229,8 @@ def test_swagger_injects_routes(project_root: Path, swagger_file: Path) -> None:
 
 def test_swagger_schemas_contains_routes(project_root: Path, swagger_file: Path) -> None:
     runner.invoke(
-        app, ["gep", "--type", "restapi", "--swagger", str(swagger_file)],
+        app,
+        ["gep", "--type", "restapi", "--swagger", str(swagger_file)],
         catch_exceptions=False,
     )
     content = (
@@ -155,54 +248,38 @@ def test_swagger_schemas_contains_routes(project_root: Path, swagger_file: Path)
 def test_agent_creates_init(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "agent"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "agent" / "__init__.py"
-    ).exists()
+    assert (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "agent" / "__init__.py").exists()
 
 
 def test_agent_creates_agent_file(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "agent"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "agent" / "agent.py"
-    ).exists()
+    assert (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "agent" / "agent.py").exists()
 
 
 def test_agent_creates_card_file(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "agent"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "agent" / "card.py"
-    ).exists()
+    assert (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "agent" / "card.py").exists()
 
 
 def test_agent_creates_test(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "agent"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root / "tests" / "infrastructure" / "entry_points" / "agent" / "test_agent.py"
-    ).exists()
+    assert (project_root / "tests" / "infrastructure" / "entry_points" / "agent" / "test_agent.py").exists()
 
 
 def test_agent_with_enable_kafka(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gep", "--type", "agent", "--enable-kafka"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["gep", "--type", "agent", "--enable-kafka"], catch_exceptions=False)
     assert result.exit_code == 0
-    content = (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "agent" / "agent.py"
-    ).read_text()
+    content = (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "agent" / "agent.py").read_text()
     assert "kafka" in content.lower() or "Kafka" in content
 
 
 def test_agent_with_enable_mcp_client(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gep", "--type", "agent", "--enable-mcp-client"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["gep", "--type", "agent", "--enable-mcp-client"], catch_exceptions=False)
     assert result.exit_code == 0
-    content = (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "agent" / "agent.py"
-    ).read_text()
+    content = (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "agent" / "agent.py").read_text()
     assert "mcp" in content.lower() or "MCP" in content
 
 
@@ -214,42 +291,19 @@ def test_agent_with_enable_mcp_client(project_root: Path) -> None:
 def test_mcp_creates_init(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root
-        / "src"
-        / "my_app"
-        / "infrastructure"
-        / "entry_points"
-        / "mcp_server"
-        / "__init__.py"
-    ).exists()
+    assert (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "mcp_server" / "__init__.py").exists()
 
 
 def test_mcp_creates_server(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root
-        / "src"
-        / "my_app"
-        / "infrastructure"
-        / "entry_points"
-        / "mcp_server"
-        / "server.py"
-    ).exists()
+    assert (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "mcp_server" / "server.py").exists()
 
 
 def test_mcp_creates_test(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root
-        / "tests"
-        / "infrastructure"
-        / "entry_points"
-        / "mcp_server"
-        / "test_server.py"
-    ).exists()
+    assert (project_root / "tests" / "infrastructure" / "entry_points" / "mcp_server" / "test_server.py").exists()
 
 
 # ---------------------------------------------------------------------------
@@ -260,25 +314,19 @@ def test_mcp_creates_test(project_root: Path) -> None:
 def test_generic_creates_init(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "generic"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "generic" / "__init__.py"
-    ).exists()
+    assert (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "generic" / "__init__.py").exists()
 
 
 def test_generic_creates_handler(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "generic"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "generic" / "entry_point.py"
-    ).exists()
+    assert (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "generic" / "entry_point.py").exists()
 
 
 def test_generic_creates_test(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "generic"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root / "tests" / "infrastructure" / "entry_points" / "generic" / "test_entry_point.py"
-    ).exists()
+    assert (project_root / "tests" / "infrastructure" / "entry_points" / "generic" / "test_entry_point.py").exists()
 
 
 # ---------------------------------------------------------------------------
@@ -287,9 +335,7 @@ def test_generic_creates_test(project_root: Path) -> None:
 
 
 def test_generate_entry_point_alias_works(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["generate-entry-point", "--type", "restapi"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["generate-entry-point", "--type", "restapi"], catch_exceptions=False)
     assert result.exit_code == 0
 
 
@@ -299,9 +345,7 @@ def test_generate_entry_point_alias_works(project_root: Path) -> None:
 
 
 def test_dry_run_writes_nothing(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False)
     assert result.exit_code == 0
     assert not (
         project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "rest_controller.py"
@@ -309,9 +353,7 @@ def test_dry_run_writes_nothing(project_root: Path) -> None:
 
 
 def test_dry_run_prints_paths(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False)
     assert "api" in result.output or "v1" in result.output or "server.py" in result.output
 
 
@@ -327,17 +369,13 @@ def test_unknown_type_exits_1(project_root: Path) -> None:
 
 
 def test_swagger_without_restapi_exits_1(project_root: Path, swagger_file: Path) -> None:
-    result = runner.invoke(
-        app, ["gep", "--type", "agent", "--swagger", str(swagger_file)]
-    )
+    result = runner.invoke(app, ["gep", "--type", "agent", "--swagger", str(swagger_file)])
     assert result.exit_code == 1
     assert "--swagger" in result.output
 
 
 def test_swagger_missing_file_exits_1(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gep", "--type", "restapi", "--swagger", "/nonexistent/spec.yaml"]
-    )
+    result = runner.invoke(app, ["gep", "--type", "restapi", "--swagger", "/nonexistent/spec.yaml"])
     assert result.exit_code == 1
     assert "not found" in result.output.lower() or "spec.yaml" in result.output
 
@@ -361,18 +399,8 @@ def test_no_project_root_exits_1(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 
 
 # ---------------------------------------------------------------------------
-# US3: main.py overwritten + warning
+# US3: main.py overwritten (agent / mcp / generic only)
 # ---------------------------------------------------------------------------
-
-
-def test_restapi_overwrites_main_py(project_root: Path) -> None:
-    main_py = project_root / "src" / "my_app" / "main.py"
-    assert main_py.exists(), "scaffold ca must create main.py first"
-    original = main_py.read_text()
-    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
-    updated = main_py.read_text()
-    assert updated != original
-    assert "uvicorn" in updated
 
 
 def test_agent_overwrites_main_py(project_root: Path) -> None:
@@ -399,16 +427,11 @@ def test_generic_overwrites_main_py(project_root: Path) -> None:
     assert "asyncio" in content
 
 
-def test_gep_prints_main_py_warning(project_root: Path) -> None:
-    result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
-    assert "main.py" in result.output
-
-
-def test_dry_run_does_not_overwrite_main_py(project_root: Path) -> None:
-    main_py = project_root / "src" / "my_app" / "main.py"
-    original = main_py.read_text()
+def test_dry_run_does_not_create_main_py(project_root: Path) -> None:
+    # gep --type restapi never creates main.py, even in real run — confirm dry-run also skips it
+    (project_root / "src" / "my_app" / "main.py").unlink(missing_ok=True)
     runner.invoke(app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False)
-    assert main_py.read_text() == original
+    assert not (project_root / "src" / "my_app" / "main.py").exists()
 
 
 # ---------------------------------------------------------------------------
@@ -437,11 +460,14 @@ def test_mcp_injects_mcp(project_root: Path) -> None:
 
 def test_restapi_inject_is_idempotent(project_root: Path) -> None:
     runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
-    # Remove both src and test dirs and server.py so gep can execute a second time
+    # Remove both src and test dirs, server.py, app.py, and test_app.py so gep can execute a second time
     import shutil
+
     shutil.rmtree(project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api")
     shutil.rmtree(project_root / "tests" / "infrastructure" / "entry_points" / "api", ignore_errors=True)
     (project_root / "src" / "my_app" / "server.py").unlink(missing_ok=True)
+    (project_root / "src" / "my_app" / "application" / "app.py").unlink(missing_ok=True)
+    (project_root / "tests" / "application" / "test_app.py").unlink(missing_ok=True)
     runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
     content = (project_root / "pyproject.toml").read_text()
     assert content.count("fastapi") == 1
@@ -454,9 +480,7 @@ def test_dry_run_does_not_inject_deps(project_root: Path) -> None:
 
 
 def test_dry_run_prints_deps_to_inject(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False)
     assert "fastapi" in result.output or "uvicorn" in result.output
 
 
@@ -478,6 +502,8 @@ def test_gep_restapi_twice_has_exactly_one_fastapi_entry(project_root: Path) -> 
         ignore_errors=True,
     )
     (project_root / "src" / "my_app" / "server.py").unlink(missing_ok=True)
+    (project_root / "src" / "my_app" / "application" / "app.py").unlink(missing_ok=True)
+    (project_root / "tests" / "application" / "test_app.py").unlink(missing_ok=True)
     # Second run
     runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
 

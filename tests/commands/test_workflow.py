@@ -44,22 +44,14 @@ def test_workflow_gm_creates_model(workflow_root: Path) -> None:
 def test_workflow_guc_creates_use_case(workflow_root: Path) -> None:
     result = runner.invoke(app, ["guc", "--name", "CreateOrder"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        workflow_root / "src" / "order_service" / "domain" / "usecase" / "create_order.py"
-    ).exists()
+    assert (workflow_root / "src" / "order_service" / "domain" / "usecase" / "create_order.py").exists()
 
 
 def test_workflow_gda_creates_adapter(workflow_root: Path) -> None:
     result = runner.invoke(app, ["gda", "--type", "rest-consumer"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        workflow_root
-        / "src"
-        / "order_service"
-        / "infrastructure"
-        / "driven_adapters"
-        / "rest_consumer"
-        / "__init__.py"
+        workflow_root / "src" / "order_service" / "infrastructure" / "driven_adapters" / "rest_consumer" / "__init__.py"
     ).exists()
 
 
@@ -67,14 +59,7 @@ def test_workflow_gep_creates_entry_point(workflow_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        workflow_root
-        / "src"
-        / "order_service"
-        / "infrastructure"
-        / "entry_points"
-        / "api"
-        / "v1"
-        / "__init__.py"
+        workflow_root / "src" / "order_service" / "infrastructure" / "entry_points" / "api" / "v1" / "__init__.py"
     ).exists()
 
 

@@ -73,6 +73,7 @@ def _get_python_package(root: Path) -> str:
     section = data.get("tool", {}).get("scaffold-ca-python", {})
     name = section.get("name", root.name)
     import re
+
     s = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", name)
     s = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s)
     return s.lower()
@@ -95,9 +96,7 @@ def _delete_module_impl(name: str, confirm: bool, dry_run: bool) -> None:
     try:
         project_root = find_project_root()
     except ScaffoldError:
-        console.print(
-            "[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first."
-        )
+        console.print("[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first.")
         raise typer.Exit(code=1) from None
 
     snake = to_snake_case(name)

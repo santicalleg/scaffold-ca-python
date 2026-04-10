@@ -28,6 +28,7 @@ def project_root_bench(tmp_path_factory: pytest.TempPathFactory) -> Path:
     runner.invoke(app, ["ca", "--name", "BenchApp"], catch_exceptions=False)
     # ca writes relative to cwd; we need to call from distinct cwd
     import os
+
     orig = os.getcwd()
     os.chdir(tmp)
     runner.invoke(app, ["ca", "--name", "BenchApp"], catch_exceptions=False)
@@ -129,9 +130,7 @@ def large_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     model_dir = project_dir / "src" / "large_app" / "domain" / "model"
     model_dir.mkdir(parents=True, exist_ok=True)
     for i in range(200):
-        (model_dir / f"stub_{i:03d}.py").write_text(
-            f'"""Stub module {i}."""\n\n\nclass Stub{i:03d}:\n    pass\n'
-        )
+        (model_dir / f"stub_{i:03d}.py").write_text(f'"""Stub module {i}."""\n\n\nclass Stub{i:03d}:\n    pass\n')
     return project_dir
 
 

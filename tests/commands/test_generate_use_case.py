@@ -14,6 +14,7 @@ runner = CliRunner()
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture()
 def project_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Bootstrap a minimal CA project root that generate-use-case can work inside."""
@@ -27,6 +28,7 @@ def project_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 # ---------------------------------------------------------------------------
 # Success path
 # ---------------------------------------------------------------------------
+
 
 def test_creates_use_case_file(project_root: Path) -> None:
     result = runner.invoke(app, ["guc", "--name", "CreateOrder"], catch_exceptions=False)
@@ -68,6 +70,7 @@ def test_generate_use_case_alias_works(project_root: Path) -> None:
 # Dry-run
 # ---------------------------------------------------------------------------
 
+
 def test_dry_run_writes_nothing(project_root: Path) -> None:
     result = runner.invoke(app, ["guc", "--name", "CreateOrder", "--dry-run"], catch_exceptions=False)
     assert result.exit_code == 0
@@ -82,6 +85,7 @@ def test_dry_run_prints_paths(project_root: Path) -> None:
 # ---------------------------------------------------------------------------
 # Error cases
 # ---------------------------------------------------------------------------
+
 
 def test_duplicate_use_case_exits_1(project_root: Path) -> None:
     runner.invoke(app, ["guc", "--name", "CreateOrder"], catch_exceptions=False)

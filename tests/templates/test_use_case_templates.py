@@ -18,11 +18,7 @@ def _ctx() -> ModuleContext:
 
 
 def _tmpl(name: str) -> str:
-    return (
-        importlib.resources.files("scaffold_ca_python.templates")
-        .joinpath(name)
-        .read_text(encoding="utf-8")
-    )
+    return importlib.resources.files("scaffold_ca_python.templates").joinpath(name).read_text(encoding="utf-8")
 
 
 def test_use_case_class_name_present() -> None:

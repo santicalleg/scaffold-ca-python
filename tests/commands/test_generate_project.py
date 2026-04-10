@@ -14,6 +14,7 @@ runner = CliRunner()
 # Success path
 # ---------------------------------------------------------------------------
 
+
 def test_creates_project_directory(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     result = runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
@@ -121,6 +122,7 @@ def test_package_flag_is_not_accepted(tmp_path: Path, monkeypatch: pytest.Monkey
 # US1: clean-architecture command (T003)
 # ---------------------------------------------------------------------------
 
+
 def test_clean_architecture_creates_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     result = runner.invoke(app, ["clean-architecture", "--name", "Demo"], catch_exceptions=False)
@@ -155,7 +157,8 @@ def test_ca_help_identical_to_clean_architecture_help() -> None:
         lines = output.splitlines()
         return "\n".join(
             line.replace(" ca ", " <CMD> ").replace(" clean-architecture ", " <CMD> ").rstrip()
-            if "Usage:" in line else line.rstrip()
+            if "Usage:" in line
+            else line.rstrip()
             for line in lines
         )
 
@@ -165,6 +168,7 @@ def test_ca_help_identical_to_clean_architecture_help() -> None:
 # ---------------------------------------------------------------------------
 # US1: ca alias and generate-project tombstone (T004)
 # ---------------------------------------------------------------------------
+
 
 def test_ca_alias_creates_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
@@ -195,6 +199,7 @@ def test_creates_tests_init(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> 
 # Dry-run
 # ---------------------------------------------------------------------------
 
+
 def test_dry_run_writes_nothing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     result = runner.invoke(app, ["ca", "--name", "DryProject", "--dry-run"], catch_exceptions=False)
@@ -211,6 +216,7 @@ def test_dry_run_prints_file_list(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
 # ---------------------------------------------------------------------------
 # Error cases
 # ---------------------------------------------------------------------------
+
 
 def test_duplicate_project_exits_1(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)

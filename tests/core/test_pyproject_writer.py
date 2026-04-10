@@ -11,6 +11,7 @@ from scaffold_ca_python.core.pyproject_writer import dry_run_inject, inject_depe
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 def _make_pyproject(tmp_path: Path, deps: list[str] | None = None) -> Path:
     """Write a minimal pyproject.toml with optional pre-existing dependencies."""
     existing = deps if deps is not None else []
@@ -53,6 +54,7 @@ def _read_deps(pyproject: Path) -> list[str]:
 # ---------------------------------------------------------------------------
 # inject_dependencies — writes
 # ---------------------------------------------------------------------------
+
 
 def test_inject_adds_new_package(tmp_path: Path) -> None:
     pyproject = _make_pyproject(tmp_path)
@@ -122,6 +124,7 @@ def test_inject_preserves_existing_dependencies(tmp_path: Path) -> None:
 # dry_run_inject — never writes
 # ---------------------------------------------------------------------------
 
+
 def test_dry_run_returns_packages_that_would_be_added(tmp_path: Path) -> None:
     _make_pyproject(tmp_path)
     would_add = dry_run_inject(tmp_path, ["fastapi>=0.100", "uvicorn[standard]>=0.20"])
@@ -150,6 +153,7 @@ def test_dry_run_with_empty_packages_returns_empty(tmp_path: Path) -> None:
 # ---------------------------------------------------------------------------
 # Error handling
 # ---------------------------------------------------------------------------
+
 
 def test_malformed_toml_raises_on_inject(tmp_path: Path) -> None:
     bad = tmp_path / "pyproject.toml"

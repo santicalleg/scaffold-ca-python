@@ -13,11 +13,7 @@ def _ctx() -> ProjectContext:
 
 
 def _tmpl(name: str) -> str:
-    return (
-        importlib.resources.files("scaffold_ca_python.templates")
-        .joinpath(name)
-        .read_text(encoding="utf-8")
-    )
+    return importlib.resources.files("scaffold_ca_python.templates").joinpath(name).read_text(encoding="utf-8")
 
 
 def _render(path: str) -> str:
@@ -25,6 +21,7 @@ def _render(path: str) -> str:
 
 
 # --- project/main.py.jinja2 (default Hello World) -------------------------
+
 
 def test_default_main_has_def_main() -> None:
     out = _render("project/main.py.jinja2")
@@ -43,6 +40,7 @@ def test_default_main_has_name_guard() -> None:
 
 # --- restapi entrypoint_main.py -------------------------------------------
 
+
 def test_restapi_main_has_def_main() -> None:
     out = _render("entry_point/restapi/entrypoint_main.py.jinja2")
     assert "def main" in out
@@ -55,13 +53,12 @@ def test_restapi_main_has_uvicorn() -> None:
 
 def test_restapi_main_uses_python_package() -> None:
     ctx = _ctx()
-    out = renderer.render_string(
-        _tmpl("entry_point/restapi/entrypoint_main.py.jinja2"), ctx.model_dump()
-    )
+    out = renderer.render_string(_tmpl("entry_point/restapi/entrypoint_main.py.jinja2"), ctx.model_dump())
     assert ctx.python_package in out
 
 
 # --- agent entrypoint_main.py ---------------------------------------------
+
 
 def test_agent_main_has_def_main() -> None:
     out = _render("entry_point/agent/entrypoint_main.py.jinja2")
@@ -75,6 +72,7 @@ def test_agent_main_uses_asyncio() -> None:
 
 # --- mcp entrypoint_main.py -----------------------------------------------
 
+
 def test_mcp_main_has_def_main() -> None:
     out = _render("entry_point/mcp/entrypoint_main.py.jinja2")
     assert "def main" in out
@@ -86,6 +84,7 @@ def test_mcp_main_uses_asyncio() -> None:
 
 
 # --- generic entrypoint_main.py -------------------------------------------
+
 
 def test_generic_main_has_def_main() -> None:
     out = _render("entry_point/generic/entrypoint_main.py.jinja2")

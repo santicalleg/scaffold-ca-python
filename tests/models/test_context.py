@@ -10,6 +10,7 @@ from scaffold_ca_python.models.layer import Layer
 # ProjectContext
 # ---------------------------------------------------------------------------
 
+
 def test_project_context_valid() -> None:
     ctx = ProjectContext(name="MyProject")
     assert ctx.name == "MyProject"
@@ -54,6 +55,7 @@ def test_project_context_name_allows_underscores() -> None:
 # ---------------------------------------------------------------------------
 # ModuleContext
 # ---------------------------------------------------------------------------
+
 
 def _make_project() -> ProjectContext:
     return ProjectContext(name="MyProject")

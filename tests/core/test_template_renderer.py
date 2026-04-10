@@ -13,6 +13,7 @@ from scaffold_ca_python.models.layer import Layer
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture()
 def renderer() -> TemplateRenderer:
     return TemplateRenderer()
@@ -32,6 +33,7 @@ def module_ctx(project_ctx: ProjectContext) -> ModuleContext:
 # Loading from importlib.resources
 # ---------------------------------------------------------------------------
 
+
 def test_renderer_instantiates(renderer: TemplateRenderer) -> None:
     assert renderer is not None
 
@@ -44,6 +46,7 @@ def test_raises_on_missing_template(renderer: TemplateRenderer, project_ctx: Pro
 # ---------------------------------------------------------------------------
 # Rendering with context
 # ---------------------------------------------------------------------------
+
 
 def test_render_returns_string(renderer: TemplateRenderer, tmp_path: Path) -> None:
     """Use a real template from the package to verify rendering works."""
@@ -93,6 +96,7 @@ def test_render_string_exposes_computed_module_name(renderer: TemplateRenderer, 
 # ---------------------------------------------------------------------------
 # Edge cases
 # ---------------------------------------------------------------------------
+
 
 def test_render_string_empty_template(renderer: TemplateRenderer) -> None:
     assert renderer.render_string("", {}) == ""

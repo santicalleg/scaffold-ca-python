@@ -11,6 +11,7 @@ from scaffold_ca_python.core.project_detector import find_project_root
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_pyproject(directory: Path, *, with_section: bool) -> Path:
     """Write a minimal pyproject.toml into *directory*."""
     content = "[project]\nname = 'test'\n"
@@ -30,6 +31,7 @@ def _make_ca_layout(directory: Path) -> None:
 # ---------------------------------------------------------------------------
 # Detection via [tool.scaffold-ca-python] section
 # ---------------------------------------------------------------------------
+
 
 def test_finds_root_in_cwd(tmp_path: Path) -> None:
     _make_pyproject(tmp_path, with_section=True)
@@ -55,6 +57,7 @@ def test_ignores_pyproject_without_section(tmp_path: Path) -> None:
 # Fallback to CA directory layout
 # ---------------------------------------------------------------------------
 
+
 def test_fallback_to_ca_directories(tmp_path: Path) -> None:
     # No pyproject.toml with section, but has CA directories
     _make_ca_layout(tmp_path)
@@ -71,6 +74,7 @@ def test_fallback_ca_directories_in_parent(tmp_path: Path) -> None:
 # ---------------------------------------------------------------------------
 # Error case
 # ---------------------------------------------------------------------------
+
 
 def test_raises_when_neither_found(tmp_path: Path) -> None:
     # Empty directory, no pyproject.toml with section, no CA layout

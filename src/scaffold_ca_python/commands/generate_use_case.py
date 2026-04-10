@@ -34,30 +34,15 @@ def _generate_use_case_impl(name: str, dry_run: bool) -> None:
     try:
         project_root = find_project_root()
     except ScaffoldError:
-        console.print(
-            "[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first."
-        )
+        console.print("[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first.")
         raise typer.Exit(code=1) from None
 
     project_ctx = _load_project_context(project_root)
     module_ctx = ModuleContext(name=name, layer=Layer.DOMAIN_USECASE, project=project_ctx)
 
     snake = to_snake_case(name)
-    src_path = (
-        project_root
-        / "src"
-        / project_ctx.python_package
-        / "domain"
-        / "usecase"
-        / f"{snake}.py"
-    )
-    test_path = (
-        project_root
-        / "tests"
-        / "domain"
-        / "usecase"
-        / f"test_{snake}.py"
-    )
+    src_path = project_root / "src" / project_ctx.python_package / "domain" / "usecase" / f"{snake}.py"
+    test_path = project_root / "tests" / "domain" / "usecase" / f"test_{snake}.py"
 
     if src_path.exists() or test_path.exists():
         existing = src_path if src_path.exists() else test_path
@@ -70,17 +55,21 @@ def _generate_use_case_impl(name: str, dry_run: bool) -> None:
 
     ctx_dict = module_ctx.model_dump()
     operations: list[FileOperation] = [
-        CreateFile(file=GeneratedFile(
-            path=src_path,
-            content=renderer.render_string(_tmpl("use_case/use_case.py.jinja2"), ctx_dict),
-            template_name="use_case/use_case.py.jinja2",
-        )),
-        CreateFile(file=GeneratedFile(
-            path=test_path,
-            content=renderer.render_string(_tmpl("use_case/test_use_case.py.jinja2"), ctx_dict),
-            template_name="use_case/test_use_case.py.jinja2",
-            is_test=True,
-        )),
+        CreateFile(
+            file=GeneratedFile(
+                path=src_path,
+                content=renderer.render_string(_tmpl("use_case/use_case.py.jinja2"), ctx_dict),
+                template_name="use_case/use_case.py.jinja2",
+            )
+        ),
+        CreateFile(
+            file=GeneratedFile(
+                path=test_path,
+                content=renderer.render_string(_tmpl("use_case/test_use_case.py.jinja2"), ctx_dict),
+                template_name="use_case/test_use_case.py.jinja2",
+                is_test=True,
+            )
+        ),
     ]
 
     if dry_run:

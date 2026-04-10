@@ -59,20 +59,23 @@ def _generate_project_impl(
     operations: list[FileOperation] = []
 
     # --- Config files at project root ----------------------------------------
-    _add(operations, target_dir / "pyproject.toml",
-         renderer.render_string(_tmpl("project/pyproject_toml.jinja2"), ctx_dict))
-    _add(operations, target_dir / "README.md",
-         renderer.render_string(_tmpl("project/README.jinja2"), ctx_dict))
-    _add(operations, target_dir / ".gitignore",
-         renderer.render_string(_tmpl("project/gitignore.jinja2"), ctx_dict))
-    _add(operations, target_dir / "mypy.ini",
-         renderer.render_string(_tmpl("project/mypy_ini.jinja2"), ctx_dict))
-    _add(operations, target_dir / "Dockerfile",
-         renderer.render_string(_tmpl("project/dockerfile.jinja2"), ctx_dict))
-    _add(operations, target_dir / ".dockerignore",
-         renderer.render_string(_tmpl("project/dockerignore.jinja2"), ctx_dict))
-    _add(operations, target_dir / ".python-version",
-         renderer.render_string(_tmpl("project/python_version.jinja2"), ctx_dict))
+    _add(
+        operations,
+        target_dir / "pyproject.toml",
+        renderer.render_string(_tmpl("project/pyproject_toml.jinja2"), ctx_dict),
+    )
+    _add(operations, target_dir / "README.md", renderer.render_string(_tmpl("project/README.jinja2"), ctx_dict))
+    _add(operations, target_dir / ".gitignore", renderer.render_string(_tmpl("project/gitignore.jinja2"), ctx_dict))
+    _add(operations, target_dir / "mypy.ini", renderer.render_string(_tmpl("project/mypy_ini.jinja2"), ctx_dict))
+    _add(operations, target_dir / "Dockerfile", renderer.render_string(_tmpl("project/dockerfile.jinja2"), ctx_dict))
+    _add(
+        operations, target_dir / ".dockerignore", renderer.render_string(_tmpl("project/dockerignore.jinja2"), ctx_dict)
+    )
+    _add(
+        operations,
+        target_dir / ".python-version",
+        renderer.render_string(_tmpl("project/python_version.jinja2"), ctx_dict),
+    )
 
     # --- DI config files -----------------------------------------------------
     _di_cfg = target_dir / "src" / python_pkg / "application" / "config"
@@ -91,12 +94,14 @@ def _generate_project_impl(
         )
 
     # --- src/<pkg>/main.py ---------------------------------------------------
-    _add(operations, target_dir / "src" / python_pkg / "main.py",
-         renderer.render_string(_tmpl("project/main.py.jinja2"), ctx_dict))
+    _add(
+        operations,
+        target_dir / "src" / python_pkg / "main.py",
+        renderer.render_string(_tmpl("project/main.py.jinja2"), ctx_dict),
+    )
 
     # --- src/<pkg>/__init__.py ------------------------------------------------
-    _add(operations, target_dir / "src" / python_pkg / "__init__.py",
-         f'"""{name} package."""\n')
+    _add(operations, target_dir / "src" / python_pkg / "__init__.py", f'"""{name} package."""\n')
 
     # --- Layer __init__.py stubs ---------------------------------------------
     for layer_path, layer_label in _LAYER_DIRS:
@@ -120,8 +125,7 @@ def _generate_project_impl(
 
     created = writer.execute(operations, dry_run=False)
     console.print(
-        f"[green]✓[/green] Project [bold]{python_pkg}/[/bold] created successfully. "
-        f"Created {len(created)} file(s)."
+        f"[green]✓[/green] Project [bold]{python_pkg}/[/bold] created successfully. Created {len(created)} file(s)."
     )
 
 
@@ -159,12 +163,17 @@ def register(app: typer.Typer) -> None:
             raise typer.Exit(0)
         _generate_project_impl(name, dry_run)
 
-    @app.command("ca", hidden=True, help="Scaffold a new CA project. Alias: ca",
-                 epilog="Example: scaffold clean-architecture --name OrderService")
+    @app.command(
+        "ca",
+        hidden=True,
+        help="Scaffold a new CA project. Alias: ca",
+        epilog="Example: scaffold clean-architecture --name OrderService",
+    )
     def ca(
         ctx: typer.Context,
-        name: Annotated[str, typer.Option("--name", help="Project name (PascalCase or snake_case).",
-                                          rich_help_panel="Required")] = None,
+        name: Annotated[
+            str, typer.Option("--name", help="Project name (PascalCase or snake_case).", rich_help_panel="Required")
+        ] = None,
         dry_run: Annotated[
             bool,
             typer.Option(
@@ -181,6 +190,7 @@ def register(app: typer.Typer) -> None:
             raise typer.Exit(0)
         _generate_project_impl(name, dry_run)
 
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -193,5 +203,6 @@ def _add(operations: list[FileOperation], path: Path, content: str) -> None:
 def _tmpl(name: str) -> str:
     """Read a bundled template source string via the renderer's resource loader."""
     import importlib.resources
+
     ref = importlib.resources.files("scaffold_ca_python.templates").joinpath(name)
     return ref.read_text(encoding="utf-8")

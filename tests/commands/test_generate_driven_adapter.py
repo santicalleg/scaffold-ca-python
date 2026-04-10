@@ -34,13 +34,7 @@ def test_rest_consumer_creates_init(project_root: Path) -> None:
     result = runner.invoke(app, ["gda", "--type", "rest-consumer"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root
-        / "src"
-        / "my_app"
-        / "infrastructure"
-        / "driven_adapters"
-        / "rest_consumer"
-        / "__init__.py"
+        project_root / "src" / "my_app" / "infrastructure" / "driven_adapters" / "rest_consumer" / "__init__.py"
     ).exists()
 
 
@@ -48,13 +42,7 @@ def test_rest_consumer_creates_impl(project_root: Path) -> None:
     result = runner.invoke(app, ["gda", "--type", "rest-consumer"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root
-        / "src"
-        / "my_app"
-        / "infrastructure"
-        / "driven_adapters"
-        / "rest_consumer"
-        / "rest_consumer.py"
+        project_root / "src" / "my_app" / "infrastructure" / "driven_adapters" / "rest_consumer" / "rest_consumer.py"
     ).exists()
 
 
@@ -62,25 +50,14 @@ def test_rest_consumer_creates_test(project_root: Path) -> None:
     result = runner.invoke(app, ["gda", "--type", "rest-consumer"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root
-        / "tests"
-        / "infrastructure"
-        / "driven_adapters"
-        / "rest_consumer"
-        / "test_rest_consumer.py"
+        project_root / "tests" / "infrastructure" / "driven_adapters" / "rest_consumer" / "test_rest_consumer.py"
     ).exists()
 
 
 def test_rest_consumer_impl_contains_httpx(project_root: Path) -> None:
     runner.invoke(app, ["gda", "--type", "rest-consumer"], catch_exceptions=False)
     content = (
-        project_root
-        / "src"
-        / "my_app"
-        / "infrastructure"
-        / "driven_adapters"
-        / "rest_consumer"
-        / "rest_consumer.py"
+        project_root / "src" / "my_app" / "infrastructure" / "driven_adapters" / "rest_consumer" / "rest_consumer.py"
     ).read_text()
     assert "httpx" in content
 
@@ -93,28 +70,14 @@ def test_rest_consumer_impl_contains_httpx(project_root: Path) -> None:
 def test_secrets_creates_init(project_root: Path) -> None:
     result = runner.invoke(app, ["gda", "--type", "secrets"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root
-        / "src"
-        / "my_app"
-        / "infrastructure"
-        / "driven_adapters"
-        / "secrets"
-        / "__init__.py"
-    ).exists()
+    assert (project_root / "src" / "my_app" / "infrastructure" / "driven_adapters" / "secrets" / "__init__.py").exists()
 
 
 def test_secrets_creates_impl(project_root: Path) -> None:
     result = runner.invoke(app, ["gda", "--type", "secrets"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root
-        / "src"
-        / "my_app"
-        / "infrastructure"
-        / "driven_adapters"
-        / "secrets"
-        / "secrets_adapter.py"
+        project_root / "src" / "my_app" / "infrastructure" / "driven_adapters" / "secrets" / "secrets_adapter.py"
     ).exists()
 
 
@@ -122,12 +85,7 @@ def test_secrets_creates_test(project_root: Path) -> None:
     result = runner.invoke(app, ["gda", "--type", "secrets"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root
-        / "tests"
-        / "infrastructure"
-        / "driven_adapters"
-        / "secrets"
-        / "test_secrets_adapter.py"
+        project_root / "tests" / "infrastructure" / "driven_adapters" / "secrets" / "test_secrets_adapter.py"
     ).exists()
 
 
@@ -137,25 +95,15 @@ def test_secrets_creates_test(project_root: Path) -> None:
 
 
 def test_generic_creates_init(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gda", "--type", "generic", "--name", "CacheStore"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["gda", "--type", "generic", "--name", "CacheStore"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root
-        / "src"
-        / "my_app"
-        / "infrastructure"
-        / "driven_adapters"
-        / "cache_store"
-        / "__init__.py"
+        project_root / "src" / "my_app" / "infrastructure" / "driven_adapters" / "cache_store" / "__init__.py"
     ).exists()
 
 
 def test_generic_creates_impl(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gda", "--type", "generic", "--name", "CacheStore"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["gda", "--type", "generic", "--name", "CacheStore"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
         project_root
@@ -169,24 +117,15 @@ def test_generic_creates_impl(project_root: Path) -> None:
 
 
 def test_generic_creates_test(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gda", "--type", "generic", "--name", "CacheStore"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["gda", "--type", "generic", "--name", "CacheStore"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root
-        / "tests"
-        / "infrastructure"
-        / "driven_adapters"
-        / "cache_store"
-        / "test_cache_store_adapter.py"
+        project_root / "tests" / "infrastructure" / "driven_adapters" / "cache_store" / "test_cache_store_adapter.py"
     ).exists()
 
 
 def test_generic_impl_contains_class_name(project_root: Path) -> None:
-    runner.invoke(
-        app, ["gda", "--type", "generic", "--name", "CacheStore"], catch_exceptions=False
-    )
+    runner.invoke(app, ["gda", "--type", "generic", "--name", "CacheStore"], catch_exceptions=False)
     content = (
         project_root
         / "src"
@@ -205,9 +144,7 @@ def test_generic_impl_contains_class_name(project_root: Path) -> None:
 
 
 def test_generate_driven_adapter_alias_works(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["generate-driven-adapter", "--type", "rest-consumer"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["generate-driven-adapter", "--type", "rest-consumer"], catch_exceptions=False)
     assert result.exit_code == 0
 
 
@@ -217,31 +154,22 @@ def test_generate_driven_adapter_alias_works(project_root: Path) -> None:
 
 
 def test_dry_run_writes_nothing_rest_consumer(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gda", "--type", "rest-consumer", "--dry-run"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["gda", "--type", "rest-consumer", "--dry-run"], catch_exceptions=False)
     assert result.exit_code == 0
     assert not (
-        project_root
-        / "src"
-        / "my_app"
-        / "infrastructure"
-        / "driven_adapters"
-        / "rest_consumer"
-        / "rest_consumer.py"
+        project_root / "src" / "my_app" / "infrastructure" / "driven_adapters" / "rest_consumer" / "rest_consumer.py"
     ).exists()
 
 
 def test_dry_run_prints_paths(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gda", "--type", "rest-consumer", "--dry-run"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["gda", "--type", "rest-consumer", "--dry-run"], catch_exceptions=False)
     assert "rest_consumer" in result.output
 
 
 def test_dry_run_generic_writes_nothing(project_root: Path) -> None:
     result = runner.invoke(
-        app, ["gda", "--type", "generic", "--name", "CacheStore", "--dry-run"],
+        app,
+        ["gda", "--type", "generic", "--name", "CacheStore", "--dry-run"],
         catch_exceptions=False,
     )
     assert result.exit_code == 0
@@ -309,18 +237,15 @@ def test_secrets_injects_boto3(project_root: Path) -> None:
 
 def test_generic_injects_nothing(project_root: Path) -> None:
     original = (project_root / "pyproject.toml").read_text()
-    runner.invoke(
-        app, ["gda", "--type", "generic", "--name", "CacheStore"], catch_exceptions=False
-    )
+    runner.invoke(app, ["gda", "--type", "generic", "--name", "CacheStore"], catch_exceptions=False)
     assert (project_root / "pyproject.toml").read_text() == original
 
 
 def test_rest_consumer_inject_is_idempotent(project_root: Path) -> None:
     runner.invoke(app, ["gda", "--type", "rest-consumer"], catch_exceptions=False)
     import shutil
-    shutil.rmtree(
-        project_root / "src" / "my_app" / "infrastructure" / "driven_adapters" / "rest_consumer"
-    )
+
+    shutil.rmtree(project_root / "src" / "my_app" / "infrastructure" / "driven_adapters" / "rest_consumer")
     shutil.rmtree(
         project_root / "tests" / "infrastructure" / "driven_adapters" / "rest_consumer",
         ignore_errors=True,
@@ -332,16 +257,12 @@ def test_rest_consumer_inject_is_idempotent(project_root: Path) -> None:
 
 def test_dry_run_does_not_inject_deps(project_root: Path) -> None:
     original = (project_root / "pyproject.toml").read_text()
-    runner.invoke(
-        app, ["gda", "--type", "rest-consumer", "--dry-run"], catch_exceptions=False
-    )
+    runner.invoke(app, ["gda", "--type", "rest-consumer", "--dry-run"], catch_exceptions=False)
     assert (project_root / "pyproject.toml").read_text() == original
 
 
 def test_dry_run_prints_deps_to_inject(project_root: Path) -> None:
-    result = runner.invoke(
-        app, ["gda", "--type", "rest-consumer", "--dry-run"], catch_exceptions=False
-    )
+    result = runner.invoke(app, ["gda", "--type", "rest-consumer", "--dry-run"], catch_exceptions=False)
     assert "httpx" in result.output
 
 

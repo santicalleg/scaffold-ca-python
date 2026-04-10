@@ -153,7 +153,7 @@ def test_no_project_root_error_message(tmp_path: Path, monkeypatch: pytest.Monke
 
 
 def test_up_no_args_exits_0(project_root: Path) -> None:
-    with __import__('unittest.mock', fromlist=['patch']).patch(
+    with __import__("unittest.mock", fromlist=["patch"]).patch(
         "scaffold_ca_python.commands.update_project.subprocess.run"
     ):
         result = runner.invoke(app, ["up"], catch_exceptions=False)

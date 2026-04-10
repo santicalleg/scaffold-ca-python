@@ -13,11 +13,7 @@ def _project() -> ProjectContext:
 
 
 def _tmpl(name: str) -> str:
-    return (
-        importlib.resources.files("scaffold_ca_python.templates")
-        .joinpath(name)
-        .read_text(encoding="utf-8")
-    )
+    return importlib.resources.files("scaffold_ca_python.templates").joinpath(name).read_text(encoding="utf-8")
 
 
 # ---------------------------------------------------------------------------
@@ -26,31 +22,23 @@ def _tmpl(name: str) -> str:
 
 
 def test_github_has_ruff_step() -> None:
-    out = renderer.render_string(
-        _tmpl("pipeline/github/ci.yml.jinja2"), _project().model_dump()
-    )
+    out = renderer.render_string(_tmpl("pipeline/github/ci.yml.jinja2"), _project().model_dump())
     assert "ruff" in out
 
 
 def test_github_has_mypy_step() -> None:
-    out = renderer.render_string(
-        _tmpl("pipeline/github/ci.yml.jinja2"), _project().model_dump()
-    )
+    out = renderer.render_string(_tmpl("pipeline/github/ci.yml.jinja2"), _project().model_dump())
     assert "mypy" in out
 
 
 def test_github_has_pytest_with_coverage() -> None:
-    out = renderer.render_string(
-        _tmpl("pipeline/github/ci.yml.jinja2"), _project().model_dump()
-    )
+    out = renderer.render_string(_tmpl("pipeline/github/ci.yml.jinja2"), _project().model_dump())
     assert "pytest" in out
     assert "cov" in out
 
 
 def test_github_has_coverage_gate_80() -> None:
-    out = renderer.render_string(
-        _tmpl("pipeline/github/ci.yml.jinja2"), _project().model_dump()
-    )
+    out = renderer.render_string(_tmpl("pipeline/github/ci.yml.jinja2"), _project().model_dump())
     assert "80" in out
 
 
@@ -60,29 +48,21 @@ def test_github_has_coverage_gate_80() -> None:
 
 
 def test_azure_has_ruff_step() -> None:
-    out = renderer.render_string(
-        _tmpl("pipeline/azure/azure_pipelines.yml.jinja2"), _project().model_dump()
-    )
+    out = renderer.render_string(_tmpl("pipeline/azure/azure_pipelines.yml.jinja2"), _project().model_dump())
     assert "ruff" in out
 
 
 def test_azure_has_mypy_step() -> None:
-    out = renderer.render_string(
-        _tmpl("pipeline/azure/azure_pipelines.yml.jinja2"), _project().model_dump()
-    )
+    out = renderer.render_string(_tmpl("pipeline/azure/azure_pipelines.yml.jinja2"), _project().model_dump())
     assert "mypy" in out
 
 
 def test_azure_has_pytest_with_coverage() -> None:
-    out = renderer.render_string(
-        _tmpl("pipeline/azure/azure_pipelines.yml.jinja2"), _project().model_dump()
-    )
+    out = renderer.render_string(_tmpl("pipeline/azure/azure_pipelines.yml.jinja2"), _project().model_dump())
     assert "pytest" in out
     assert "cov" in out
 
 
 def test_azure_has_coverage_gate_80() -> None:
-    out = renderer.render_string(
-        _tmpl("pipeline/azure/azure_pipelines.yml.jinja2"), _project().model_dump()
-    )
+    out = renderer.render_string(_tmpl("pipeline/azure/azure_pipelines.yml.jinja2"), _project().model_dump())
     assert "80" in out

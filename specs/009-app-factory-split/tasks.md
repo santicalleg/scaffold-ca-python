@@ -37,17 +37,17 @@
 
 ### Tests for User Story 1 *(write first — must fail before T007–T009)*
 
-- [ ] T002 [US1] Add `test_restapi_creates_app_py` — assert `src/my_app/application/app.py` is created by `gep --type restapi` · `tests/commands/test_generate_entry_point.py`
-- [ ] T003 [P] [US1] Add `test_entry_point_restapi_app_has_create_app_factory` — render `app.py.jinja2`, assert `"create_app"` in output · `tests/templates/test_entry_point_templates.py`
-- [ ] T004 [P] [US1] Add `test_entry_point_restapi_app_has_lifespan` — render `app.py.jinja2`, assert `"lifespan"` and `"asynccontextmanager"` in output · `tests/templates/test_entry_point_templates.py`
-- [ ] T005 [P] [US1] Add `test_entry_point_restapi_app_has_container_wiring` — render `app.py.jinja2`, assert `"Container"` and `"wire("` in output · `tests/templates/test_entry_point_templates.py`
-- [ ] T006 [P] [US1] Add `test_entry_point_restapi_app_factory_path_uses_application_app` — render `app.py.jinja2`, assert `"application.app:create_app"` appears in the uvicorn.run call · `tests/templates/test_entry_point_templates.py`
+- [X] T002 [US1] Add `test_restapi_creates_app_py` — assert `src/my_app/application/app.py` is created by `gep --type restapi` · `tests/commands/test_generate_entry_point.py`
+- [X] T003 [P] [US1] Add `test_entry_point_restapi_app_has_create_app_factory` — render `app.py.jinja2`, assert `"create_app"` in output · `tests/templates/test_entry_point_templates.py`
+- [X] T004 [P] [US1] Add `test_entry_point_restapi_app_has_lifespan` — render `app.py.jinja2`, assert `"lifespan"` and `"asynccontextmanager"` in output · `tests/templates/test_entry_point_templates.py`
+- [X] T005 [P] [US1] Add `test_entry_point_restapi_app_has_container_wiring` — render `app.py.jinja2`, assert `"Container"` and `"wire("` in output · `tests/templates/test_entry_point_templates.py`
+- [X] T006 [P] [US1] Add `test_entry_point_restapi_app_factory_path_uses_application_app` — render `app.py.jinja2`, assert `"application.app:create_app"` appears in the uvicorn.run call · `tests/templates/test_entry_point_templates.py`
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Create `app.py.jinja2` — move `lifespan`, `create_app`, `start_server` from `server.py.jinja2` into this new file; update `uvicorn.run` first arg to `"{{ project.python_package }}.application.app:create_app"` · `src/scaffold_ca_python/templates/entry_point/restapi/app.py.jinja2`
-- [ ] T008 [US1] Add `application/app.py` emission — in `_build_operations` restapi branch, add a `CreateFile` operation for `project_root / "src" / pkg / "application" / "app.py"` using `app.py.jinja2` · `src/scaffold_ca_python/commands/generate_entry_point.py`
-- [ ] T009 [P] [US1] Create ms_test reference implementation — copy `lifespan`, `create_app`, `start_server` from `ms_test/server.py` into new file; update uvicorn path to `"ms_test.application.app:create_app"` · `ms_test/src/ms_test/application/app.py`
+- [X] T007 [US1] Create `app.py.jinja2` — move `lifespan`, `create_app`, `start_server` from `server.py.jinja2` into this new file; update `uvicorn.run` first arg to `"{{ project.python_package }}.application.app:create_app"` · `src/scaffold_ca_python/templates/entry_point/restapi/app.py.jinja2`
+- [X] T008 [US1] Add `application/app.py` emission — in `_build_operations` restapi branch, add a `CreateFile` operation for `project_root / "src" / pkg / "application" / "app.py"` using `app.py.jinja2` · `src/scaffold_ca_python/commands/generate_entry_point.py`
+- [X] T009 [P] [US1] Create ms_test reference implementation — copy `lifespan`, `create_app`, `start_server` from `ms_test/server.py` into new file; update uvicorn path to `"ms_test.application.app:create_app"` · `ms_test/src/ms_test/application/app.py`
 
 **Checkpoint**: T002–T006 GREEN · `gep --type restapi` creates `application/app.py` with factory code
 
@@ -61,14 +61,14 @@
 
 ### Tests for User Story 2 *(write first — must fail before T013–T014)*
 
-- [ ] T010 [US2] Add `test_restapi_server_py_is_thin_wrapper` — run `gep`, read `server.py`, assert `"FastAPI"` not in content and content line-count (non-blank, non-comment) ≤ 5 · `tests/commands/test_generate_entry_point.py`
-- [ ] T011 [P] [US2] Add `test_entry_point_restapi_server_is_thin_wrapper` — render `server.py.jinja2`, assert `"FastAPI"` not in output and `"Container"` not in output · `tests/templates/test_entry_point_templates.py`
-- [ ] T012 [P] [US2] Add `test_entry_point_restapi_server_imports_start_server` — render `server.py.jinja2`, assert `"application.app import start_server"` in output · `tests/templates/test_entry_point_templates.py`
+- [X] T010 [US2] Add `test_restapi_server_py_is_thin_wrapper` — run `gep`, read `server.py`, assert `"FastAPI"` not in content and content line-count (non-blank, non-comment) ≤ 5 · `tests/commands/test_generate_entry_point.py`
+- [X] T011 [P] [US2] Add `test_entry_point_restapi_server_is_thin_wrapper` — render `server.py.jinja2`, assert `"FastAPI"` not in output and `"Container"` not in output · `tests/templates/test_entry_point_templates.py`
+- [X] T012 [P] [US2] Add `test_entry_point_restapi_server_imports_start_server` — render `server.py.jinja2`, assert `"application.app import start_server"` in output · `tests/templates/test_entry_point_templates.py`
 
 ### Implementation for User Story 2
 
-- [ ] T013 [US2] Replace full content of `server.py.jinja2` with thin wrapper: module docstring + `from {{ project.python_package }}.application.app import start_server` + blank line + `if __name__ == "__main__": start_server()` · `src/scaffold_ca_python/templates/entry_point/restapi/server.py.jinja2`
-- [ ] T014 [P] [US2] Update ms_test reference `server.py` to thin wrapper — replace body with `from ms_test.application.app import start_server` + `if __name__ == "__main__": start_server()` · `ms_test/src/ms_test/server.py`
+- [X] T013 [US2] Replace full content of `server.py.jinja2` with thin wrapper: module docstring + `from {{ project.python_package }}.application.app import start_server` + blank line + `if __name__ == "__main__": start_server()` · `src/scaffold_ca_python/templates/entry_point/restapi/server.py.jinja2`
+- [X] T014 [P] [US2] Update ms_test reference `server.py` to thin wrapper — replace body with `from ms_test.application.app import start_server` + `if __name__ == "__main__": start_server()` · `ms_test/src/ms_test/server.py`
 
 **Checkpoint**: T010–T012 GREEN · generated `server.py` is thin; imports `start_server` from `application.app`
 
@@ -82,14 +82,14 @@
 
 ### Tests for User Story 3 *(write first — must fail before T016b–T017)*
 
-- [ ] T015 [US3] Add `test_restapi_no_main_py` — run `gep --type restapi`, assert `src/my_app/main.py` does **not** exist · `tests/commands/test_generate_entry_point.py`
-- [ ] T016 [P] [US3] Add `test_restapi_dry_run_includes_app_py_not_main` — run `gep --type restapi --dry-run`, assert `"app.py"` in output and `"main.py"` not in output (as a created file) · `tests/commands/test_generate_entry_point.py`
-- [ ] T016c [US3] Add `test_restapi_gep_twice_does_not_overwrite_app_py` — run `gep --type restapi`, record content of `application/app.py`, run `gep --type restapi` again (expect duplicate-dir error or no-op), assert content unchanged — **covers FR-007 for app.py** · `tests/commands/test_generate_entry_point.py`
+- [X] T015 [US3] Add `test_restapi_no_main_py` — run `gep --type restapi`, assert `src/my_app/main.py` does **not** exist · `tests/commands/test_generate_entry_point.py`
+- [X] T016 [P] [US3] Add `test_restapi_dry_run_includes_app_py_not_main` — run `gep --type restapi --dry-run`, assert `"app.py"` in output and `"main.py"` not in output (as a created file) · `tests/commands/test_generate_entry_point.py`
+- [X] T016c [US3] Add `test_restapi_gep_twice_does_not_overwrite_app_py` — run `gep --type restapi`, record content of `application/app.py`, run `gep --type restapi` again (expect duplicate-dir error or no-op), assert content unchanged — **covers FR-007 for app.py** · `tests/commands/test_generate_entry_point.py`
 
 ### Implementation for User Story 3
 
-- [ ] T016b [US3] Update existing main.py-related tests in `test_generate_entry_point.py` — **before** removing the overwrite block: delete `test_restapi_overwrites_main_py` and `test_gep_prints_main_py_warning` (both assert old behaviour that is being removed); update `test_dry_run_does_not_overwrite_main_py` to assert `main.py` is untouched because gep *never creates it* (not merely because dry-run skipped it) · `tests/commands/test_generate_entry_point.py`
-- [ ] T017 [US3] Delete the `"Overwrite main.py"` block from `_generate_entry_point_impl` (~8 lines: the console warning, `main_tpl`, `main_content`, `overwrite_op`, and `writer.execute` call) · `src/scaffold_ca_python/commands/generate_entry_point.py`
+- [X] T016b [US3] Update existing main.py-related tests in `test_generate_entry_point.py` — **before** removing the overwrite block: delete `test_restapi_overwrites_main_py` and `test_gep_prints_main_py_warning` (both assert old behaviour that is being removed); update `test_dry_run_does_not_overwrite_main_py` to assert `main.py` is untouched because gep *never creates it* (not merely because dry-run skipped it) · `tests/commands/test_generate_entry_point.py`
+- [X] T017 [US3] Delete the `"Overwrite main.py"` block from `_generate_entry_point_impl` (~8 lines: the console warning, `main_tpl`, `main_content`, `overwrite_op`, and `writer.execute` call) · `src/scaffold_ca_python/commands/generate_entry_point.py`
 
 **Checkpoint**: T015–T016b GREEN, T016b passes after edit · T017 removes the block · no `main.py` emitted for restapi type; dry-run output correct
 
@@ -103,23 +103,23 @@
 
 ### Tests for User Story 4 *(write first — must fail before T026–T031)*
 
-- [ ] T018 [US4] Add `test_restapi_creates_test_app` — run `gep`, assert `tests/application/test_app.py` exists · `tests/commands/test_generate_entry_point.py`
-- [ ] T019 [P] [US4] Add `test_restapi_creates_test_server` — run `gep`, assert `tests/infrastructure/entry_points/api/v1/test_server.py` exists · `tests/commands/test_generate_entry_point.py`
-- [ ] T020 [P] [US4] Add `test_restapi_creates_test_exception_handler` — run `gep`, assert `tests/infrastructure/entry_points/api/v1/test_exception_handler.py` exists · `tests/commands/test_generate_entry_point.py`
-- [ ] T021 [P] [US4] Add `test_restapi_creates_test_schemas` — run `gep`, assert `tests/infrastructure/entry_points/api/v1/test_schemas.py` exists · `tests/commands/test_generate_entry_point.py`
-- [ ] T022 [P] [US4] Add `test_entry_point_restapi_test_app_template_has_create_app_assertion` — render `test_app.py.jinja2`, assert `"create_app"` and `"FastAPI"` in output · `tests/templates/test_entry_point_templates.py`
-- [ ] T023 [P] [US4] Add `test_entry_point_restapi_test_server_template_references_start_server` — render `test_server.py.jinja2`, assert `"start_server"` in output · `tests/templates/test_entry_point_templates.py`
-- [ ] T024 [P] [US4] Add `test_entry_point_restapi_test_exception_handler_template_has_status_codes` — render `test_exception_handler.py.jinja2`, assert `"422"` or `"HTTPException"` in output · `tests/templates/test_entry_point_templates.py`
-- [ ] T025 [P] [US4] Add `test_entry_point_restapi_test_schemas_template_has_example_response` — render `test_schemas.py.jinja2`, assert `"ExampleResponse"` in output (matching actual `schemas.py.jinja2` which defines `ExampleResponse`, not `ErrorResponse`) · `tests/templates/test_entry_point_templates.py`
+- [X] T018 [US4] Add `test_restapi_creates_test_app` — run `gep`, assert `tests/application/test_app.py` exists · `tests/commands/test_generate_entry_point.py`
+- [X] T019 [P] [US4] Add `test_restapi_creates_test_server` — run `gep`, assert `tests/infrastructure/entry_points/api/v1/test_server.py` exists · `tests/commands/test_generate_entry_point.py`
+- [X] T020 [P] [US4] Add `test_restapi_creates_test_exception_handler` — run `gep`, assert `tests/infrastructure/entry_points/api/v1/test_exception_handler.py` exists · `tests/commands/test_generate_entry_point.py`
+- [X] T021 [P] [US4] Add `test_restapi_creates_test_schemas` — run `gep`, assert `tests/infrastructure/entry_points/api/v1/test_schemas.py` exists · `tests/commands/test_generate_entry_point.py`
+- [X] T022 [P] [US4] Add `test_entry_point_restapi_test_app_template_has_create_app_assertion` — render `test_app.py.jinja2`, assert `"create_app"` and `"FastAPI"` in output · `tests/templates/test_entry_point_templates.py`
+- [X] T023 [P] [US4] Add `test_entry_point_restapi_test_server_template_references_start_server` — render `test_server.py.jinja2`, assert `"start_server"` in output · `tests/templates/test_entry_point_templates.py`
+- [X] T024 [P] [US4] Add `test_entry_point_restapi_test_exception_handler_template_has_status_codes` — render `test_exception_handler.py.jinja2`, assert `"422"` or `"HTTPException"` in output · `tests/templates/test_entry_point_templates.py`
+- [X] T025 [P] [US4] Add `test_entry_point_restapi_test_schemas_template_has_example_response` — render `test_schemas.py.jinja2`, assert `"ExampleResponse"` in output (matching actual `schemas.py.jinja2` which defines `ExampleResponse`, not `ErrorResponse`) · `tests/templates/test_entry_point_templates.py`
 
 ### Implementation for User Story 4
 
-- [ ] T026 [P] [US4] Create `test_app.py.jinja2` — generates a pytest file that: imports `create_app` from `application.app`, asserts return type is `FastAPI`, asserts router included, asserts exception handlers registered · `src/scaffold_ca_python/templates/entry_point/restapi/test_app.py.jinja2`
-- [ ] T027 [P] [US4] Create `test_server.py.jinja2` — generates a pytest file that: imports `start_server` from `application.app`, asserts it is callable, asserts importing `server` module does not raise · `src/scaffold_ca_python/templates/entry_point/restapi/test_server.py.jinja2`
-- [ ] T028 [P] [US4] Create `test_exception_handler.py.jinja2` — generates pytest + TestClient tests asserting `HTTPException` → JSON with `status_code`, `RequestValidationError` → 422, unhandled `Exception` → 500 · `src/scaffold_ca_python/templates/entry_point/restapi/test_exception_handler.py.jinja2`
-- [ ] T029 [P] [US4] Create `test_schemas.py.jinja2` — generates a pytest file that: imports `ExampleResponse` from `schemas` (matching actual `schemas.py.jinja2`), asserts it is a Pydantic model, asserts it has a `message` field · `src/scaffold_ca_python/templates/entry_point/restapi/test_schemas.py.jinja2`
-- [ ] T030 [US4] Update `_build_operations` restapi branch — add `CreateFile` for `project_root / "tests" / "application" / "test_app.py"` using `test_app.py.jinja2` (note: custom path, not `test_dir`) · `src/scaffold_ca_python/commands/generate_entry_point.py`
-- [ ] T031 [US4] Update `_build_operations` restapi branch — add three `_test(...)` calls for `test_server.py.jinja2 → test_server.py`, `test_exception_handler.py.jinja2 → test_exception_handler.py`, `test_schemas.py.jinja2 → test_schemas.py` in `test_dir` · `src/scaffold_ca_python/commands/generate_entry_point.py`
+- [X] T026 [P] [US4] Create `test_app.py.jinja2` — generates a pytest file that: imports `create_app` from `application.app`, asserts return type is `FastAPI`, asserts router included, asserts exception handlers registered · `src/scaffold_ca_python/templates/entry_point/restapi/test_app.py.jinja2`
+- [X] T027 [P] [US4] Create `test_server.py.jinja2` — generates a pytest file that: imports `start_server` from `application.app`, asserts it is callable, asserts importing `server` module does not raise · `src/scaffold_ca_python/templates/entry_point/restapi/test_server.py.jinja2`
+- [X] T028 [P] [US4] Create `test_exception_handler.py.jinja2` — generates pytest + TestClient tests asserting `HTTPException` → JSON with `status_code`, `RequestValidationError` → 422, unhandled `Exception` → 500 · `src/scaffold_ca_python/templates/entry_point/restapi/test_exception_handler.py.jinja2`
+- [X] T029 [P] [US4] Create `test_schemas.py.jinja2` — generates a pytest file that: imports `ExampleResponse` from `schemas` (matching actual `schemas.py.jinja2`), asserts it is a Pydantic model, asserts it has a `message` field · `src/scaffold_ca_python/templates/entry_point/restapi/test_schemas.py.jinja2`
+- [X] T030 [US4] Update `_build_operations` restapi branch — add `CreateFile` for `project_root / "tests" / "application" / "test_app.py"` using `test_app.py.jinja2` (note: custom path, not `test_dir`) · `src/scaffold_ca_python/commands/generate_entry_point.py`
+- [X] T031 [US4] Update `_build_operations` restapi branch — add three `_test(...)` calls for `test_server.py.jinja2 → test_server.py`, `test_exception_handler.py.jinja2 → test_exception_handler.py`, `test_schemas.py.jinja2 → test_schemas.py` in `test_dir` · `src/scaffold_ca_python/commands/generate_entry_point.py`
 
 **Checkpoint**: T018–T025 GREEN · all 5 test files emitted by `gep --type restapi`
 
@@ -129,11 +129,11 @@
 
 **Purpose**: Confirm all linting, type-checking, and coverage gates pass across every new and modified file.
 
-- [ ] T032 [P] Run `uv run ruff check src/ tests/` — zero lint errors
-- [ ] T033 [P] Run `uv run ruff format --check src/ tests/` — zero format violations
-- [ ] T034 [P] Run `uv run mypy src/` — zero type errors (strict mode)
-- [ ] T035 Run `uv run pytest tests/ --cov=src --cov-fail-under=80` — ≥ 80% line coverage; ≥ 466 tests passing (450 baseline + 16+ new)
-- [ ] T036 End-to-end smoke test per [quickstart.md](quickstart.md) — scaffold a fresh `demo_api` project, run `gep --type restapi`, confirm `application/app.py` exists, `main.py` absent, `server.py` thin; run generated tests
+- [X] T032 [P] Run `uv run ruff check src/ tests/` — zero lint errors
+- [X] T033 [P] Run `uv run ruff format --check src/ tests/` — zero format violations
+- [X] T034 [P] Run `uv run mypy src/` — zero type errors (strict mode)
+- [X] T035 Run `uv run pytest tests/ --cov=src --cov-fail-under=80` — ≥ 80% line coverage; ≥ 466 tests passing (450 baseline + 16+ new)
+- [X] T036 End-to-end smoke test per [quickstart.md](quickstart.md) — scaffold a fresh `demo_api` project, run `gep --type restapi`, confirm `application/app.py` exists, `main.py` absent, `server.py` thin; run generated tests
 
 ---
 

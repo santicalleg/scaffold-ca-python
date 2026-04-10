@@ -42,14 +42,8 @@ def _layer_from_module(module: str, python_package: str) -> Layer | None:
 
 def _make_hint(source: Layer, target: Layer) -> str:
     if source in (Layer.DOMAIN_MODEL, Layer.DOMAIN_USECASE):
-        return (
-            f"Define a port interface in {source} and inject the adapter. "
-            f"Do not import directly from {target}."
-        )
-    return (
-        f"{source} must not import from {target}. "
-        "Pass dependencies via constructor injection instead."
-    )
+        return f"Define a port interface in {source} and inject the adapter. Do not import directly from {target}."
+    return f"{source} must not import from {target}. Pass dependencies via constructor injection instead."
 
 
 # ---------------------------------------------------------------------------
@@ -106,6 +100,7 @@ class StructureValidator:
             except SyntaxError:
                 # Non-fatal — warn and continue scanning other files.
                 import warnings
+
                 warnings.warn(f"could not parse '{py_file}' — skipping", stacklevel=2)
                 continue
 
@@ -114,27 +109,31 @@ class StructureValidator:
                     target = _layer_from_module(node.module, python_package)
                     if target is not None and target in forbidden:
                         names = ", ".join(a.name for a in node.names)
-                        violations.append(Violation(
-                            source_file=py_file,
-                            line_number=node.lineno,
-                            import_statement=f"from {node.module} import {names}",
-                            source_layer=source_layer,
-                            target_layer=target,
-                            resolution_hint=_make_hint(source_layer, target),
-                        ))
+                        violations.append(
+                            Violation(
+                                source_file=py_file,
+                                line_number=node.lineno,
+                                import_statement=f"from {node.module} import {names}",
+                                source_layer=source_layer,
+                                target_layer=target,
+                                resolution_hint=_make_hint(source_layer, target),
+                            )
+                        )
 
                 elif isinstance(node, ast.Import):
                     for alias in node.names:
                         target = _layer_from_module(alias.name, python_package)
                         if target is not None and target in forbidden:
-                            violations.append(Violation(
-                                source_file=py_file,
-                                line_number=node.lineno,
-                                import_statement=f"import {alias.name}",
-                                source_layer=source_layer,
-                                target_layer=target,
-                                resolution_hint=_make_hint(source_layer, target),
-                            ))
+                            violations.append(
+                                Violation(
+                                    source_file=py_file,
+                                    line_number=node.lineno,
+                                    import_statement=f"import {alias.name}",
+                                    source_layer=source_layer,
+                                    target_layer=target,
+                                    resolution_hint=_make_hint(source_layer, target),
+                                )
+                            )
 
         return ValidationReport(
             project_root=project_root,

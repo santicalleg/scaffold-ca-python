@@ -20,9 +20,7 @@ def _validate_structure_impl(dry_run: bool) -> None:
     try:
         project_root = find_project_root()
     except ScaffoldError:
-        console.print(
-            "[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first."
-        )
+        console.print("[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first.")
         raise typer.Exit(code=1) from None
 
     try:
@@ -32,10 +30,7 @@ def _validate_structure_impl(dry_run: bool) -> None:
         raise typer.Exit(code=1) from None
 
     if report.passed:
-        console.print(
-            f"[green]✓[/green] Validated [bold]{report.files_scanned}[/bold] file(s) "
-            "— no violations found."
-        )
+        console.print(f"[green]✓[/green] Validated [bold]{report.files_scanned}[/bold] file(s) — no violations found.")
         return
 
     # --- Print violation table ---

@@ -33,40 +33,30 @@ def project_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 def test_creates_init(project_root: Path) -> None:
     result = runner.invoke(app, ["gh", "--name", "DateUtils"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root / "src" / "my_app" / "infrastructure" / "helpers" / "date_utils" / "__init__.py"
-    ).exists()
+    assert (project_root / "src" / "my_app" / "infrastructure" / "helpers" / "date_utils" / "__init__.py").exists()
 
 
 def test_creates_implementation_file(project_root: Path) -> None:
     result = runner.invoke(app, ["gh", "--name", "DateUtils"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root / "src" / "my_app" / "infrastructure" / "helpers" / "date_utils" / "date_utils.py"
-    ).exists()
+    assert (project_root / "src" / "my_app" / "infrastructure" / "helpers" / "date_utils" / "date_utils.py").exists()
 
 
 def test_creates_test_file(project_root: Path) -> None:
     result = runner.invoke(app, ["gh", "--name", "DateUtils"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (
-        project_root / "tests" / "infrastructure" / "helpers" / "date_utils" / "test_date_utils.py"
-    ).exists()
+    assert (project_root / "tests" / "infrastructure" / "helpers" / "date_utils" / "test_date_utils.py").exists()
 
 
 def test_implementation_contains_class(project_root: Path) -> None:
     runner.invoke(app, ["gh", "--name", "DateUtils"], catch_exceptions=False)
-    impl = (
-        project_root / "src" / "my_app" / "infrastructure" / "helpers" / "date_utils" / "date_utils.py"
-    ).read_text()
+    impl = (project_root / "src" / "my_app" / "infrastructure" / "helpers" / "date_utils" / "date_utils.py").read_text()
     assert "class DateUtils" in impl
 
 
 def test_test_file_imports_class(project_root: Path) -> None:
     runner.invoke(app, ["gh", "--name", "DateUtils"], catch_exceptions=False)
-    test_src = (
-        project_root / "tests" / "infrastructure" / "helpers" / "date_utils" / "test_date_utils.py"
-    ).read_text()
+    test_src = (project_root / "tests" / "infrastructure" / "helpers" / "date_utils" / "test_date_utils.py").read_text()
     assert "DateUtils" in test_src
 
 
@@ -83,9 +73,7 @@ def test_success_exit_code(project_root: Path) -> None:
 def test_dry_run_writes_nothing(project_root: Path) -> None:
     result = runner.invoke(app, ["gh", "--name", "DateUtils", "--dry-run"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert not (
-        project_root / "src" / "my_app" / "infrastructure" / "helpers" / "date_utils"
-    ).exists()
+    assert not (project_root / "src" / "my_app" / "infrastructure" / "helpers" / "date_utils").exists()
 
 
 def test_dry_run_prints_paths(project_root: Path) -> None:

@@ -13,11 +13,7 @@ def _ctx() -> ProjectContext:
 
 
 def _tmpl(name: str) -> str:
-    return (
-        importlib.resources.files("scaffold_ca_python.templates")
-        .joinpath(name)
-        .read_text(encoding="utf-8")
-    )
+    return importlib.resources.files("scaffold_ca_python.templates").joinpath(name).read_text(encoding="utf-8")
 
 
 def _render(filename: str) -> str:
@@ -29,12 +25,14 @@ def _render(filename: str) -> str:
 
 # --- __init__.py -----------------------------------------------------------
 
+
 def test_init_renders_docstring() -> None:
     out = _render("__init__")
     assert "DI configuration package" in out
 
 
 # --- config.py -------------------------------------------------------------
+
 
 def test_config_has_settings_class() -> None:
     out = _render("config")
@@ -53,6 +51,7 @@ def test_config_has_settings_singleton() -> None:
 
 # --- driven_adapters_container.py -----------------------------------------
 
+
 def test_da_container_class_name() -> None:
     out = _render("driven_adapters_container")
     assert "DAContainer" in out
@@ -64,6 +63,7 @@ def test_da_container_uses_declarative_container() -> None:
 
 
 # --- usecases_container.py ------------------------------------------------
+
 
 def test_usecase_container_class_name() -> None:
     out = _render("usecases_container")
@@ -90,6 +90,7 @@ def test_usecase_container_uses_python_package() -> None:
 
 
 # --- container.py ---------------------------------------------------------
+
 
 def test_container_class_name() -> None:
     out = _render("container")

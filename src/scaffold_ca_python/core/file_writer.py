@@ -92,8 +92,7 @@ class FileWriter:
                 target.parent.mkdir(parents=True, exist_ok=True)
                 if target.exists() and not op.file.overwrite:
                     raise FileExistsError(
-                        f"File already exists: {target}. "
-                        "Use overwrite=True on GeneratedFile to replace it."
+                        f"File already exists: {target}. Use overwrite=True on GeneratedFile to replace it."
                     )
 
             # All parents exist — commit via os.replace (atomic on POSIX)

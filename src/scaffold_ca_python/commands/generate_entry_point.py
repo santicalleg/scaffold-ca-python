@@ -66,10 +66,7 @@ def _generate_entry_point_impl(
 ) -> None:
     # --- Validate type ---
     if type_ not in _ALLOWED_TYPES:
-        console.print(
-            f"[red]Error:[/red] Unknown type '{type_}'. "
-            f"Allowed: {', '.join(_ALLOWED_TYPES)}."
-        )
+        console.print(f"[red]Error:[/red] Unknown type '{type_}'. Allowed: {', '.join(_ALLOWED_TYPES)}.")
         raise typer.Exit(code=1) from None
 
     # --- Flag compatibility checks ---
@@ -86,9 +83,7 @@ def _generate_entry_point_impl(
     if swagger:
         swagger_path = Path(swagger)
         if not swagger_path.exists():
-            console.print(
-                f"[red]Error:[/red] Swagger file '{swagger}' not found."
-            )
+            console.print(f"[red]Error:[/red] Swagger file '{swagger}' not found.")
             raise typer.Exit(code=1) from None
         routes = _parse_swagger(swagger_path)
 
@@ -96,9 +91,7 @@ def _generate_entry_point_impl(
     try:
         project_root = find_project_root()
     except ScaffoldError:
-        console.print(
-            "[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first."
-        )
+        console.print("[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first.")
         raise typer.Exit(code=1) from None
 
     project_ctx = _load_project_context(project_root)
@@ -163,37 +156,34 @@ def _generate_entry_point_impl(
         if deps:
             would_add = dry_run_inject(project_root, deps)
             if would_add:
-                console.print(
-                    f"[dim]Would add to [project.dependencies]: {', '.join(would_add)}[/dim]"
-                )
+                console.print(f"[dim]Would add to [project.dependencies]: {', '.join(would_add)}[/dim]")
         return
 
     created = writer.execute(operations, dry_run=False)
-    console.print(
-        f"[green]✓[/green] Entry point [bold]{subdir}[/bold] created. "
-        f"Created {len(created)} file(s)."
-    )
+    console.print(f"[green]✓[/green] Entry point [bold]{subdir}[/bold] created. Created {len(created)} file(s).")
 
     # --- Inject dependencies ------------------------------------------------
     if deps:
         added = inject_dependencies(project_root, deps)
         if added:
-            console.print(
-                f"[green]✓[/green] Added {', '.join(added)} to [project.dependencies]."
-            )
+            console.print(f"[green]✓[/green] Added {', '.join(added)} to [project.dependencies].")
 
     # --- Overwrite main.py with type-specific entrypoint --------------------
-    main_py = project_root / "src" / pkg / "main.py"
-    console.print(f"[yellow]⚠[/yellow] main.py will be replaced with {type_} entrypoint.")
-    main_tpl = _tmpl(f"entry_point/{type_}/entrypoint_main.py.jinja2")
-    main_content = renderer.render_string(main_tpl, {**module_ctx.model_dump(), "routes": routes})
-    overwrite_op = CreateFile(file=GeneratedFile(
-        path=main_py,
-        content=main_content,
-        template_name=f"entry_point/{type_}/entrypoint_main.py.jinja2",
-        overwrite=True,
-    ))
-    writer.execute([overwrite_op], dry_run=False)
+    # restapi no longer writes to main.py — app factory lives in application/app.py
+    if type_ != "restapi":
+        main_py = project_root / "src" / pkg / "main.py"
+        console.print(f"[yellow]⚠[/yellow] main.py will be replaced with {type_} entrypoint.")
+        main_tpl = _tmpl(f"entry_point/{type_}/entrypoint_main.py.jinja2")
+        main_content = renderer.render_string(main_tpl, {**module_ctx.model_dump(), "routes": routes})
+        overwrite_op = CreateFile(
+            file=GeneratedFile(
+                path=main_py,
+                content=main_content,
+                template_name=f"entry_point/{type_}/entrypoint_main.py.jinja2",
+                overwrite=True,
+            )
+        )
+        writer.execute([overwrite_op], dry_run=False)
 
 
 def _build_operations(
@@ -208,34 +198,60 @@ def _build_operations(
     base = f"entry_point/{type_}"
 
     def _src(tpl: str, out: str) -> CreateFile:
-        return CreateFile(file=GeneratedFile(
-            path=src_dir / out,
-            content=renderer.render_string(_tmpl(f"{base}/{tpl}"), ctx_dict),
-            template_name=f"{base}/{tpl}",
-        ))
+        return CreateFile(
+            file=GeneratedFile(
+                path=src_dir / out,
+                content=renderer.render_string(_tmpl(f"{base}/{tpl}"), ctx_dict),
+                template_name=f"{base}/{tpl}",
+            )
+        )
 
     def _test(tpl: str, out: str) -> CreateFile:
-        return CreateFile(file=GeneratedFile(
-            path=test_dir / out,
-            content=renderer.render_string(_tmpl(f"{base}/{tpl}"), ctx_dict),
-            template_name=f"{base}/{tpl}",
-            is_test=True,
-        ))
+        return CreateFile(
+            file=GeneratedFile(
+                path=test_dir / out,
+                content=renderer.render_string(_tmpl(f"{base}/{tpl}"), ctx_dict),
+                template_name=f"{base}/{tpl}",
+                is_test=True,
+            )
+        )
 
     if type_ == "restapi":
         assert project_root is not None and pkg is not None
+        app_py_path = project_root / "src" / pkg / "application" / "app.py"
         server_path = project_root / "src" / pkg / "server.py"
+        test_app_path = project_root / "tests" / "application" / "test_app.py"
         return [
+            CreateFile(
+                file=GeneratedFile(
+                    path=app_py_path,
+                    content=renderer.render_string(_tmpl(f"{base}/app.py.jinja2"), ctx_dict),
+                    template_name=f"{base}/app.py.jinja2",
+                )
+            ),
             _src("__init__.py.jinja2", "__init__.py"),
             _src("rest_controller.py.jinja2", "rest_controller.py"),
             _src("exception_handler.py.jinja2", "exception_handler.py"),
             _src("schemas.py.jinja2", "schemas.py"),
-            CreateFile(file=GeneratedFile(
-                path=server_path,
-                content=renderer.render_string(_tmpl(f"{base}/server.py.jinja2"), ctx_dict),
-                template_name=f"{base}/server.py.jinja2",
-            )),
+            CreateFile(
+                file=GeneratedFile(
+                    path=server_path,
+                    content=renderer.render_string(_tmpl(f"{base}/server.py.jinja2"), ctx_dict),
+                    template_name=f"{base}/server.py.jinja2",
+                )
+            ),
             _test("test_rest_controller.py.jinja2", "test_rest_controller.py"),
+            _test("test_server.py.jinja2", "test_server.py"),
+            _test("test_exception_handler.py.jinja2", "test_exception_handler.py"),
+            _test("test_schemas.py.jinja2", "test_schemas.py"),
+            CreateFile(
+                file=GeneratedFile(
+                    path=test_app_path,
+                    content=renderer.render_string(_tmpl(f"{base}/test_app.py.jinja2"), ctx_dict),
+                    template_name=f"{base}/test_app.py.jinja2",
+                    is_test=True,
+                )
+            ),
         ]
     if type_ == "agent":
         return [
@@ -290,9 +306,7 @@ def register(app: typer.Typer) -> None:
     def generate_entry_point(
         ctx: typer.Context,
         type_: Annotated[str | None, typer.Option("--type", help=_TYPE_HELP, rich_help_panel="Required")] = None,
-        swagger: Annotated[
-            str | None, typer.Option("--swagger", help=_SWAGGER_HELP, rich_help_panel="Options")
-        ] = None,
+        swagger: Annotated[str | None, typer.Option("--swagger", help=_SWAGGER_HELP, rich_help_panel="Options")] = None,
         enable_kafka: Annotated[
             bool,
             typer.Option(
@@ -332,9 +346,7 @@ def register(app: typer.Typer) -> None:
         ctx: typer.Context,
         type_: Annotated[str | None, typer.Option("--type", help=_TYPE_HELP)] = None,
         swagger: Annotated[str | None, typer.Option("--swagger", help=_SWAGGER_HELP)] = None,
-        enable_kafka: Annotated[
-            bool, typer.Option("--enable-kafka/--no-enable-kafka", help=_KAFKA_HELP)
-        ] = False,
+        enable_kafka: Annotated[bool, typer.Option("--enable-kafka/--no-enable-kafka", help=_KAFKA_HELP)] = False,
         enable_mcp_client: Annotated[
             bool, typer.Option("--enable-mcp-client/--no-enable-mcp-client", help=_MCP_CLIENT_HELP)
         ] = False,

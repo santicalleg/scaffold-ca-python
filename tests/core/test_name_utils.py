@@ -8,6 +8,7 @@ from scaffold_ca_python.core.name_utils import ScaffoldError, to_pascal_case, to
 # to_snake_case
 # ---------------------------------------------------------------------------
 
+
 def test_snake_case_from_pascal() -> None:
     assert to_snake_case("MyOrder") == "my_order"
 
@@ -32,6 +33,7 @@ def test_snake_case_single_word() -> None:
 # to_pascal_case
 # ---------------------------------------------------------------------------
 
+
 def test_pascal_case_from_snake() -> None:
     assert to_pascal_case("my_order") == "MyOrder"
 
@@ -51,6 +53,7 @@ def test_pascal_case_multiple_underscores() -> None:
 # ---------------------------------------------------------------------------
 # validate_name
 # ---------------------------------------------------------------------------
+
 
 def test_validate_name_accepts_pascal_case() -> None:
     assert validate_name("MyProject") == "MyProject"

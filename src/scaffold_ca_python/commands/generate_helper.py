@@ -34,9 +34,7 @@ def _generate_helper_impl(name: str, dry_run: bool) -> None:
     try:
         project_root = find_project_root()
     except ScaffoldError:
-        console.print(
-            "[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first."
-        )
+        console.print("[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first.")
         raise typer.Exit(code=1) from None
 
     project_ctx = _load_project_context(project_root)
@@ -56,22 +54,28 @@ def _generate_helper_impl(name: str, dry_run: bool) -> None:
 
     ctx_dict = module_ctx.model_dump()
     operations: list[FileOperation] = [
-        CreateFile(file=GeneratedFile(
-            path=src_dir / "__init__.py",
-            content=renderer.render_string(_tmpl("helper/__init__.py.jinja2"), ctx_dict),
-            template_name="helper/__init__.py.jinja2",
-        )),
-        CreateFile(file=GeneratedFile(
-            path=src_dir / f"{snake}.py",
-            content=renderer.render_string(_tmpl("helper/helper.py.jinja2"), ctx_dict),
-            template_name="helper/helper.py.jinja2",
-        )),
-        CreateFile(file=GeneratedFile(
-            path=test_dir / f"test_{snake}.py",
-            content=renderer.render_string(_tmpl("helper/test_helper.py.jinja2"), ctx_dict),
-            template_name="helper/test_helper.py.jinja2",
-            is_test=True,
-        )),
+        CreateFile(
+            file=GeneratedFile(
+                path=src_dir / "__init__.py",
+                content=renderer.render_string(_tmpl("helper/__init__.py.jinja2"), ctx_dict),
+                template_name="helper/__init__.py.jinja2",
+            )
+        ),
+        CreateFile(
+            file=GeneratedFile(
+                path=src_dir / f"{snake}.py",
+                content=renderer.render_string(_tmpl("helper/helper.py.jinja2"), ctx_dict),
+                template_name="helper/helper.py.jinja2",
+            )
+        ),
+        CreateFile(
+            file=GeneratedFile(
+                path=test_dir / f"test_{snake}.py",
+                content=renderer.render_string(_tmpl("helper/test_helper.py.jinja2"), ctx_dict),
+                template_name="helper/test_helper.py.jinja2",
+                is_test=True,
+            )
+        ),
     ]
 
     if dry_run:
@@ -84,8 +88,7 @@ def _generate_helper_impl(name: str, dry_run: bool) -> None:
 
     created = writer.execute(operations, dry_run=False)
     console.print(
-        f"[green]✓[/green] Helper [bold]{module_ctx.class_name}[/bold] created. "
-        f"Created {len(created)} file(s)."
+        f"[green]✓[/green] Helper [bold]{module_ctx.class_name}[/bold] created. Created {len(created)} file(s)."
     )
 
 
