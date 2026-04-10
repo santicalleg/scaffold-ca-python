@@ -34,6 +34,18 @@ None — all placeholders resolved.
 
 ---
 
+### Amendment v2.0.3 (2026-04-10) — PATCH
+**Type**: PATCH — branch naming exception; no semantic change to other governance rules.
+
+**Changes**:
+- Principle VII: Added exception bullet recognizing the project's established flat
+  numbered-branch convention (`NNN-kebab-name`, e.g., `011-fix-restapi-cleanup`).
+  The `feature/` prefix is not required for branches following this pattern.
+
+**Templates updated**: None.
+
+---
+
 ### Amendment v2.0.2 (2026-03-26) — PATCH
 **Type**: PATCH — command rename; no semantic change to governance.
 
@@ -63,7 +75,7 @@ or artifact structure was affected.
 
 # scaffold-ca-python Constitution
 
-**Version**: 2.0.2 | **Ratified**: 2026-03-25 | **Last amended**: 2026-03-26
+**Version**: 2.0.3 | **Ratified**: 2026-03-25 | **Last amended**: 2026-04-10
 
 ## Core Principles
 
@@ -204,6 +216,9 @@ feature/<branch-name>
   `feature/jinja-template-engine`, `feature/fastapi-entry-point`).
 - No other branch prefixes (`fix/`, `chore/`, `hotfix/`, etc.) are permitted without
   an explicit amendment to this constitution.
+- **Exception (v2.0.3)**: This project uses a flat numbered-branch convention
+  (`NNN-kebab-name`, e.g., `011-fix-restapi-cleanup`). The `feature/` prefix is not
+  required for branches following this pattern.
 
 **Rationale**: A single enforced branch pattern keeps CI selectors, code-review
 automation, and project board filters simple and predictable.

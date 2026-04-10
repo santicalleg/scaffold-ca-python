@@ -98,3 +98,64 @@ def dry_run_inject(project_root: Path, packages: list[str]) -> list[str]:
 
     deps: list[str] = data.get("project", {}).get("dependencies", [])
     return _missing(deps, packages)
+
+
+def update_project_scripts(project_root: Path, pkg: str) -> bool:
+    """Rewrite ``[project.scripts]`` so the CLI entry calls ``start_server()``.
+
+    Sets ``<pkg> = "<pkg>.server:start_server"`` in ``pyproject.toml``.
+    Idempotent: returns ``False`` immediately when the entry already has the
+    correct value, leaving the file unchanged.
+
+    Parameters
+    ----------
+    project_root:
+        Directory containing ``pyproject.toml``.
+    pkg:
+        The Python package name (e.g. ``"my_app"``).
+
+    Returns
+    -------
+    bool
+        ``True`` if the file was written, ``False`` if it was already correct.
+    """
+    pyproject = project_root / "pyproject.toml"
+    with pyproject.open("rb") as fh:
+        data = tomllib.load(fh)
+
+    new_value = f"{pkg}.server:start_server"
+    scripts: dict[str, str] = data.setdefault("project", {}).setdefault("scripts", {})
+    if scripts.get(pkg) == new_value:
+        return False
+
+    scripts[pkg] = new_value
+    with pyproject.open("wb") as fh:
+        tomli_w.dump(data, fh)
+    return True
+
+
+def dry_run_scripts_update(project_root: Path, pkg: str) -> bool:
+    """Return whether ``update_project_scripts`` *would* write to disk.
+
+    Read-only: never modifies ``pyproject.toml``.
+
+    Parameters
+    ----------
+    project_root:
+        Directory containing ``pyproject.toml``.
+    pkg:
+        The Python package name (e.g. ``"my_app"``).
+
+    Returns
+    -------
+    bool
+        ``True`` if the current entry differs from ``<pkg>.server:start_server``,
+        ``False`` if no change would be needed.
+    """
+    pyproject = project_root / "pyproject.toml"
+    with pyproject.open("rb") as fh:
+        data = tomllib.load(fh)
+
+    new_value = f"{pkg}.server:start_server"
+    scripts: dict[str, str] = data.get("project", {}).get("scripts", {})
+    return scripts.get(pkg) != new_value

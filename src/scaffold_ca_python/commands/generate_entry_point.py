@@ -16,7 +16,12 @@ from rich.tree import Tree
 from scaffold_ca_python.core.file_writer import FileWriter
 from scaffold_ca_python.core.name_utils import ScaffoldError
 from scaffold_ca_python.core.project_detector import find_project_root
-from scaffold_ca_python.core.pyproject_writer import dry_run_inject, inject_dependencies
+from scaffold_ca_python.core.pyproject_writer import (
+    dry_run_inject,
+    dry_run_scripts_update,
+    inject_dependencies,
+    update_project_scripts,
+)
 from scaffold_ca_python.core.template_renderer import TemplateRenderer
 from scaffold_ca_python.models.context import ModuleContext, ProjectContext
 from scaffold_ca_python.models.file_operation import CreateFile, FileOperation, GeneratedFile
@@ -157,6 +162,12 @@ def _generate_entry_point_impl(
             would_add = dry_run_inject(project_root, deps)
             if would_add:
                 console.print(f"[dim]Would add to [project.dependencies]: {', '.join(would_add)}[/dim]")
+        if type_ == "restapi":
+            main_py = project_root / "src" / pkg / "main.py"
+            if main_py.exists():
+                console.print(f"[dim]Would delete: src/{pkg}/main.py[/dim]")
+            if dry_run_scripts_update(project_root, pkg):
+                console.print(f'[dim]Would update [project.scripts]: {pkg} = "{pkg}.server:start_server"[/dim]')
         return
 
     created = writer.execute(operations, dry_run=False)
@@ -170,7 +181,13 @@ def _generate_entry_point_impl(
 
     # --- Overwrite main.py with type-specific entrypoint --------------------
     # restapi no longer writes to main.py — app factory lives in application/app.py
-    if type_ != "restapi":
+    if type_ == "restapi":
+        main_py = project_root / "src" / pkg / "main.py"
+        main_py.unlink(missing_ok=True)
+        console.print(f"[green]\u2713[/green] Deleted src/{pkg}/main.py")
+        if update_project_scripts(project_root, pkg):
+            console.print(f'[green]\u2713[/green] Updated [project.scripts]: {pkg} = "{pkg}.server:start_server"')
+    elif type_ != "restapi":
         main_py = project_root / "src" / pkg / "main.py"
         console.print(f"[yellow]⚠[/yellow] main.py will be replaced with {type_} entrypoint.")
         main_tpl = _tmpl(f"entry_point/{type_}/entrypoint_main.py.jinja2")

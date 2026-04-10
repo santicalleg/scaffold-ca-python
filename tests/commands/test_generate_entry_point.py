@@ -99,8 +99,10 @@ def test_restapi_dry_run_includes_app_py_not_main(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False)
     assert result.exit_code == 0
     assert "app.py" in result.output
-    # main.py must not appear as a created file in dry-run output
-    assert "main.py" not in result.output
+    # main.py must not appear as a *created* file — it appears as a deletion notice (FR-004)
+    assert "Would delete" in result.output
+    # dry-run must NOT actually delete the file
+    assert (project_root / "src" / "my_app" / "main.py").exists()
 
 
 def test_restapi_gep_twice_does_not_overwrite_app_py(project_root: Path) -> None:
@@ -603,3 +605,100 @@ def test_gep_restapi_dry_run_still_reports_mcp_conflict(
     assert result.exit_code == 1
     assert not (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api").exists()
     assert "mcp_server" in result.output
+
+
+# ---------------------------------------------------------------------------
+# Feature 011 — US1: gep --type restapi deletes main.py (FR-001)
+# ---------------------------------------------------------------------------
+
+
+def test_restapi_deletes_main_py(project_root: Path) -> None:
+    """T010: main.py created by scaffold ca must be removed after gep --type restapi."""
+    main_py = project_root / "src" / "my_app" / "main.py"
+    assert main_py.exists(), "fixture must create main.py via scaffold ca"
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    assert not main_py.exists()
+
+
+def test_restapi_second_run_exits_with_duplicate_error(project_root: Path) -> None:
+    """T010b: second gep --type restapi must fail on duplicate guard; main.py still absent."""
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    main_py = project_root / "src" / "my_app" / "main.py"
+    # Second run — duplicate guard fires because src_dir already exists
+    result = runner.invoke(app, ["gep", "--type", "restapi"])
+    assert result.exit_code != 0
+    assert not main_py.exists()
+
+
+def test_restapi_gep_ok_when_main_py_already_absent(project_root: Path) -> None:
+    """T011: silent no-op delete — command must succeed even if main.py is already gone."""
+    (project_root / "src" / "my_app" / "main.py").unlink(missing_ok=True)
+    result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    assert result.exit_code == 0
+
+
+def test_restapi_dry_run_reports_would_delete_main_py(project_root: Path) -> None:
+    """T012: dry-run must mention main.py in output; the file must NOT be deleted."""
+    main_py = project_root / "src" / "my_app" / "main.py"
+    assert main_py.exists()
+    result = runner.invoke(app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False)
+    assert result.exit_code == 0
+    assert "main.py" in result.output
+    assert main_py.exists()
+
+
+# ---------------------------------------------------------------------------
+# Feature 011 — US2: gep --type restapi updates [project.scripts] (FR-002)
+# ---------------------------------------------------------------------------
+
+
+def test_restapi_updates_project_scripts(project_root: Path) -> None:
+    """T015: [project.scripts] entry must read <pkg>.server:start_server after gep restapi."""
+    import tomllib
+
+    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    with (project_root / "pyproject.toml").open("rb") as fh:
+        data = tomllib.load(fh)
+    assert data["project"]["scripts"]["my_app"] == "my_app.server:start_server"
+
+
+def test_restapi_dry_run_reports_scripts_update(project_root: Path) -> None:
+    """T016: dry-run reports the scripts update; pyproject.toml must remain unchanged."""
+    import tomllib
+
+    result = runner.invoke(app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False)
+    assert result.exit_code == 0
+    assert "server:start_server" in result.output
+    with (project_root / "pyproject.toml").open("rb") as fh:
+        data = tomllib.load(fh)
+    assert data["project"]["scripts"]["my_app"] == "my_app.main:main"
+
+
+def test_agent_does_not_change_project_scripts(project_root: Path) -> None:
+    """T017: gep --type agent must NOT modify [project.scripts]."""
+    import tomllib
+
+    runner.invoke(app, ["gep", "--type", "agent"], catch_exceptions=False)
+    with (project_root / "pyproject.toml").open("rb") as fh:
+        data = tomllib.load(fh)
+    assert data["project"]["scripts"]["my_app"] == "my_app.main:main"
+
+
+def test_mcp_does_not_change_project_scripts(project_root: Path) -> None:
+    """T018: gep --type mcp must NOT modify [project.scripts]."""
+    import tomllib
+
+    runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
+    with (project_root / "pyproject.toml").open("rb") as fh:
+        data = tomllib.load(fh)
+    assert data["project"]["scripts"]["my_app"] == "my_app.main:main"
+
+
+def test_generic_does_not_change_project_scripts(project_root: Path) -> None:
+    """T018b: gep --type generic must NOT modify [project.scripts]."""
+    import tomllib
+
+    runner.invoke(app, ["gep", "--type", "generic"], catch_exceptions=False)
+    with (project_root / "pyproject.toml").open("rb") as fh:
+        data = tomllib.load(fh)
+    assert data["project"]["scripts"]["my_app"] == "my_app.main:main"

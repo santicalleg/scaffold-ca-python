@@ -32,8 +32,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         ]
     )
     logger.info("Application startup complete.")
+    # Uncomment to initialize async resources on startup, if needed
+    # await container.resource_container.init_resources()
     yield
     container.unwire()
+    # Uncomment the following line if you have async resources to shutdown
+    # await container.resource_container.shutdown_resources()
     logger.info("Application shutdown complete.")
 
 
