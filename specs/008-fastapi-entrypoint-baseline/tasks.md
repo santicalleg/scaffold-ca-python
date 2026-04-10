@@ -101,13 +101,13 @@
 
 ### Tests for User Story 2 *(write FIRST, confirm failing)*
 
-- [ ] T019 [P] [US2] Write failing test `test_entry_point_restapi_test_rest_controller_has_testclient` in `tests/templates/test_entry_point_templates.py` — renders `entry_point/restapi/test_rest_controller.py.jinja2`, asserts contains `TestClient`, `GET /v1/health`, `assert response.status_code == 200`
+- [X] T019 [P] [US2] Write failing test `test_entry_point_restapi_test_rest_controller_has_testclient` in `tests/templates/test_entry_point_templates.py` — renders `entry_point/restapi/test_rest_controller.py.jinja2`, asserts contains `TestClient`, `GET /v1/health`, `assert response.status_code == 200`
 
 ### Implementation for User Story 2
 
-- [ ] T020 [P] [US2] Add `test_rest_controller.py.jinja2` to `src/scaffold_ca_python/templates/entry_point/restapi/test_rest_controller.py.jinja2` — imports `TestClient` from `starlette.testclient`, imports `create_app` from `{{ python_package }}.server`, tests `GET /v1/health` → HTTP 200, includes a comment block for custom DI overrides
-- [ ] T021 [US2] Add test template emission to `_build_operations("restapi", ...)` in `src/scaffold_ca_python/commands/generate_entry_point.py` — emit `test_rest_controller.py.jinja2` into `tests/infrastructure/entry_points/api/v1/test_rest_controller.py` with `overwrite=False`
-- [ ] T022 [US2] Update `tests/commands/test_generate_entry_point.py` to assert that `tests/infrastructure/entry_points/api/v1/test_rest_controller.py` is in the generated file list for `--type restapi`
+- [X] T020 [P] [US2] Add `test_rest_controller.py.jinja2` to `src/scaffold_ca_python/templates/entry_point/restapi/test_rest_controller.py.jinja2` — imports `TestClient` from `starlette.testclient`, imports `create_app` from `{{ python_package }}.server`, tests `GET /v1/health` → HTTP 200, includes a comment block for custom DI overrides
+- [X] T021 [US2] Add test template emission to `_build_operations("restapi", ...)` in `src/scaffold_ca_python/commands/generate_entry_point.py` — emit `test_rest_controller.py.jinja2` into `tests/infrastructure/entry_points/api/v1/test_rest_controller.py` with `overwrite=False`
+- [X] T022 [US2] Update `tests/commands/test_generate_entry_point.py` to assert that `tests/infrastructure/entry_points/api/v1/test_rest_controller.py` is in the generated file list for `--type restapi`
 
 **Checkpoint**: All three story phases (US3, US1, US2) fully green. `uv run pytest` must pass 100%.
 

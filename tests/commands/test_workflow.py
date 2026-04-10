@@ -72,7 +72,8 @@ def test_workflow_gep_creates_entry_point(workflow_root: Path) -> None:
         / "order_service"
         / "infrastructure"
         / "entry_points"
-        / "restapi"
+        / "api"
+        / "v1"
         / "__init__.py"
     ).exists()
 

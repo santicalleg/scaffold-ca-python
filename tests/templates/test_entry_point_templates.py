@@ -148,3 +148,17 @@ def test_generic_has_async_run() -> None:
         _tmpl("entry_point/generic/handler.py.jinja2"), _ctx().model_dump()
     )
     assert "async def run" in out
+
+
+# ---------------------------------------------------------------------------
+# restapi — test template (US2 / T019)
+# ---------------------------------------------------------------------------
+
+
+def test_entry_point_restapi_test_rest_controller_has_testclient() -> None:
+    out = renderer.render_string(
+        _tmpl("entry_point/restapi/test_rest_controller.py.jinja2"), _ctx().model_dump()
+    )
+    assert "TestClient" in out
+    assert "/v1/health" in out
+    assert "assert response.status_code == 200" in out

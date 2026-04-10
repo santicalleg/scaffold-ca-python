@@ -235,6 +235,7 @@ def _build_operations(
                 content=renderer.render_string(_tmpl(f"{base}/server.py.jinja2"), ctx_dict),
                 template_name=f"{base}/server.py.jinja2",
             )),
+            _test("test_rest_controller.py.jinja2", "test_rest_controller.py"),
         ]
     if type_ == "agent":
         return [
