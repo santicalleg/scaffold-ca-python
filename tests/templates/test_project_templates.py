@@ -70,3 +70,12 @@ def test_gitignore_contains_venv() -> None:
 def test_layer_init_renders() -> None:
     out = renderer.render_string(_tmpl("project/layer_init.jinja2"), _ctx().model_dump())
     assert isinstance(out, str)
+
+
+def test_project_resource_container_has_declarative_container() -> None:
+    out = renderer.render_string(
+        _tmpl("project/application/config/resource_container.py.jinja2"),
+        _ctx().model_dump(),
+    )
+    assert "DeclarativeContainer" in out
+    assert "pydantic_settings" in out

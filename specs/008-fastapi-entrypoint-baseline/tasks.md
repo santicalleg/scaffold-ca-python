@@ -31,12 +31,12 @@
 
 ### Tests for Foundational Phase *(write FIRST, confirm failing)*
 
-- [ ] T002 [P] Write failing test `test_project_resource_container_has_declarative_container` in `tests/templates/test_project_templates.py` that renders `project/application/config/resource_container.py.jinja2` and asserts it contains `DeclarativeContainer` and `pydantic_settings`
+- [X] T002 [P] Write failing test `test_project_resource_container_has_declarative_container` in `tests/templates/test_project_templates.py` that renders `project/application/config/resource_container.py.jinja2` and asserts it contains `DeclarativeContainer` and `pydantic_settings`
 
 ### Implementation for Foundational Phase
 
-- [ ] T003 Add `resource_container.py.jinja2` to `src/scaffold_ca_python/templates/project/application/config/resource_container.py.jinja2` — stub `ResourceContainer(containers.DeclarativeContainer)` that wires `Settings` from `{{ python_package }}.application.config.config`
-- [ ] T004 Register `resource_container.py.jinja2` in the `application/config/` emission block of `src/scaffold_ca_python/commands/generate_project.py` (alongside the existing five config templates)
+- [X] T003 Add `resource_container.py.jinja2` to `src/scaffold_ca_python/templates/project/application/config/resource_container.py.jinja2` — stub `ResourceContainer(containers.DeclarativeContainer)` that wires `Settings` from `{{ python_package }}.application.config.config`
+- [X] T004 Register `resource_container.py.jinja2` in the `application/config/` emission block of `src/scaffold_ca_python/commands/generate_project.py` (alongside the existing five config templates)
 
 **Checkpoint**: `uv run pytest tests/templates/test_project_templates.py -k resource_container` must be green before proceeding to Phase 3.
 

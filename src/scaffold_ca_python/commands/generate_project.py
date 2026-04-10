@@ -79,6 +79,7 @@ def _generate_project_impl(
     for _fname in (
         "__init__.py",
         "config.py",
+        "resource_container.py",
         "driven_adapters_container.py",
         "usecases_container.py",
         "container.py",
