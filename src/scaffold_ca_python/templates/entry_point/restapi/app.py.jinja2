@@ -12,7 +12,7 @@ from starlette.exceptions import HTTPException
 
 from {{ project.python_package }}.application.config.container import Container
 from {{ project.python_package }}.application.config.config import Settings
-from {{ project.python_package }}.infrastructure.entry_points.api.v1.rest_controller import router
+from {{ project.python_package }}.infrastructure.entry_points.api.v1 import rest_controller
 from {{ project.python_package }}.infrastructure.entry_points.api.v1.exception_handler import (
     generic_exception_handler,
     http_exception_handler,
@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     container: Container = app.state.container  # type: ignore[attr-defined]
     container.wire(
         modules=[
-            "{{ project.python_package }}.infrastructure.entry_points.api.v1.rest_controller",
+            rest_controller,
         ]
     )
     logger.info("Application startup complete.")
@@ -45,6 +45,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="{{ project.name }}",
         lifespan=lifespan,
+        root_path="/api"
     )
     app.state.container = container  # type: ignore[attr-defined]
     app.state.settings = settings  # type: ignore[attr-defined]
@@ -53,7 +54,7 @@ def create_app() -> FastAPI:
     app.add_exception_handler(RequestValidationError, validation_exception_handler)  # type: ignore[arg-type]
     app.add_exception_handler(Exception, generic_exception_handler)  # type: ignore[arg-type]
 
-    app.include_router(router)
+    app.include_router(rest_controller.router)
 
     return app
 

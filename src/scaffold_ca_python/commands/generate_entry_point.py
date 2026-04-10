@@ -232,7 +232,6 @@ def _build_operations(
             _src("__init__.py.jinja2", "__init__.py"),
             _src("rest_controller.py.jinja2", "rest_controller.py"),
             _src("exception_handler.py.jinja2", "exception_handler.py"),
-            _src("schemas.py.jinja2", "schemas.py"),
             CreateFile(
                 file=GeneratedFile(
                     path=server_path,
@@ -243,7 +242,6 @@ def _build_operations(
             _test("test_rest_controller.py.jinja2", "test_rest_controller.py"),
             _test("test_server.py.jinja2", "test_server.py"),
             _test("test_exception_handler.py.jinja2", "test_exception_handler.py"),
-            _test("test_schemas.py.jinja2", "test_schemas.py"),
             CreateFile(
                 file=GeneratedFile(
                     path=test_app_path,
