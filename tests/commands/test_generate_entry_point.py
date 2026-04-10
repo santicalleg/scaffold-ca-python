@@ -62,31 +62,23 @@ def test_restapi_creates_init(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "restapi" / "__init__.py"
+        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "__init__.py"
     ).exists()
 
 
-def test_restapi_creates_main(project_root: Path) -> None:
+def test_restapi_creates_rest_controller(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "restapi" / "main.py"
+        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "rest_controller.py"
     ).exists()
 
 
-def test_restapi_creates_router(project_root: Path) -> None:
+def test_restapi_creates_exception_handler(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "restapi" / "router.py"
-    ).exists()
-
-
-def test_restapi_creates_health(project_root: Path) -> None:
-    result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
-    assert result.exit_code == 0
-    assert (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "restapi" / "health.py"
+        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "exception_handler.py"
     ).exists()
 
 
@@ -94,24 +86,40 @@ def test_restapi_creates_schemas(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "restapi" / "schemas.py"
+        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "schemas.py"
     ).exists()
+
+
+def test_restapi_creates_server_py(project_root: Path) -> None:
+    result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
+    assert result.exit_code == 0
+    assert (project_root / "src" / "my_app" / "server.py").exists()
 
 
 def test_restapi_creates_test(project_root: Path) -> None:
     result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root / "tests" / "infrastructure" / "entry_points" / "restapi" / "test_router.py"
+        project_root / "tests" / "infrastructure" / "entry_points" / "api" / "v1" / "test_rest_controller.py"
     ).exists()
 
 
 def test_restapi_main_contains_fastapi(project_root: Path) -> None:
     runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
     content = (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "restapi" / "main.py"
+        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "rest_controller.py"
     ).read_text()
-    assert "FastAPI" in content or "fastapi" in content
+    assert "FastAPI" in content or "APIRouter" in content
+
+
+def test_restapi_dry_run_lists_all_planned_files_and_writes_nothing(project_root: Path) -> None:
+    result = runner.invoke(app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False)
+    assert result.exit_code == 0
+    assert "rest_controller.py" in result.output
+    assert "exception_handler.py" in result.output
+    assert "schemas.py" in result.output
+    assert "server.py" in result.output
+    assert not (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api").exists()
 
 
 # ---------------------------------------------------------------------------
@@ -133,7 +141,7 @@ def test_swagger_schemas_contains_routes(project_root: Path, swagger_file: Path)
         catch_exceptions=False,
     )
     content = (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "restapi" / "schemas.py"
+        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "schemas.py"
     ).read_text()
     # routes from OpenAPI spec should be mentioned
     assert "/users" in content or "/orders" in content or "routes" in content.lower()
@@ -296,7 +304,7 @@ def test_dry_run_writes_nothing(project_root: Path) -> None:
     )
     assert result.exit_code == 0
     assert not (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "restapi" / "main.py"
+        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "rest_controller.py"
     ).exists()
 
 
@@ -304,7 +312,7 @@ def test_dry_run_prints_paths(project_root: Path) -> None:
     result = runner.invoke(
         app, ["gep", "--type", "restapi", "--dry-run"], catch_exceptions=False
     )
-    assert "restapi" in result.output
+    assert "api" in result.output or "v1" in result.output or "server.py" in result.output
 
 
 # ---------------------------------------------------------------------------
@@ -429,10 +437,11 @@ def test_mcp_injects_mcp(project_root: Path) -> None:
 
 def test_restapi_inject_is_idempotent(project_root: Path) -> None:
     runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
-    # Remove both src and test dirs so gep can execute a second time
+    # Remove both src and test dirs and server.py so gep can execute a second time
     import shutil
-    shutil.rmtree(project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "restapi")
-    shutil.rmtree(project_root / "tests" / "infrastructure" / "entry_points" / "restapi", ignore_errors=True)
+    shutil.rmtree(project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api")
+    shutil.rmtree(project_root / "tests" / "infrastructure" / "entry_points" / "api", ignore_errors=True)
+    (project_root / "src" / "my_app" / "server.py").unlink(missing_ok=True)
     runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
     content = (project_root / "pyproject.toml").read_text()
     assert content.count("fastapi") == 1
@@ -463,11 +472,12 @@ def test_gep_restapi_twice_has_exactly_one_fastapi_entry(project_root: Path) -> 
     # First run
     runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
     # Remove generated dirs so gep can run again without hitting the duplicate guard
-    shutil.rmtree(project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "restapi")
+    shutil.rmtree(project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api")
     shutil.rmtree(
-        project_root / "tests" / "infrastructure" / "entry_points" / "restapi",
+        project_root / "tests" / "infrastructure" / "entry_points" / "api",
         ignore_errors=True,
     )
+    (project_root / "src" / "my_app" / "server.py").unlink(missing_ok=True)
     # Second run
     runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
 

@@ -29,7 +29,12 @@ writer = FileWriter()
 _ALLOWED_TYPES = ("restapi", "agent", "mcp", "generic")
 _TYPE_HELP = "Entry-point type: restapi, agent, mcp, generic."
 _DEP_MAP: dict[str, list[str]] = {
-    "restapi": ["fastapi>=0.100", "uvicorn[standard]>=0.20"],
+    "restapi": [
+        "fastapi[standard]>=0.135.2",
+        "uvicorn[standard]>=0.20",
+        "dependency-injector>=4.49.0",
+        "pydantic-settings>=2.13.1",
+    ],
     "agent": ["a2a-sdk>=0.1"],
     "mcp": ["mcp>=1.0"],
     "generic": [],
@@ -113,7 +118,12 @@ def _generate_entry_point_impl(
                 raise typer.Exit(code=1) from None
 
     # --- Determine subdir and module context ---
-    subdir = "mcp_server" if type_ == "mcp" else type_
+    if type_ == "restapi":
+        subdir = "api/v1"
+    elif type_ == "mcp":
+        subdir = "mcp_server"
+    else:
+        subdir = type_
     module_ctx = ModuleContext(
         name=type_.replace("-", "_"),
         layer=Layer.ENTRY_POINTS,
@@ -140,7 +150,7 @@ def _generate_entry_point_impl(
         "enable_mcp_client": enable_mcp_client,
     }
 
-    operations = _build_operations(type_, src_dir, test_dir, ctx_dict)
+    operations = _build_operations(type_, src_dir, test_dir, ctx_dict, project_root, pkg)
 
     deps = _DEP_MAP.get(type_, [])
 
@@ -191,6 +201,8 @@ def _build_operations(
     src_dir: Path,
     test_dir: Path,
     ctx_dict: dict[str, object],
+    project_root: Path | None = None,
+    pkg: str | None = None,
 ) -> list[FileOperation]:
     """Return the CreateFile operations for the given entry-point type."""
     base = f"entry_point/{type_}"
@@ -211,13 +223,18 @@ def _build_operations(
         ))
 
     if type_ == "restapi":
+        assert project_root is not None and pkg is not None
+        server_path = project_root / "src" / pkg / "server.py"
         return [
             _src("__init__.py.jinja2", "__init__.py"),
-            _src("main.py.jinja2", "main.py"),
-            _src("router.py.jinja2", "router.py"),
-            _src("health.py.jinja2", "health.py"),
+            _src("rest_controller.py.jinja2", "rest_controller.py"),
+            _src("exception_handler.py.jinja2", "exception_handler.py"),
             _src("schemas.py.jinja2", "schemas.py"),
-            _test("test_router.py.jinja2", "test_router.py"),
+            CreateFile(file=GeneratedFile(
+                path=server_path,
+                content=renderer.render_string(_tmpl(f"{base}/server.py.jinja2"), ctx_dict),
+                template_name=f"{base}/server.py.jinja2",
+            )),
         ]
     if type_ == "agent":
         return [

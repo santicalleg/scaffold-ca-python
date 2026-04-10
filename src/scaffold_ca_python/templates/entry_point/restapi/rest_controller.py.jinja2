@@ -1,0 +1,26 @@
+"""REST controller — versioned API router for {{ project.name }}."""
+from __future__ import annotations
+
+import logging
+
+from fastapi import APIRouter
+from fastapi.responses import JSONResponse
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter(prefix="/v1")
+{% if routes %}
+{% for path, method in routes %}
+
+@router.{{ method }}("{{ path }}")
+async def {{ method }}_{{ path | replace("/", "_") | replace("-", "_") | trim("_") }}() -> JSONResponse:
+    """Handle {{ method.upper() }} {{ path }}."""
+    raise NotImplementedError
+{% endfor %}
+{% else %}
+
+@router.get("/health")
+async def health() -> JSONResponse:
+    """Health check endpoint."""
+    return JSONResponse(content={"status": "app is online"})
+{% endif %}

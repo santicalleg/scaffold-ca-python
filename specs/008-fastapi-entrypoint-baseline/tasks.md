@@ -71,23 +71,23 @@
 
 ### Tests for User Story 1 *(write FIRST, confirm failing)*
 
-- [ ] T010 [P] [US1] Write failing test `test_entry_point_restapi_rest_controller_has_apirouter` in `tests/templates/test_entry_point_templates.py` — renders `entry_point/restapi/rest_controller.py.jinja2`, asserts contains `APIRouter`, `async def`, `/health`
-- [ ] T011 [P] [US1] Write failing test `test_entry_point_restapi_exception_handler_has_http_exception` in `tests/templates/test_entry_point_templates.py` — renders `entry_point/restapi/exception_handler.py.jinja2`, asserts contains `HTTPException`, `RequestValidationError`
-- [ ] T012 [P] [US1] Write failing test `test_entry_point_restapi_server_has_fastapi_factory` in `tests/templates/test_entry_point_templates.py` — renders `entry_point/restapi/server.py.jinja2`, asserts contains `FastAPI`, `lifespan`, `Container`, `start_server`
-- [ ] T013 [US1] Update path assertions in `tests/commands/test_generate_entry_point.py` — change all `entry_points/restapi/` path references to `entry_points/api/v1/` and add assertions for `server.py` at package root
+- [X] T010 [P] [US1] Write failing test `test_entry_point_restapi_rest_controller_has_apirouter` in `tests/templates/test_entry_point_templates.py` — renders `entry_point/restapi/rest_controller.py.jinja2`, asserts contains `APIRouter`, `async def`, `/health`
+- [X] T011 [P] [US1] Write failing test `test_entry_point_restapi_exception_handler_has_http_exception` in `tests/templates/test_entry_point_templates.py` — renders `entry_point/restapi/exception_handler.py.jinja2`, asserts contains `HTTPException`, `RequestValidationError`
+- [X] T012 [P] [US1] Write failing test `test_entry_point_restapi_server_has_fastapi_factory` in `tests/templates/test_entry_point_templates.py` — renders `entry_point/restapi/server.py.jinja2`, asserts contains `FastAPI`, `lifespan`, `Container`, `start_server`
+- [X] T013 [US1] Update path assertions in `tests/commands/test_generate_entry_point.py` — change all `entry_points/restapi/` path references to `entry_points/api/v1/` and add assertions for `server.py` at package root
 
 ### Implementation for User Story 1
 
-- [ ] T014 [P] [US1] Add `rest_controller.py.jinja2` to `src/scaffold_ca_python/templates/entry_point/restapi/rest_controller.py.jinja2` — `APIRouter(prefix="/v1")` with `GET /health` endpoint returning `{"status": "app is online"}` using `async def`; wire into `server.py` app (see ms_test baseline)
-- [ ] T015 [P] [US1] Add `exception_handler.py.jinja2` to `src/scaffold_ca_python/templates/entry_point/restapi/exception_handler.py.jinja2` — handlers for `Exception`, `HTTPException`, `RequestValidationError`; no Jinja2 variables needed (pure Python)
-- [ ] T016 [P] [US1] Add `server.py.jinja2` to `src/scaffold_ca_python/templates/entry_point/restapi/server.py.jinja2` — `create_app()` factory with `lifespan` that wires `Container`, reads `HOST`/`PORT` from `Settings`, registers exception handlers and routers; also exposes `start_server()` entry point; uses `{{ python_package }}` variable
-- [ ] T017 [US1] Update `_build_operations("restapi", ...)` in `src/scaffold_ca_python/commands/generate_entry_point.py`:
+- [X] T014 [P] [US1] Add `rest_controller.py.jinja2` to `src/scaffold_ca_python/templates/entry_point/restapi/rest_controller.py.jinja2` — `APIRouter(prefix="/v1")` with `GET /health` endpoint returning `{"status": "app is online"}` using `async def`; wire into `server.py` app (see ms_test baseline)
+- [X] T015 [P] [US1] Add `exception_handler.py.jinja2` to `src/scaffold_ca_python/templates/entry_point/restapi/exception_handler.py.jinja2` — handlers for `Exception`, `HTTPException`, `RequestValidationError`; no Jinja2 variables needed (pure Python)
+- [X] T016 [P] [US1] Add `server.py.jinja2` to `src/scaffold_ca_python/templates/entry_point/restapi/server.py.jinja2` — `create_app()` factory with `lifespan` that wires `Container`, reads `HOST`/`PORT` from `Settings`, registers exception handlers and routers; also exposes `start_server()` entry point; uses `{{ python_package }}` variable
+- [X] T017 [US1] Update `_build_operations("restapi", ...)` in `src/scaffold_ca_python/commands/generate_entry_point.py`:
   - Change subdir from `"restapi"` to `"api/v1"` (emit into `infrastructure/entry_points/api/v1/`)
   - Replace emitted file list: `__init__.py`, `rest_controller.py`, `exception_handler.py`, `schemas.py` (remove `health.py`, `router.py`, `main.py` from emission)
   - Add `server.py` operation emitting to `src/<pkg>/server.py` (package root)
   - Keep `entrypoint_main.py.jinja2` → `main.py` overwrite (unchanged)
-- [ ] T018 [US1] Update `_DEP_MAP["restapi"]` in `src/scaffold_ca_python/commands/generate_entry_point.py` to `["fastapi[standard]>=0.135.2", "uvicorn[standard]>=0.20", "dependency-injector>=4.49.0", "pydantic-settings>=2.13.1"]`
-- [ ] T018b [US1] Write failing test `test_gep_restapi_dry_run_lists_all_planned_files_and_writes_nothing` in `tests/commands/test_generate_entry_point.py` — invokes `gep --type restapi --dry-run` on a clean project, asserts exit 0, asserts output contains all six planned file paths (`__init__.py`, `rest_controller.py`, `exception_handler.py`, `schemas.py`, `server.py`, `test_rest_controller.py`), and asserts none of those files were created on disk (FR-013, SC-005)
+- [X] T018 [US1] Update `_DEP_MAP["restapi"]` in `src/scaffold_ca_python/commands/generate_entry_point.py` to `["fastapi[standard]>=0.135.2", "uvicorn[standard]>=0.20", "dependency-injector>=4.49.0", "pydantic-settings>=2.13.1"]`
+- [X] T018b [US1] Write failing test `test_gep_restapi_dry_run_lists_all_planned_files_and_writes_nothing` in `tests/commands/test_generate_entry_point.py` — invokes `gep --type restapi --dry-run` on a clean project, asserts exit 0, asserts output contains all six planned file paths (`__init__.py`, `rest_controller.py`, `exception_handler.py`, `schemas.py`, `server.py`, `test_rest_controller.py`), and asserts none of those files were created on disk (FR-013, SC-005)
 
 **Checkpoint**: `uv run pytest tests/commands/test_generate_entry_point.py tests/templates/test_entry_point_templates.py` must be green before proceeding to Phase 5.
 

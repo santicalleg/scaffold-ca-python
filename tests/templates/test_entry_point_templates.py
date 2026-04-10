@@ -51,6 +51,33 @@ def test_restapi_router_has_async_def() -> None:
     assert "async def" in out
 
 
+def test_entry_point_restapi_rest_controller_has_apirouter() -> None:
+    out = renderer.render_string(
+        _tmpl("entry_point/restapi/rest_controller.py.jinja2"), _ctx().model_dump()
+    )
+    assert "APIRouter" in out
+    assert "async def" in out
+    assert "/health" in out
+
+
+def test_entry_point_restapi_exception_handler_has_http_exception() -> None:
+    out = renderer.render_string(
+        _tmpl("entry_point/restapi/exception_handler.py.jinja2"), _ctx().model_dump()
+    )
+    assert "HTTPException" in out
+    assert "RequestValidationError" in out
+
+
+def test_entry_point_restapi_server_has_fastapi_factory() -> None:
+    out = renderer.render_string(
+        _tmpl("entry_point/restapi/server.py.jinja2"), _ctx().model_dump()
+    )
+    assert "FastAPI" in out
+    assert "lifespan" in out
+    assert "Container" in out
+    assert "start_server" in out
+
+
 # ---------------------------------------------------------------------------
 # agent
 # ---------------------------------------------------------------------------
