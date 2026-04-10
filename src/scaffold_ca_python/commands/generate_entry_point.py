@@ -98,6 +98,20 @@ def _generate_entry_point_impl(
 
     project_ctx = _load_project_context(project_root)
 
+    # --- Compatibility guard (restapi vs mcp/agent) --------------------------
+    if type_ == "restapi":
+        pkg_ep = project_root / "src" / project_ctx.python_package / "infrastructure" / "entry_points"
+        for incompatible in ("mcp_server", "agent"):
+            conflict_dir = pkg_ep / incompatible
+            if conflict_dir.exists():
+                console.print(
+                    f"[red]Error:[/red] Incompatible entry point '[bold]{incompatible}[/bold]' "
+                    f"already exists at: {conflict_dir.relative_to(project_root)}\n"
+                    "[dim]Hint:[/dim] A project may have only one entry-point type. "
+                    f"Remove '{conflict_dir.relative_to(project_root)}' before adding restapi."
+                )
+                raise typer.Exit(code=1) from None
+
     # --- Determine subdir and module context ---
     subdir = "mcp_server" if type_ == "mcp" else type_
     module_ctx = ModuleContext(

@@ -50,14 +50,14 @@
 
 ### Tests for User Story 3 *(write FIRST, confirm failing)*
 
-- [ ] T005 [P] [US3] Write failing test `test_gep_restapi_blocked_when_mcp_server_exists` in `tests/commands/test_generate_entry_point.py` — creates `mcp_server/` dir in tmp project, invokes `gep --type restapi`, asserts exit code 1, no `api/v1/` directory created
-- [ ] T006 [P] [US3] Write failing test `test_gep_restapi_blocked_when_agent_exists` in `tests/commands/test_generate_entry_point.py` — creates `agent/` dir in tmp project, invokes `gep --type restapi`, asserts exit code 1, no `api/v1/` directory created
-- [ ] T007 [P] [US3] Write failing test `test_gep_restapi_proceeds_when_no_incompatible_entry_point` in `tests/commands/test_generate_entry_point.py` — clean project, asserts generation proceeds normally (exit 0)
-- [ ] T008 [P] [US3] Write failing test `test_gep_restapi_dry_run_still_reports_mcp_conflict` in `tests/commands/test_generate_entry_point.py` — `mcp_server/` + `--dry-run` → exit 1, no files written
+- [X] T005 [P] [US3] Write failing test `test_gep_restapi_blocked_when_mcp_server_exists` in `tests/commands/test_generate_entry_point.py` — creates `mcp_server/` dir in tmp project, invokes `gep --type restapi`, asserts exit code 1, no `api/v1/` directory created
+- [X] T006 [P] [US3] Write failing test `test_gep_restapi_blocked_when_agent_exists` in `tests/commands/test_generate_entry_point.py` — creates `agent/` dir in tmp project, invokes `gep --type restapi`, asserts exit code 1, no `api/v1/` directory created
+- [X] T007 [P] [US3] Write failing test `test_gep_restapi_proceeds_when_no_incompatible_entry_point` in `tests/commands/test_generate_entry_point.py` — clean project, asserts generation proceeds normally (exit 0)
+- [X] T008 [P] [US3] Write failing test `test_gep_restapi_dry_run_still_reports_mcp_conflict` in `tests/commands/test_generate_entry_point.py` — `mcp_server/` + `--dry-run` → exit 1, no files written
 
 ### Implementation for User Story 3
 
-- [ ] T009 [US3] Add compatibility guard loop in `src/scaffold_ca_python/commands/generate_entry_point.py` — immediately after project root discovery, before the duplicate-directory guard: iterate `("mcp_server", "agent")`, check for dir existence, print Rich error with conflicting path + resolution hint, raise `typer.Exit(code=1)`
+- [X] T009 [US3] Add compatibility guard loop in `src/scaffold_ca_python/commands/generate_entry_point.py` — immediately after project root discovery, before the duplicate-directory guard: iterate `("mcp_server", "agent")`, check for dir existence, print Rich error with conflicting path + resolution hint, raise `typer.Exit(code=1)`
 
 **Checkpoint**: `uv run pytest tests/commands/test_generate_entry_point.py -k "blocked_when or proceeds_when or dry_run_still_reports"` must be green before proceeding to Phase 4.
 

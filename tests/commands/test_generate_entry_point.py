@@ -511,3 +511,59 @@ def test_gep_no_args_exits_0() -> None:
 def test_gep_no_args_shows_type_option() -> None:
     result = runner.invoke(app, ["gep"])
     assert "--type" in result.output
+
+
+# ---------------------------------------------------------------------------
+# US3 (feature 008): compatibility guard — T005/T006/T007/T008
+# ---------------------------------------------------------------------------
+
+
+def test_gep_restapi_blocked_when_mcp_server_exists(
+    project_root: Path,
+) -> None:
+    """FR-009: exit 1 when mcp_server/ dir already exists; no api/v1/ created."""
+    conflict = project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "mcp_server"
+    conflict.mkdir(parents=True)
+
+    result = runner.invoke(app, ["gep", "--type", "restapi"])
+
+    assert result.exit_code == 1
+    assert not (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api").exists()
+    assert "mcp_server" in result.output
+
+
+def test_gep_restapi_blocked_when_agent_exists(
+    project_root: Path,
+) -> None:
+    """FR-010: exit 1 when agent/ dir already exists; no api/v1/ created."""
+    conflict = project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "agent"
+    conflict.mkdir(parents=True)
+
+    result = runner.invoke(app, ["gep", "--type", "restapi"])
+
+    assert result.exit_code == 1
+    assert not (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api").exists()
+    assert "agent" in result.output
+
+
+def test_gep_restapi_proceeds_when_no_incompatible_entry_point(
+    project_root: Path,
+) -> None:
+    """FR-009/FR-010: clean project — guard must NOT block generation."""
+    result = runner.invoke(app, ["gep", "--type", "restapi"])
+
+    assert result.exit_code == 0
+
+
+def test_gep_restapi_dry_run_still_reports_mcp_conflict(
+    project_root: Path,
+) -> None:
+    """FR-013: --dry-run does not bypass the compatibility guard."""
+    conflict = project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "mcp_server"
+    conflict.mkdir(parents=True)
+
+    result = runner.invoke(app, ["gep", "--type", "restapi", "--dry-run"])
+
+    assert result.exit_code == 1
+    assert not (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api").exists()
+    assert "mcp_server" in result.output
