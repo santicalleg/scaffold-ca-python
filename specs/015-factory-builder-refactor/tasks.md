@@ -72,12 +72,12 @@ all six commands are migrated and the full regression suite passes.
 **Independent test**: `uv run pytest tests/commands/ --no-cov -q` — all existing
 command tests pass with no modifications.
 
-- [ ] T024 [US2] Write failing tests for `DrivenAdapterRestConsumer.build()` in `tests/factory/driven_adapters/test_da_rest_consumer.py` (files queued, httpx dep, test stub)
-- [ ] T025 [US2] Implement `DrivenAdapterRestConsumer` in `src/scaffold_ca_python/factory/driven_adapters/da_rest_consumer.py`
-- [ ] T026 [P] [US2] Write failing tests for `DrivenAdapterSecrets.build()` in `tests/factory/driven_adapters/test_da_secrets.py`
-- [ ] T027 [P] [US2] Implement `DrivenAdapterSecrets` in `src/scaffold_ca_python/factory/driven_adapters/da_secrets.py`
-- [ ] T028 [P] [US2] Write failing tests for `DrivenAdapterGeneric.build()` in `tests/factory/driven_adapters/test_da_generic.py`
-- [ ] T029 [P] [US2] Implement `DrivenAdapterGeneric` in `src/scaffold_ca_python/factory/driven_adapters/da_generic.py`
+ [x] T024 [US2] Write failing tests for `DrivenAdapterRestConsumer.build()` in `tests/factory/driven_adapters/test_da_rest_consumer.py` (files queued, httpx dep, test stub)
+ [x] T025 [US2] Implement `DrivenAdapterRestConsumer` in `src/scaffold_ca_python/factory/driven_adapters/da_rest_consumer.py`
+ [x] T026 [P] [US2] Write failing tests for `DrivenAdapterSecrets.build()` in `tests/factory/driven_adapters/test_da_secrets.py`
+ [x] T027 [P] [US2] Implement `DrivenAdapterSecrets` in `src/scaffold_ca_python/factory/driven_adapters/da_secrets.py`
+ [x] T028 [P] [US2] Write failing tests for `DrivenAdapterGeneric.build()` in `tests/factory/driven_adapters/test_da_generic.py`
+ [x] T029 [P] [US2] Implement `DrivenAdapterGeneric` in `src/scaffold_ca_python/factory/driven_adapters/da_generic.py`
 - [ ] T030 [US2] Refactor `src/scaffold_ca_python/commands/generate_driven_adapter.py` to thin + `_REGISTRY`; remove FileWriter/TemplateRenderer/pyproject_writer imports
 - [ ] T031 [US2] Run `uv run pytest tests/commands/ --no-cov -q` and confirm zero regressions (no test file modified)
 

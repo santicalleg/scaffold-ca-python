@@ -1,8 +1,7 @@
-"""generate_driven_adapter: scaffold a driven adapter and test stub (T048)."""
+"""generate_driven_adapter: scaffold a driven adapter and test stub (T030)."""
 
 from __future__ import annotations
 
-import importlib.resources
 import tomllib
 from pathlib import Path
 from typing import Annotated
@@ -11,20 +10,23 @@ import typer
 from rich.console import Console
 from rich.tree import Tree
 
-from scaffold_ca_python.core.file_writer import FileWriter
+from scaffold_ca_python.core.module_builder import ModuleBuilder
 from scaffold_ca_python.core.name_utils import ScaffoldError, to_snake_case, validate_name
-from scaffold_ca_python.core.project_detector import find_project_root, resolve_tests_root
-from scaffold_ca_python.core.pyproject_writer import dry_run_inject, inject_dependencies
-from scaffold_ca_python.core.template_renderer import TemplateRenderer
+from scaffold_ca_python.core.project_detector import find_project_root
+from scaffold_ca_python.factory import ModuleFactory
+from scaffold_ca_python.factory.driven_adapters.da_generic import DrivenAdapterGeneric
+from scaffold_ca_python.factory.driven_adapters.da_rest_consumer import DrivenAdapterRestConsumer
+from scaffold_ca_python.factory.driven_adapters.da_secrets import DrivenAdapterSecrets
 from scaffold_ca_python.models.context import ModuleContext, ProjectContext
-from scaffold_ca_python.models.file_operation import CreateFile, FileOperation, GeneratedFile
 from scaffold_ca_python.models.layer import Layer
 
 console = Console()
-renderer = TemplateRenderer()
-writer = FileWriter()
 
-_ALLOWED_TYPES = ("rest-consumer", "secrets", "generic")
+_REGISTRY: dict[str, type[ModuleFactory]] = {
+    "rest-consumer": DrivenAdapterRestConsumer,
+    "secrets": DrivenAdapterSecrets,
+    "generic": DrivenAdapterGeneric,
+}
 
 _TYPE_HELP = "Adapter type: rest-consumer, secrets, generic."
 
@@ -38,17 +40,11 @@ _GDA_EPILOG = (
     "  scaffold gda --type generic --name MyAdapter\n"
 )
 
-_DEP_MAP: dict[str, list[str]] = {
-    "rest-consumer": ["httpx>=0.27"],
-    "secrets": ["boto3>=1.34"],
-    "generic": [],
-}
-
 
 def _generate_driven_adapter_impl(type_: str, name: str | None, dry_run: bool) -> None:  # noqa: ANN001
     # --- Validate type ---
-    if type_ not in _ALLOWED_TYPES:
-        console.print(f"[red]Error:[/red] Unknown type '{type_}'. Allowed: {', '.join(_ALLOWED_TYPES)}.")
+    if type_ not in _REGISTRY:
+        console.print(f"[red]Error:[/red] Unknown type '{type_}'. Allowed: {', '.join(_REGISTRY.keys())}.")
         raise typer.Exit(code=1) from None
 
     # --- Validate name requirement for generic ---
@@ -73,7 +69,7 @@ def _generate_driven_adapter_impl(type_: str, name: str | None, dry_run: bool) -
 
     project_ctx = _load_project_context(project_root)
 
-    # --- Determine subdir name and module context ---
+    # --- Determine module context and subdir from type/name ---
     if type_ == "rest-consumer":
         subdir = "rest_consumer"
         module_ctx = ModuleContext(name="RestConsumer", layer=Layer.DRIVEN_ADAPTERS, project=project_ctx)
@@ -87,7 +83,6 @@ def _generate_driven_adapter_impl(type_: str, name: str | None, dry_run: bool) -
 
     pkg = project_ctx.python_package
     src_dir = project_root / "src" / pkg / "infrastructure" / "driven_adapters" / subdir
-    test_dir = resolve_tests_root(project_root) / "infrastructure" / "driven_adapters" / subdir
 
     # --- Duplicate guard ---
     if src_dir.exists():
@@ -97,122 +92,35 @@ def _generate_driven_adapter_impl(type_: str, name: str | None, dry_run: bool) -
         )
         raise typer.Exit(code=1) from None
 
-    ctx_dict = module_ctx.model_dump()
-    operations = _build_operations(type_, subdir, src_dir, test_dir, ctx_dict)
+    # --- Create builder and get factory from registry ---
+    builder = ModuleBuilder(
+        project_root=project_root,
+        project_ctx=project_ctx,
+        module_ctx=module_ctx,
+        dry_run=dry_run,
+    )
 
-    deps = _DEP_MAP.get(type_, [])
+    # Get factory class and instantiate
+    factory_class = _REGISTRY[type_]
+    factory = factory_class()
 
+    # Invoke factory to build via ModuleBuilder
+    factory.build(builder)
+
+    # Persist all operations
+    created = builder.persist()
+
+    # --- Display results ---
     if dry_run:
-        preview = writer.execute(operations, dry_run=True)
         tree = Tree(f"[bold]{subdir}[/bold] (dry run)")
-        for p in sorted(preview):
+        for p in sorted(created):
             tree.add(str(p.relative_to(project_root)))
         console.print(tree)
-        if deps:
-            would_add = dry_run_inject(project_root, deps)
-            if would_add:
-                console.print(f"[dim]Would add to [project.dependencies]: {', '.join(would_add)}[/dim]")
+        if builder._dependencies:
+            console.print(f"[dim]Would add to [project.dependencies]: {', '.join(builder._dependencies)}[/dim]")
         return
 
-    created = writer.execute(operations, dry_run=False)
     console.print(f"[green]✓[/green] Driven adapter [bold]{subdir}[/bold] created. Created {len(created)} file(s).")
-
-    # --- Inject dependencies ------------------------------------------------
-    if deps:
-        added = inject_dependencies(project_root, deps)
-        if added:
-            console.print(f"[green]✓[/green] Added {', '.join(added)} to [project.dependencies].")
-
-
-def _build_operations(
-    type_: str,
-    subdir: str,
-    src_dir: Path,
-    test_dir: Path,
-    ctx_dict: dict[str, object],
-) -> list[FileOperation]:
-    """Return the list of CreateFile operations for the given adapter type."""
-    if type_ == "rest-consumer":
-        return [
-            CreateFile(
-                file=GeneratedFile(
-                    path=src_dir / "__init__.py",
-                    content=renderer.render_string(_tmpl("driven_adapter/rest_consumer/__init__.py.jinja2"), ctx_dict),
-                    template_name="driven_adapter/rest_consumer/__init__.py.jinja2",
-                )
-            ),
-            CreateFile(
-                file=GeneratedFile(
-                    path=src_dir / "rest_consumer.py",
-                    content=renderer.render_string(
-                        _tmpl("driven_adapter/rest_consumer/rest_consumer.py.jinja2"), ctx_dict
-                    ),
-                    template_name="driven_adapter/rest_consumer/rest_consumer.py.jinja2",
-                )
-            ),
-            CreateFile(
-                file=GeneratedFile(
-                    path=test_dir / "test_rest_consumer.py",
-                    content=renderer.render_string(
-                        _tmpl("driven_adapter/rest_consumer/test_rest_consumer.py.jinja2"), ctx_dict
-                    ),
-                    template_name="driven_adapter/rest_consumer/test_rest_consumer.py.jinja2",
-                    is_test=True,
-                )
-            ),
-        ]
-    if type_ == "secrets":
-        return [
-            CreateFile(
-                file=GeneratedFile(
-                    path=src_dir / "__init__.py",
-                    content=renderer.render_string(_tmpl("driven_adapter/secrets/__init__.py.jinja2"), ctx_dict),
-                    template_name="driven_adapter/secrets/__init__.py.jinja2",
-                )
-            ),
-            CreateFile(
-                file=GeneratedFile(
-                    path=src_dir / "secrets_adapter.py",
-                    content=renderer.render_string(_tmpl("driven_adapter/secrets/secrets_adapter.py.jinja2"), ctx_dict),
-                    template_name="driven_adapter/secrets/secrets_adapter.py.jinja2",
-                )
-            ),
-            CreateFile(
-                file=GeneratedFile(
-                    path=test_dir / "test_secrets_adapter.py",
-                    content=renderer.render_string(
-                        _tmpl("driven_adapter/secrets/test_secrets_adapter.py.jinja2"), ctx_dict
-                    ),
-                    template_name="driven_adapter/secrets/test_secrets_adapter.py.jinja2",
-                    is_test=True,
-                )
-            ),
-        ]
-    # generic
-    return [
-        CreateFile(
-            file=GeneratedFile(
-                path=src_dir / "__init__.py",
-                content=renderer.render_string(_tmpl("driven_adapter/generic/__init__.py.jinja2"), ctx_dict),
-                template_name="driven_adapter/generic/__init__.py.jinja2",
-            )
-        ),
-        CreateFile(
-            file=GeneratedFile(
-                path=src_dir / f"{subdir}_adapter.py",
-                content=renderer.render_string(_tmpl("driven_adapter/generic/adapter.py.jinja2"), ctx_dict),
-                template_name="driven_adapter/generic/adapter.py.jinja2",
-            )
-        ),
-        CreateFile(
-            file=GeneratedFile(
-                path=test_dir / f"test_{subdir}_adapter.py",
-                content=renderer.render_string(_tmpl("driven_adapter/generic/test_adapter.py.jinja2"), ctx_dict),
-                template_name="driven_adapter/generic/test_adapter.py.jinja2",
-                is_test=True,
-            )
-        ),
-    ]
 
 
 def register(app: typer.Typer) -> None:
@@ -286,8 +194,3 @@ def _load_project_context(root: Path) -> ProjectContext:
     return ProjectContext(
         name=section.get("name", root.name),
     )
-
-
-def _tmpl(name: str) -> str:
-    ref = importlib.resources.files("scaffold_ca_python.templates").joinpath(name)
-    return ref.read_text(encoding="utf-8")
