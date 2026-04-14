@@ -91,16 +91,16 @@ command in scope uses only `ModuleBuilder`. After this phase, no command file im
 
 **Independent test**: `uv run pytest tests/factory/simple/ tests/commands/test_generate_model.py tests/commands/test_generate_use_case.py tests/commands/test_generate_helper.py tests/commands/test_delete_module.py --no-cov -q`
 
-- [ ] T032 [US3] Write failing tests for `ModelFactory.build()` in `tests/factory/simple/test_model_factory.py`
-- [ ] T033 [US3] Implement `ModelFactory` in `src/scaffold_ca_python/factory/simple/model_factory.py`; refactor `src/scaffold_ca_python/commands/generate_model.py` to use `ModuleBuilder` and add `_REGISTRY: dict[str, type[ModuleFactory]] = {"<type>": ModelFactory}` (FR-006)
-- [ ] T034 [P] [US3] Write failing tests for `UseCaseFactory.build()` in `tests/factory/simple/test_use_case_factory.py`
-- [ ] T035 [P] [US3] Implement `UseCaseFactory` in `src/scaffold_ca_python/factory/simple/use_case_factory.py`; refactor `src/scaffold_ca_python/commands/generate_use_case.py` and add `_REGISTRY` (FR-006)
-- [ ] T036 [P] [US3] Write failing tests for `HelperFactory.build()` in `tests/factory/simple/test_helper_factory.py`
-- [ ] T037 [P] [US3] Implement `HelperFactory` in `src/scaffold_ca_python/factory/simple/helper_factory.py`; refactor `src/scaffold_ca_python/commands/generate_helper.py` and add `_REGISTRY` (FR-006)
-- [ ] T038 [P] [US3] Write failing tests for `DeleteModuleFactory.build()` in `tests/factory/simple/test_delete_module_factory.py`
-- [ ] T039 [P] [US3] Implement `DeleteModuleFactory` in `src/scaffold_ca_python/factory/simple/delete_module_factory.py`; refactor `src/scaffold_ca_python/commands/delete_module.py` and add `_REGISTRY` (FR-006)
-- [ ] T040 [US3] Verify FR-007 compliance: assert no file under `src/scaffold_ca_python/factory/` imports `FileWriter`, `TemplateRenderer`, or `pyproject_writer` directly (grep `from scaffold_ca_python.core.file_writer|template_renderer|pyproject_writer` on the factory/ tree must return 0 results); also assert no command file in `src/scaffold_ca_python/commands/` imports those utilities (commands must route through `ModuleBuilder`)
-- [ ] T041 [US3] Run `uv run pytest tests/factory/simple/ tests/commands/ --no-cov -q` and confirm all pass
+[x] T032 [US3] Write failing tests for `ModelFactory.build()` in `tests/factory/simple/test_model_factory.py`
+- [x] T033 [US3] Implement `ModelFactory` in `src/scaffold_ca_python/factory/simple/model_factory.py`; refactor `src/scaffold_ca_python/commands/generate_model.py` to use `ModuleBuilder` and add `_REGISTRY: dict[str, type[ModuleFactory]] = {"<type>": ModelFactory}` (FR-006)
+- [x] T034 [P] [US3] Write failing tests for `UseCaseFactory.build()` in `tests/factory/simple/test_use_case_factory.py`
+- [x] T035 [P] [US3] Implement `UseCaseFactory` in `src/scaffold_ca_python/factory/simple/use_case_factory.py`; refactor `src/scaffold_ca_python/commands/generate_use_case.py` and add `_REGISTRY` (FR-006)
+- [x] T036 [P] [US3] Write failing tests for `HelperFactory.build()` in `tests/factory/simple/test_helper_factory.py`
+- [x] T037 [P] [US3] Implement `HelperFactory` in `src/scaffold_ca_python/factory/simple/helper_factory.py`; refactor `src/scaffold_ca_python/commands/generate_helper.py` and add `_REGISTRY` (FR-006)
+- [x] T038 [P] [US3] Write failing tests for `DeleteModuleFactory.build()` in `tests/factory/simple/test_delete_module_factory.py`
+- [x] T039 [P] [US3] Implement `DeleteModuleFactory` in `src/scaffold_ca_python/factory/simple/delete_module_factory.py`; refactor `src/scaffold_ca_python/commands/delete_module.py` and add `_REGISTRY` (FR-006)
+- [x] T040 [US3] Verify FR-007 compliance: assert no file under `src/scaffold_ca_python/factory/` imports `FileWriter`, `TemplateRenderer`, or `pyproject_writer` directly (grep `from scaffold_ca_python.core.file_writer|template_renderer|pyproject_writer` on the factory/ tree must return 0 results); also assert no command file in `src/scaffold_ca_python/commands/` imports those utilities (commands must route through `ModuleBuilder`)
+- [x] T041 [US3] Run `uv run pytest tests/factory/simple/ tests/commands/ --no-cov -q` and confirm all pass
 
 ---
 
@@ -111,7 +111,7 @@ command in scope uses only `ModuleBuilder`. After this phase, no command file im
 
 **Independent test**: `uv run pytest tests/factory/test_registry.py tests/factory/test_dry_run_parity.py --no-cov -q`
 
-- [ ] T042 [US4] Write `tests/factory/test_registry.py` — assert `_REGISTRY` for `gep` contains exactly {restapi, agent, mcp, generic}; assert `_REGISTRY` for `gda` contains exactly {rest-consumer, secrets, generic}; assert unknown type lookup produces error listing valid keys
+- [ ] T042 [US4] Write `tests/factory/test_registry.py` — assert `_REGISTRY` for `gep` contains exactly {restapi, agent, mcp, generic}; assert `_REGISTRY` for `gda` contains exactly {rest-consumer, secrets, generic}; assert all 6 simple commands have `_REGISTRY` with their respective types; assert unknown type lookup produces error listing valid keys
 - [ ] T043 [US4] Write `tests/factory/test_dry_run_parity.py` — for each type in both commands, compare dry-run preview path set against a captured pre-refactor baseline fixture
 - [ ] T044 [US4] Write SC-002 extensibility proof test in `tests/factory/test_extensibility.py` — define a stub factory inline, register it under a new key in a patched `_REGISTRY`, invoke the command with the stub type, assert factory was called; zero existing command files modified
 

@@ -1,8 +1,7 @@
-"""generate_model: scaffold a domain model class and test stub (T037)."""
+"""generate_model: scaffold a domain model class and test stub (T033)."""
 
 from __future__ import annotations
 
-import importlib.resources
 import tomllib
 from pathlib import Path
 from typing import Annotated
@@ -11,26 +10,30 @@ import typer
 from rich.console import Console
 from rich.tree import Tree
 
-from scaffold_ca_python.core.file_writer import FileWriter
+from scaffold_ca_python.core.module_builder import ModuleBuilder
 from scaffold_ca_python.core.name_utils import ScaffoldError, validate_name
-from scaffold_ca_python.core.project_detector import find_project_root, resolve_tests_root
-from scaffold_ca_python.core.template_renderer import TemplateRenderer
+from scaffold_ca_python.core.project_detector import find_project_root
+from scaffold_ca_python.factory import ModuleFactory
+from scaffold_ca_python.factory.simple.model_factory import ModelFactory
 from scaffold_ca_python.models.context import ModuleContext, ProjectContext
-from scaffold_ca_python.models.file_operation import CreateFile, FileOperation, GeneratedFile
 from scaffold_ca_python.models.layer import Layer
 
 console = Console()
-renderer = TemplateRenderer()
-writer = FileWriter()
+
+_REGISTRY: dict[str, type[ModuleFactory]] = {
+    "model": ModelFactory,
+}
 
 
 def _generate_model_impl(name: str, dry_run: bool) -> None:
+    # --- Validate name ---
     try:
         validate_name(name)
     except ScaffoldError as exc:
         console.print(f"[red]Error:[/red] {exc}")
         raise typer.Exit(code=1) from None
 
+    # --- Locate project root ---
     try:
         project_root = find_project_root()
     except ScaffoldError:
@@ -40,49 +43,45 @@ def _generate_model_impl(name: str, dry_run: bool) -> None:
     project_ctx = _load_project_context(project_root)
     module_ctx = ModuleContext(name=name, layer=Layer.DOMAIN_MODEL, project=project_ctx)
 
-    src_path = project_root / "src" / project_ctx.python_package / "domain" / "model" / f"{module_ctx.module_name}.py"
-    test_path = resolve_tests_root(project_root) / "domain" / "model" / f"test_{module_ctx.module_name}.py"
+    pkg = project_ctx.python_package
+    src_dir = project_root / "src" / pkg / "domain" / "model"
 
-    if src_path.exists() or test_path.exists():
-        existing = src_path if src_path.exists() else test_path
+    # --- Duplicate guard ---
+    src_path = src_dir / f"{module_ctx.module_name}.py"
+    if src_path.exists():
         console.print(
-            f"[red]Error:[/red] File '{existing.relative_to(project_root)}' already exists. "
-            "Use --force to overwrite.\n"
+            f"[red]Error:[/red] File '{src_path.relative_to(project_root)}' already exists.\n"
             "[dim]Hint:[/dim] Choose a different name or remove the existing file first."
         )
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from None
 
-    ctx_dict = module_ctx.model_dump()
-    operations: list[FileOperation] = [
-        CreateFile(
-            file=GeneratedFile(
-                path=src_path,
-                content=renderer.render_string(_tmpl("model/model.py.jinja2"), ctx_dict),
-                template_name="model/model.py.jinja2",
-            )
-        ),
-        CreateFile(
-            file=GeneratedFile(
-                path=test_path,
-                content=renderer.render_string(_tmpl("model/test_model.py.jinja2"), ctx_dict),
-                template_name="model/test_model.py.jinja2",
-                is_test=True,
-            )
-        ),
-    ]
+    # --- Create builder and get factory from registry ---
+    builder = ModuleBuilder(
+        project_root=project_root,
+        project_ctx=project_ctx,
+        module_ctx=module_ctx,
+        dry_run=dry_run,
+    )
 
+    # Get factory class and instantiate
+    factory_class = _REGISTRY["model"]
+    factory = factory_class()
+
+    # Invoke factory to build via ModuleBuilder
+    factory.build(builder)
+
+    # Persist all operations
+    created = builder.persist()
+
+    # --- Display results ---
     if dry_run:
-        preview = writer.execute(operations, dry_run=True)
         tree = Tree(f"[bold]{module_ctx.module_name}[/bold] (dry run)")
-        for p in sorted(preview):
+        for p in sorted(created):
             tree.add(str(p.relative_to(project_root)))
         console.print(tree)
         return
 
-    created = writer.execute(operations, dry_run=False)
-    console.print(
-        f"[green]✓[/green] Model [bold]{module_ctx.class_name}[/bold] created. Created {len(created)} file(s)."
-    )
+    console.print(f"[green]✓[/green] Model [bold]{module_ctx.class_name}[/bold] created. Created {len(created)} file(s).")
 
 
 def register(app: typer.Typer) -> None:
@@ -108,7 +107,7 @@ def register(app: typer.Typer) -> None:
             ),
         ] = False,
     ) -> None:
-        """Scaffold a domain model class inside domain/model/."""
+        """Scaffold a domain model in domain/model/."""
         if name is None:
             typer.echo(ctx.get_help())
             raise typer.Exit(0)
@@ -117,7 +116,7 @@ def register(app: typer.Typer) -> None:
     @app.command("gm", hidden=True, help="Alias for generate-model.")
     def gm(
         ctx: typer.Context,
-        name: Annotated[str | None, typer.Option("--name", help="Model name.")] = None,
+        name: Annotated[str | None, typer.Option("--name", help="Model name (PascalCase).")] = None,
         dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
     ) -> None:
         """Alias for generate-model."""
@@ -140,8 +139,3 @@ def _load_project_context(root: Path) -> ProjectContext:
     return ProjectContext(
         name=section.get("name", root.name),
     )
-
-
-def _tmpl(name: str) -> str:
-    ref = importlib.resources.files("scaffold_ca_python.templates").joinpath(name)
-    return ref.read_text(encoding="utf-8")

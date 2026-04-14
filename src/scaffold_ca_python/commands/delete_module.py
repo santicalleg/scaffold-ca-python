@@ -1,8 +1,7 @@
-"""delete_module: safely remove a previously generated module and its test mirror (T072)."""
+"""delete_module: safely remove a previously generated module and its test mirror (T039)."""
 
 from __future__ import annotations
 
-import shutil
 import tomllib
 from pathlib import Path
 from typing import Annotated
@@ -10,10 +9,19 @@ from typing import Annotated
 import typer
 from rich.console import Console
 
+from scaffold_ca_python.core.module_builder import ModuleBuilder
 from scaffold_ca_python.core.name_utils import ScaffoldError, to_snake_case, validate_name
 from scaffold_ca_python.core.project_detector import find_project_root, resolve_tests_root
+from scaffold_ca_python.factory import ModuleFactory
+from scaffold_ca_python.factory.simple.delete_module_factory import DeleteModuleFactory
+from scaffold_ca_python.models.context import ModuleContext, ProjectContext
+from scaffold_ca_python.models.layer import Layer
 
 console = Console()
+
+_REGISTRY: dict[str, type[ModuleFactory]] = {
+    "delete": DeleteModuleFactory,
+}
 
 
 # ---------------------------------------------------------------------------
@@ -99,6 +107,12 @@ def _delete_module_impl(name: str, confirm: bool, dry_run: bool) -> None:
         console.print("[red]Error:[/red] No scaffold-ca-python project found. Run 'scaffold ca' first.")
         raise typer.Exit(code=1) from None
 
+    project_ctx = _load_project_context(project_root)
+    
+    # Create a placeholder ModuleContext for the factory (layer doesn't matter for delete)
+    module_ctx = ModuleContext(name=name, layer=Layer.HELPERS, project=project_ctx)
+
+    # Find targets
     snake = to_snake_case(name)
     targets = _find_module_targets(project_root, snake)
 
@@ -109,76 +123,73 @@ def _delete_module_impl(name: str, confirm: bool, dry_run: bool) -> None:
         )
         raise typer.Exit(code=1) from None
 
-    # Collect all paths to delete
-    paths_to_delete: list[Path] = []
-    for src_path, test_path in targets:
-        paths_to_delete.append(src_path)
-        if test_path is not None:
-            paths_to_delete.append(test_path)
-
     # dry_run OR no --confirm → preview mode only
     if dry_run or not confirm:
         console.print("The following files would be deleted:\n")
-        for p in paths_to_delete:
+        for src_path, test_path in targets:
             try:
-                display = p.relative_to(project_root)
+                display = src_path.relative_to(project_root)
             except ValueError:
-                display = p
+                display = src_path
             console.print(f"  {display}")
+            if test_path:
+                try:
+                    display = test_path.relative_to(project_root)
+                except ValueError:
+                    display = test_path
+                console.print(f"  {display}")
         console.print("\nRun with --confirm to proceed.")
         return
 
-    # Actually delete
-    deleted: list[Path] = []
-    for p in paths_to_delete:
-        if p.is_dir():
-            shutil.rmtree(p)
-        elif p.is_file():
-            p.unlink()
-        deleted.append(p)
+    # Use factory for deletion (only when confirm=True and not dry_run)
+    builder = ModuleBuilder(
+        project_root=project_root,
+        project_ctx=project_ctx,
+        module_ctx=module_ctx,
+        dry_run=False,
+    )
 
-    console.print("Deleted:")
-    for p in deleted:
-        try:
-            display = p.relative_to(project_root)
-        except ValueError:
-            display = p
-        console.print(f"  [green]✓[/green] {display}")
+    factory_class = _REGISTRY["delete"]
+    factory = factory_class()
+    factory.build(builder)
+
+    # Persist deletion
+    builder.persist()
+    console.print(f"[green]✓[/green] Deleted module(s) for [bold]{name}[/bold].")
 
 
 def register(app: typer.Typer) -> None:
-    """Register dm / delete-module commands onto *app*."""
+    """Register dm / delete-module command onto *app*."""
 
     @app.command(
         "delete-module",
-        help="Safely remove a module and its test mirror.",
-        epilog="Example: scaffold dm --name Order --confirm",
+        help="Delete a previously generated module and its test mirror.",
+        epilog="Example: scaffold dm --name Order",
     )
     def delete_module(
         ctx: typer.Context,
         name: Annotated[
-            str | None, typer.Option("--name", help="Module name to delete.", rich_help_panel="Required")
+            str | None, typer.Option("--name", help="Module name (PascalCase).", rich_help_panel="Required")
         ] = None,
         confirm: Annotated[
             bool,
             typer.Option(
                 "--confirm/--no-confirm",
-                help="Actually perform deletion.",
+                help="Skip confirmation dialog and delete immediately.",
                 rich_help_panel="Options",
-                show_default=True,
             ),
         ] = False,
         dry_run: Annotated[
             bool,
             typer.Option(
                 "--dry-run/--no-dry-run",
-                help="Preview without writing.",
+                help="Preview deletion without removing files.",
                 rich_help_panel="Options",
                 show_default=True,
             ),
         ] = False,
     ) -> None:
-        """Preview or delete a previously generated module."""
+        """Delete a module and its test mirror."""
         if name is None:
             typer.echo(ctx.get_help())
             raise typer.Exit(0)
@@ -187,7 +198,7 @@ def register(app: typer.Typer) -> None:
     @app.command("dm", hidden=True, help="Alias for delete-module.")
     def dm(
         ctx: typer.Context,
-        name: Annotated[str | None, typer.Option("--name", help="Module name to delete.")] = None,
+        name: Annotated[str | None, typer.Option("--name", help="Module name (PascalCase).")] = None,
         confirm: Annotated[bool, typer.Option("--confirm/--no-confirm")] = False,
         dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
     ) -> None:
@@ -196,3 +207,18 @@ def register(app: typer.Typer) -> None:
             typer.echo(ctx.get_help())
             raise typer.Exit(0)
         _delete_module_impl(name, confirm, dry_run)
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _load_project_context(root: Path) -> ProjectContext:
+    pyproject = root / "pyproject.toml"
+    with pyproject.open("rb") as fh:
+        data = tomllib.load(fh)
+    section = data.get("tool", {}).get("scaffold-ca-python", {})
+    return ProjectContext(
+        name=section.get("name", root.name),
+    )

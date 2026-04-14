@@ -1,8 +1,7 @@
-"""generate_use_case: scaffold an async use case class and test stub (T042)."""
+"""generate_use_case: scaffold an async use case class and test stub (T035)."""
 
 from __future__ import annotations
 
-import importlib.resources
 import tomllib
 from pathlib import Path
 from typing import Annotated
@@ -11,26 +10,30 @@ import typer
 from rich.console import Console
 from rich.tree import Tree
 
-from scaffold_ca_python.core.file_writer import FileWriter
+from scaffold_ca_python.core.module_builder import ModuleBuilder
 from scaffold_ca_python.core.name_utils import ScaffoldError, to_snake_case, validate_name
-from scaffold_ca_python.core.project_detector import find_project_root, resolve_tests_root
-from scaffold_ca_python.core.template_renderer import TemplateRenderer
+from scaffold_ca_python.core.project_detector import find_project_root
+from scaffold_ca_python.factory import ModuleFactory
+from scaffold_ca_python.factory.simple.use_case_factory import UseCaseFactory
 from scaffold_ca_python.models.context import ModuleContext, ProjectContext
-from scaffold_ca_python.models.file_operation import CreateFile, FileOperation, GeneratedFile
 from scaffold_ca_python.models.layer import Layer
 
 console = Console()
-renderer = TemplateRenderer()
-writer = FileWriter()
+
+_REGISTRY: dict[str, type[ModuleFactory]] = {
+    "use_case": UseCaseFactory,
+}
 
 
 def _generate_use_case_impl(name: str, dry_run: bool) -> None:
+    # --- Validate name ---
     try:
         validate_name(name)
     except ScaffoldError as exc:
         console.print(f"[red]Error:[/red] {exc}")
         raise typer.Exit(code=1) from None
 
+    # --- Locate project root ---
     try:
         project_root = find_project_root()
     except ScaffoldError:
@@ -40,51 +43,45 @@ def _generate_use_case_impl(name: str, dry_run: bool) -> None:
     project_ctx = _load_project_context(project_root)
     module_ctx = ModuleContext(name=name, layer=Layer.DOMAIN_USECASE, project=project_ctx)
 
+    pkg = project_ctx.python_package
     snake = to_snake_case(name)
-    src_path = project_root / "src" / project_ctx.python_package / "domain" / "usecase" / f"{snake}.py"
-    test_path = resolve_tests_root(project_root) / "domain" / "usecase" / f"test_{snake}.py"
+    src_path = project_root / "src" / pkg / "domain" / "usecase" / f"{snake}.py"
 
-    if src_path.exists() or test_path.exists():
-        existing = src_path if src_path.exists() else test_path
+    # --- Duplicate guard ---
+    if src_path.exists():
         console.print(
-            f"[red]Error:[/red] File '{existing.relative_to(project_root)}' already exists. "
-            "Use --force to overwrite.\n"
+            f"[red]Error:[/red] File '{src_path.relative_to(project_root)}' already exists.\n"
             "[dim]Hint:[/dim] Choose a different name or remove the existing file first."
         )
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from None
 
-    ctx_dict = module_ctx.model_dump()
-    operations: list[FileOperation] = [
-        CreateFile(
-            file=GeneratedFile(
-                path=src_path,
-                content=renderer.render_string(_tmpl("use_case/use_case.py.jinja2"), ctx_dict),
-                template_name="use_case/use_case.py.jinja2",
-            )
-        ),
-        CreateFile(
-            file=GeneratedFile(
-                path=test_path,
-                content=renderer.render_string(_tmpl("use_case/test_use_case.py.jinja2"), ctx_dict),
-                template_name="use_case/test_use_case.py.jinja2",
-                is_test=True,
-            )
-        ),
-    ]
+    # --- Create builder and get factory from registry ---
+    builder = ModuleBuilder(
+        project_root=project_root,
+        project_ctx=project_ctx,
+        module_ctx=module_ctx,
+        dry_run=dry_run,
+    )
 
+    # Get factory class and instantiate
+    factory_class = _REGISTRY["use_case"]
+    factory = factory_class()
+
+    # Invoke factory to build via ModuleBuilder
+    factory.build(builder)
+
+    # Persist all operations
+    created = builder.persist()
+
+    # --- Display results ---
     if dry_run:
-        preview = writer.execute(operations, dry_run=True)
         tree = Tree(f"[bold]{snake}[/bold] (dry run)")
-        for p in sorted(preview):
+        for p in sorted(created):
             tree.add(str(p.relative_to(project_root)))
         console.print(tree)
         return
 
-    created = writer.execute(operations, dry_run=False)
-    console.print(
-        f"[green]✓[/green] Use case [bold]{module_ctx.class_name}UseCase[/bold] created. "
-        f"Created {len(created)} file(s)."
-    )
+    console.print(f"[green]✓[/green] Use case [bold]{module_ctx.class_name}UseCase[/bold] created. Created {len(created)} file(s).")
 
 
 def register(app: typer.Typer) -> None:
@@ -98,8 +95,7 @@ def register(app: typer.Typer) -> None:
     def generate_use_case(
         ctx: typer.Context,
         name: Annotated[
-            str | None,
-            typer.Option("--name", help="Use case name (PascalCase).", rich_help_panel="Required"),
+            str | None, typer.Option("--name", help="Use case name (PascalCase).", rich_help_panel="Required")
         ] = None,
         dry_run: Annotated[
             bool,
@@ -111,7 +107,7 @@ def register(app: typer.Typer) -> None:
             ),
         ] = False,
     ) -> None:
-        """Scaffold an async use case inside domain/usecase/."""
+        """Scaffold a use case in domain/usecase/."""
         if name is None:
             typer.echo(ctx.get_help())
             raise typer.Exit(0)
@@ -120,7 +116,7 @@ def register(app: typer.Typer) -> None:
     @app.command("guc", hidden=True, help="Alias for generate-use-case.")
     def guc(
         ctx: typer.Context,
-        name: Annotated[str | None, typer.Option("--name", help="Use case name.")] = None,
+        name: Annotated[str | None, typer.Option("--name", help="Use case name (PascalCase).")] = None,
         dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
     ) -> None:
         """Alias for generate-use-case."""
@@ -143,8 +139,3 @@ def _load_project_context(root: Path) -> ProjectContext:
     return ProjectContext(
         name=section.get("name", root.name),
     )
-
-
-def _tmpl(name: str) -> str:
-    ref = importlib.resources.files("scaffold_ca_python.templates").joinpath(name)
-    return ref.read_text(encoding="utf-8")

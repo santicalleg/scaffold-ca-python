@@ -1,0 +1,30 @@
+# ms_test
+
+A Clean Architecture Python project.
+
+## Getting Started
+
+```bash
+uv sync
+uv run pytest
+```
+
+## Architecture
+
+```
+src/ms_test/
+├── application/          # Application bootstrap and DI wiring
+├── domain/
+│   ├── model/            # Entities, value objects (Pydantic v2)
+│   └── usecase/          # Business logic, async use cases
+└── infrastructure/
+    ├── driven_adapters/  # Outbound adapters (DB, HTTP, secrets)
+    ├── entry_points/     # Inbound adapters (REST, CLI, events)
+    └── helpers/          # Cross-cutting utilities
+
+tests/                    # Mirrors src/ structure
+```
+
+## Package
+
+``
