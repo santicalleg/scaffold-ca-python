@@ -15,7 +15,7 @@ from rich.tree import Tree
 
 from scaffold_ca_python.core.file_writer import FileWriter
 from scaffold_ca_python.core.name_utils import ScaffoldError
-from scaffold_ca_python.core.project_detector import find_project_root
+from scaffold_ca_python.core.project_detector import find_project_root, resolve_tests_root
 from scaffold_ca_python.core.pyproject_writer import (
     dry_run_inject,
     dry_run_scripts_update,
@@ -115,6 +115,17 @@ def _generate_entry_point_impl(
                 )
                 raise typer.Exit(code=1) from None
 
+    if type_ in ("mcp", "agent"):
+        restapi_dir = project_root / "src" / project_ctx.python_package / "infrastructure" / "entry_points" / "api"
+        if restapi_dir.exists():
+            console.print(
+                f"[red]Error:[/red] Incompatible entry point '[bold]restapi[/bold]' "
+                f"already exists at: {restapi_dir.relative_to(project_root)}\n"
+                "[dim]Hint:[/dim] A project may have only one entry-point type. "
+                f"Remove '{restapi_dir.relative_to(project_root)}' before adding {type_}."
+            )
+            raise typer.Exit(code=1) from None
+
     # --- Determine subdir and module context ---
     if type_ == "restapi":
         subdir = "api/v1"
@@ -131,7 +142,7 @@ def _generate_entry_point_impl(
 
     pkg = project_ctx.python_package
     src_dir = project_root / "src" / pkg / "infrastructure" / "entry_points" / subdir
-    test_dir = project_root / "tests" / "infrastructure" / "entry_points" / subdir
+    test_dir = resolve_tests_root(project_root) / "infrastructure" / "entry_points" / subdir
 
     # --- Duplicate guard ---
     if src_dir.exists():
@@ -237,7 +248,7 @@ def _build_operations(
         assert project_root is not None and pkg is not None
         app_py_path = project_root / "src" / pkg / "application" / "app.py"
         server_path = project_root / "src" / pkg / "server.py"
-        test_app_path = project_root / "tests" / "application" / "test_app.py"
+        test_app_path = resolve_tests_root(project_root) / "application" / "test_app.py"
         return [
             CreateFile(
                 file=GeneratedFile(

@@ -13,7 +13,7 @@ from rich.tree import Tree
 
 from scaffold_ca_python.core.file_writer import FileWriter
 from scaffold_ca_python.core.name_utils import ScaffoldError, to_snake_case, validate_name
-from scaffold_ca_python.core.project_detector import find_project_root
+from scaffold_ca_python.core.project_detector import find_project_root, resolve_tests_root
 from scaffold_ca_python.core.pyproject_writer import dry_run_inject, inject_dependencies
 from scaffold_ca_python.core.template_renderer import TemplateRenderer
 from scaffold_ca_python.models.context import ModuleContext, ProjectContext
@@ -87,7 +87,7 @@ def _generate_driven_adapter_impl(type_: str, name: str | None, dry_run: bool) -
 
     pkg = project_ctx.python_package
     src_dir = project_root / "src" / pkg / "infrastructure" / "driven_adapters" / subdir
-    test_dir = project_root / "tests" / "infrastructure" / "driven_adapters" / subdir
+    test_dir = resolve_tests_root(project_root) / "infrastructure" / "driven_adapters" / subdir
 
     # --- Duplicate guard ---
     if src_dir.exists():

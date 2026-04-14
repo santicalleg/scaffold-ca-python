@@ -84,7 +84,7 @@ def test_confirm_deletes_model_file(project_root: Path) -> None:
 
 def test_confirm_deletes_test_file(project_root: Path) -> None:
     runner.invoke(app, ["dm", "--name", "Order", "--confirm"], catch_exceptions=False)
-    assert not (project_root / "tests" / "domain" / "model" / "test_order.py").exists()
+    assert not (project_root / "src" / "tests" / "domain" / "model" / "test_order.py").exists()
 
 
 def test_confirm_prints_deleted(project_root: Path) -> None:
@@ -118,7 +118,7 @@ def test_confirm_deletes_helper_dir(project_root_with_helper: Path) -> None:
 def test_confirm_deletes_helper_test_file(project_root_with_helper: Path) -> None:
     runner.invoke(app, ["dm", "--name", "LogHelper", "--confirm"], catch_exceptions=False)
     assert not (
-        project_root_with_helper / "tests" / "infrastructure" / "helpers" / "log_helper" / "test_log_helper.py"
+        project_root_with_helper / "src" / "tests" / "infrastructure" / "helpers" / "log_helper" / "test_log_helper.py"
     ).exists()
 
 

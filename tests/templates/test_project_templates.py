@@ -59,6 +59,18 @@ def test_readme_contains_project_name() -> None:
     assert "MyApp" in out
 
 
+def test_pyproject_template_testpaths_is_src_tests() -> None:
+    out = renderer.render_string(_tmpl("project/pyproject_toml.jinja2"), _ctx().model_dump())
+    assert 'testpaths = ["src/tests"]' in out
+
+
+def test_pyproject_template_coverage_uses_package_variable() -> None:
+    out = renderer.render_string(_tmpl("project/pyproject_toml.jinja2"), _ctx().model_dump())
+    assert "mcp_server_code_review" not in out
+    assert "ms_test" not in out
+    assert 'source = ["my_app"]' in out
+
+
 def test_gitignore_contains_venv() -> None:
     out = renderer.render_string(_tmpl("project/gitignore.jinja2"), _ctx().model_dump())
     assert ".venv" in out

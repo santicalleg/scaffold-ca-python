@@ -1,11 +1,11 @@
-"""Tests for project_detector: find_project_root (T018)."""
+"""Tests for project_detector: find_project_root (T018), resolve_tests_root (T002-T004)."""
 
 from pathlib import Path
 
 import pytest
 
 from scaffold_ca_python.core.name_utils import ScaffoldError
-from scaffold_ca_python.core.project_detector import find_project_root
+from scaffold_ca_python.core.project_detector import find_project_root, resolve_tests_root
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -89,3 +89,22 @@ def test_raises_at_filesystem_boundary(tmp_path: Path) -> None:
     empty.mkdir(parents=True)
     with pytest.raises(ScaffoldError):
         find_project_root(cwd=empty)
+
+
+# ---------------------------------------------------------------------------
+# resolve_tests_root (T002-T004)
+# ---------------------------------------------------------------------------
+
+
+def test_resolve_tests_root_returns_src_tests_when_src_tests_exists(tmp_path: Path) -> None:
+    (tmp_path / "src" / "tests").mkdir(parents=True)
+    assert resolve_tests_root(tmp_path) == tmp_path / "src" / "tests"
+
+
+def test_resolve_tests_root_falls_back_to_root_tests(tmp_path: Path) -> None:
+    (tmp_path / "tests").mkdir()
+    assert resolve_tests_root(tmp_path) == tmp_path / "tests"
+
+
+def test_resolve_tests_root_defaults_to_src_tests_when_neither_exists(tmp_path: Path) -> None:
+    assert resolve_tests_root(tmp_path) == tmp_path / "src" / "tests"

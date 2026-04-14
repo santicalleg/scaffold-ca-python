@@ -113,7 +113,7 @@ def _generate_project_impl(
         )
 
     # --- tests/__init__.py ---------------------------------------------------
-    _add(operations, target_dir / "tests" / "__init__.py", "")
+    _add(operations, target_dir / "src" / "tests" / "__init__.py", "")
 
     if dry_run:
         preview = writer.execute(operations, dry_run=True)

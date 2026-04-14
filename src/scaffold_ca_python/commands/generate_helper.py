@@ -13,7 +13,7 @@ from rich.tree import Tree
 
 from scaffold_ca_python.core.file_writer import FileWriter
 from scaffold_ca_python.core.name_utils import ScaffoldError, to_snake_case, validate_name
-from scaffold_ca_python.core.project_detector import find_project_root
+from scaffold_ca_python.core.project_detector import find_project_root, resolve_tests_root
 from scaffold_ca_python.core.template_renderer import TemplateRenderer
 from scaffold_ca_python.models.context import ModuleContext, ProjectContext
 from scaffold_ca_python.models.file_operation import CreateFile, FileOperation, GeneratedFile
@@ -43,7 +43,7 @@ def _generate_helper_impl(name: str, dry_run: bool) -> None:
     snake = to_snake_case(name)
     pkg = project_ctx.python_package
     src_dir = project_root / "src" / pkg / "infrastructure" / "helpers" / snake
-    test_dir = project_root / "tests" / "infrastructure" / "helpers" / snake
+    test_dir = resolve_tests_root(project_root) / "infrastructure" / "helpers" / snake
 
     if src_dir.exists():
         console.print(

@@ -37,14 +37,14 @@ select = ["E", "F", "I", "UP", "ANN"]
 ignore = ["ANN101", "ANN102"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["ANN"]
+"src/tests/**/*.py" = ["ANN"]
 
 [tool.mypy]
 python_version = "3.13"
 strict = true
 
 [tool.coverage.run]
-source = ["mcp_server_code_review"]
+source = ["{{ python_package }}"]
 omit = ["*/tests/*"]
 
 [tool.coverage.report]
@@ -62,5 +62,5 @@ exclude_also = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "-x --cov=ms_test --junitxml=out_report.xml"
-testpaths = ["tests"]
+addopts = "--cov={{ python_package }} --cov-fail-under=80"
+testpaths = ["src/tests"]

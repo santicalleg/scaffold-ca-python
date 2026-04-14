@@ -60,6 +60,23 @@ def find_project_root(cwd: Path | None = None) -> Path:
     )
 
 
+def resolve_tests_root(project_root: Path) -> Path:
+    """Return the tests root for a project, probing for src-layout vs root-layout.
+
+    Resolution order:
+    1. ``project_root/src/tests/`` if it already exists (src-layout, post-feature).
+    2. ``project_root/tests/`` if it already exists (root-layout, pre-feature).
+    3. ``project_root/src/tests/`` as the default for new projects.
+    """
+    src_tests = project_root / "src" / "tests"
+    if src_tests.exists():
+        return src_tests
+    root_tests = project_root / "tests"
+    if root_tests.exists():
+        return root_tests
+    return src_tests
+
+
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------

@@ -39,7 +39,7 @@ def test_creates_use_case_file(project_root: Path) -> None:
 def test_creates_test_mirror(project_root: Path) -> None:
     result = runner.invoke(app, ["guc", "--name", "CreateOrder"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (project_root / "tests" / "domain" / "usecase" / "test_create_order.py").exists()
+    assert (project_root / "src" / "tests" / "domain" / "usecase" / "test_create_order.py").exists()
 
 
 def test_use_case_file_contains_async_execute(project_root: Path) -> None:
@@ -56,7 +56,7 @@ def test_use_case_file_contains_class(project_root: Path) -> None:
 
 def test_test_file_contains_pytest_stub(project_root: Path) -> None:
     runner.invoke(app, ["guc", "--name", "PlaceOrder"], catch_exceptions=False)
-    content = (project_root / "tests" / "domain" / "usecase" / "test_place_order.py").read_text()
+    content = (project_root / "src" / "tests" / "domain" / "usecase" / "test_place_order.py").read_text()
     assert "def test_" in content
 
 

@@ -50,7 +50,13 @@ def test_rest_consumer_creates_test(project_root: Path) -> None:
     result = runner.invoke(app, ["gda", "--type", "rest-consumer"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root / "tests" / "infrastructure" / "driven_adapters" / "rest_consumer" / "test_rest_consumer.py"
+        project_root
+        / "src"
+        / "tests"
+        / "infrastructure"
+        / "driven_adapters"
+        / "rest_consumer"
+        / "test_rest_consumer.py"
     ).exists()
 
 
@@ -85,7 +91,7 @@ def test_secrets_creates_test(project_root: Path) -> None:
     result = runner.invoke(app, ["gda", "--type", "secrets"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root / "tests" / "infrastructure" / "driven_adapters" / "secrets" / "test_secrets_adapter.py"
+        project_root / "src" / "tests" / "infrastructure" / "driven_adapters" / "secrets" / "test_secrets_adapter.py"
     ).exists()
 
 
@@ -120,7 +126,13 @@ def test_generic_creates_test(project_root: Path) -> None:
     result = runner.invoke(app, ["gda", "--type", "generic", "--name", "CacheStore"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root / "tests" / "infrastructure" / "driven_adapters" / "cache_store" / "test_cache_store_adapter.py"
+        project_root
+        / "src"
+        / "tests"
+        / "infrastructure"
+        / "driven_adapters"
+        / "cache_store"
+        / "test_cache_store_adapter.py"
     ).exists()
 
 
@@ -247,7 +259,7 @@ def test_rest_consumer_inject_is_idempotent(project_root: Path) -> None:
 
     shutil.rmtree(project_root / "src" / "my_app" / "infrastructure" / "driven_adapters" / "rest_consumer")
     shutil.rmtree(
-        project_root / "tests" / "infrastructure" / "driven_adapters" / "rest_consumer",
+        project_root / "src" / "tests" / "infrastructure" / "driven_adapters" / "rest_consumer",
         ignore_errors=True,
     )
     runner.invoke(app, ["gda", "--type", "rest-consumer"], catch_exceptions=False)

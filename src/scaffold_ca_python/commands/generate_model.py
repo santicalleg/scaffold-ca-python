@@ -13,7 +13,7 @@ from rich.tree import Tree
 
 from scaffold_ca_python.core.file_writer import FileWriter
 from scaffold_ca_python.core.name_utils import ScaffoldError, validate_name
-from scaffold_ca_python.core.project_detector import find_project_root
+from scaffold_ca_python.core.project_detector import find_project_root, resolve_tests_root
 from scaffold_ca_python.core.template_renderer import TemplateRenderer
 from scaffold_ca_python.models.context import ModuleContext, ProjectContext
 from scaffold_ca_python.models.file_operation import CreateFile, FileOperation, GeneratedFile
@@ -41,7 +41,7 @@ def _generate_model_impl(name: str, dry_run: bool) -> None:
     module_ctx = ModuleContext(name=name, layer=Layer.DOMAIN_MODEL, project=project_ctx)
 
     src_path = project_root / "src" / project_ctx.python_package / "domain" / "model" / f"{module_ctx.module_name}.py"
-    test_path = project_root / "tests" / "domain" / "model" / f"test_{module_ctx.module_name}.py"
+    test_path = resolve_tests_root(project_root) / "domain" / "model" / f"test_{module_ctx.module_name}.py"
 
     if src_path.exists() or test_path.exists():
         existing = src_path if src_path.exists() else test_path

@@ -11,7 +11,7 @@ import typer
 from rich.console import Console
 
 from scaffold_ca_python.core.name_utils import ScaffoldError, to_snake_case, validate_name
-from scaffold_ca_python.core.project_detector import find_project_root
+from scaffold_ca_python.core.project_detector import find_project_root, resolve_tests_root
 
 console = Console()
 
@@ -33,7 +33,7 @@ def _find_module_targets(project_root: Path, snake: str) -> list[tuple[Path, Pat
     """
     pkg = _get_python_package(project_root)
     src_root = project_root / "src" / pkg
-    tests_root = project_root / "tests"
+    tests_root = resolve_tests_root(project_root)
 
     candidates: list[tuple[Path, Path | None]] = []
 

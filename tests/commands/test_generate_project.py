@@ -192,7 +192,21 @@ def test_generate_project_tombstone_exits_1_no_args() -> None:
 def test_creates_tests_init(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
-    assert (tmp_path / "my_project" / "tests" / "__init__.py").exists()
+    assert (tmp_path / "my_project" / "src" / "tests" / "__init__.py").exists()
+
+
+def test_ca_creates_src_tests_init(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
+    assert (tmp_path / "my_project" / "src" / "tests" / "__init__.py").exists()
+    assert not (tmp_path / "my_project" / "tests").exists()
+
+
+def test_ca_dry_run_shows_src_tests_init(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    result = runner.invoke(app, ["ca", "--name", "MyProject", "--dry-run"], catch_exceptions=False)
+    assert "src/tests/__init__.py" in result.output
+    assert result.output.count("tests/__init__.py") == result.output.count("src/tests/__init__.py")
 
 
 # ---------------------------------------------------------------------------

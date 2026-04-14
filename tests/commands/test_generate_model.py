@@ -40,7 +40,7 @@ def test_creates_model_file(project_root: Path) -> None:
 def test_creates_test_mirror(project_root: Path) -> None:
     result = runner.invoke(app, ["gm", "--name", "Order"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (project_root / "tests" / "domain" / "model" / "test_order.py").exists()
+    assert (project_root / "src" / "tests" / "domain" / "model" / "test_order.py").exists()
 
 
 def test_model_file_contains_pydantic_basemodel(project_root: Path) -> None:
@@ -52,7 +52,7 @@ def test_model_file_contains_pydantic_basemodel(project_root: Path) -> None:
 
 def test_test_file_contains_pytest_stub(project_root: Path) -> None:
     runner.invoke(app, ["gm", "--name", "Product"], catch_exceptions=False)
-    content = (project_root / "tests" / "domain" / "model" / "test_product.py").read_text()
+    content = (project_root / "src" / "tests" / "domain" / "model" / "test_product.py").read_text()
     assert "def test_" in content
 
 

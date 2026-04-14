@@ -45,7 +45,9 @@ def test_creates_implementation_file(project_root: Path) -> None:
 def test_creates_test_file(project_root: Path) -> None:
     result = runner.invoke(app, ["gh", "--name", "DateUtils"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (project_root / "tests" / "infrastructure" / "helpers" / "date_utils" / "test_date_utils.py").exists()
+    assert (
+        project_root / "src" / "tests" / "infrastructure" / "helpers" / "date_utils" / "test_date_utils.py"
+    ).exists()
 
 
 def test_implementation_contains_class(project_root: Path) -> None:
@@ -56,7 +58,9 @@ def test_implementation_contains_class(project_root: Path) -> None:
 
 def test_test_file_imports_class(project_root: Path) -> None:
     runner.invoke(app, ["gh", "--name", "DateUtils"], catch_exceptions=False)
-    test_src = (project_root / "tests" / "infrastructure" / "helpers" / "date_utils" / "test_date_utils.py").read_text()
+    test_src = (
+        project_root / "src" / "tests" / "infrastructure" / "helpers" / "date_utils" / "test_date_utils.py"
+    ).read_text()
     assert "DateUtils" in test_src
 
 

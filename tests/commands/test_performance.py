@@ -57,7 +57,7 @@ def test_gm_performance(benchmark: pytest.fixture, bench_project: Path) -> None:
         runner.invoke(app, ["gm", "--name", "PerfModel"], catch_exceptions=False)
         # Cleanup so benchmark can repeat
         src = bench_project / "src" / "bench_app" / "domain" / "model" / "perf_model.py"
-        test = bench_project / "tests" / "domain" / "model" / "test_perf_model.py"
+        test = bench_project / "src" / "tests" / "domain" / "model" / "test_perf_model.py"
         src.unlink(missing_ok=True)
         test.unlink(missing_ok=True)
 
@@ -70,7 +70,7 @@ def test_guc_performance(benchmark: pytest.fixture, bench_project: Path) -> None
     def run() -> None:
         runner.invoke(app, ["guc", "--name", "PerfCase"], catch_exceptions=False)
         src = bench_project / "src" / "bench_app" / "domain" / "usecase" / "perf_case.py"
-        test = bench_project / "tests" / "domain" / "usecase" / "test_perf_case.py"
+        test = bench_project / "src" / "tests" / "domain" / "usecase" / "test_perf_case.py"
         src.unlink(missing_ok=True)
         test.unlink(missing_ok=True)
 
@@ -85,7 +85,7 @@ def test_gda_performance(benchmark: pytest.fixture, bench_project: Path) -> None
     def run() -> None:
         runner.invoke(app, ["gda", "--type", "rest-consumer"], catch_exceptions=False)
         src = bench_project / "src" / "bench_app" / "infrastructure" / "driven_adapters" / "rest_consumer"
-        test = bench_project / "tests" / "infrastructure" / "driven_adapters" / "rest_consumer"
+        test = bench_project / "src" / "tests" / "infrastructure" / "driven_adapters" / "rest_consumer"
         if src.exists():
             shutil.rmtree(src)
         if test.exists():
@@ -102,7 +102,7 @@ def test_gh_performance(benchmark: pytest.fixture, bench_project: Path) -> None:
     def run() -> None:
         runner.invoke(app, ["gh", "--name", "PerfHelper"], catch_exceptions=False)
         src = bench_project / "src" / "bench_app" / "infrastructure" / "helpers" / "perf_helper"
-        test = bench_project / "tests" / "infrastructure" / "helpers" / "perf_helper"
+        test = bench_project / "src" / "tests" / "infrastructure" / "helpers" / "perf_helper"
         if src.exists():
             shutil.rmtree(src)
         if test.exists():
