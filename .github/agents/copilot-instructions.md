@@ -1,6 +1,6 @@
 # scaffold-ca-python Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-13
+Auto-generated from all feature plans. Last updated: 2026-04-14
 
 ## Active Technologies
 - Python 3.13 + Typer 0.16, Jinja2 3.1, Pydantic v2, Rich 14, uv (dep management) (008-fastapi-entrypoint-baseline)
@@ -13,6 +13,8 @@ Auto-generated from all feature plans. Last updated: 2026-04-13
 - Local filesystem — Jinja2 `.jinja2` template files (012-fix-restapi-test-templates)
 - Python 3.13 + Typer (CLI), Rich (output formatting), Jinja2 (template rendering), Pydantic v2, pytest 9.0, pytest-cov, ruff, mypy strict, uv (package manager) (014-tests-in-src)
 - Local filesystem — Path operations only (014-tests-in-src)
+- Python 3.13 + Typer ≥ 0.16, Rich ≥ 14.1, Jinja2 ≥ 3.1, Pydantic v2, uv (015-factory-builder-refactor)
+- File system only (pyproject.toml + generated project files) (015-factory-builder-refactor)
 
 - Python 3.13 + Typer 0.16.0, Rich 14.1.0 (both already in `pyproject.toml`) (007-cli-usability-enhancements)
 
@@ -32,9 +34,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.13: Follow standard conventions
 
 ## Recent Changes
+- 015-factory-builder-refactor: Added Python 3.13 + Typer ≥ 0.16, Rich ≥ 14.1, Jinja2 ≥ 3.1, Pydantic v2, uv
 - 014-tests-in-src: Added Python 3.13 + Typer (CLI), Rich (output formatting), Jinja2 (template rendering), Pydantic v2, pytest 9.0, pytest-cov, ruff, mypy strict, uv (package manager)
 - 012-fix-restapi-test-templates: Added Python 3.13 + Jinja2 (template rendering), Pydantic v2 (generated schema model), FastAPI + Starlette (generated test client), pytest + pytest-cov (testing), ruff (lint/format), mypy strict (types), uv (package management)
-- 011-fix-restapi-cleanup: Added Python 3.13 + yper, Rich (CLI); tomllib + tomli_w (TOML read/write); pytest + pytest-cov (testing); ruff (lint/format); mypy strict (types)
 
 
 <!-- MANUAL ADDITIONS START -->
