@@ -33,12 +33,12 @@ commands.
 **Independent test**: `uv run pytest tests/factory/test_module_builder.py --no-cov -q`
 must be green; all 487 prior tests must still pass.
 
-- [ ] T009 Define `ModuleFactory` `@runtime_checkable` Protocol with `build(self, builder: ModuleBuilder) -> None` in `src/scaffold_ca_python/factory/__init__.py`
-- [ ] T010 Write failing tests for `ModuleBuilder` in `tests/factory/test_module_builder.py` (add_file, delete_file, add_dependency, add_param/get_param, render delegates to TemplateRenderer, persist dry-run returns paths without writing, persist real writes files and injects deps; also test that a factory calling `Path.exists()` inside `build()` executes normally when `dry_run=True` — filesystem reads must not be suppressed)
-- [ ] T011 Implement `ModuleBuilder` class in `src/scaffold_ca_python/core/module_builder.py` (constructor, all public methods, internal FileWriter/TemplateRenderer/pyproject_writer collaborators)
-- [ ] T012 [P] Run `uv run pytest tests/factory/test_module_builder.py --no-cov -q` and confirm green
-- [ ] T013 [P] Run `uv run pytest --no-cov -q` to confirm all 487 prior tests still pass
-- [ ] T013b Capture pre-refactor dry-run path snapshots: for each type in `gep` (restapi, agent, mcp, generic) and `gda` (rest-consumer, secrets, generic), run `scaffold <cmd> --type <type> --dry-run` against a temp project and save the sorted path lists as JSON fixtures in `tests/factory/fixtures/dry_run_baseline.json` — this MUST be done before any command file is modified
+- [x] T009 Define `ModuleFactory` `@runtime_checkable` Protocol with `build(self, builder: ModuleBuilder) -> None` in `src/scaffold_ca_python/factory/__init__.py`
+- [x] T010 Write failing tests for `ModuleBuilder` in `tests/factory/test_module_builder.py` (add_file, delete_file, add_dependency, add_param/get_param, render delegates to TemplateRenderer, persist dry-run returns paths without writing, persist real writes files and injects deps; also test that a factory calling `Path.exists()` inside `build()` executes normally when `dry_run=True` — filesystem reads must not be suppressed)
+- [x] T011 Implement `ModuleBuilder` class in `src/scaffold_ca_python/core/module_builder.py` (constructor, all public methods, internal FileWriter/TemplateRenderer/pyproject_writer collaborators)
+- [x] T012 [P] Run `uv run pytest tests/factory/test_module_builder.py --no-cov -q` and confirm green
+- [x] T013 [P] Run `uv run pytest --no-cov -q` to confirm all 487 prior tests still pass
+- [x] T013b Capture pre-refactor dry-run path snapshots: for each type in `gep` (restapi, agent, mcp, generic) and `gda` (rest-consumer, secrets, generic), run `scaffold <cmd> --type <type> --dry-run` against a temp project and save the sorted path lists as JSON fixtures in `tests/factory/fixtures/dry_run_baseline.json` — this MUST be done before any command file is modified
 
 ---
 
@@ -50,16 +50,16 @@ via one factory file + one registry entry.
 
 **Independent test**: `uv run pytest tests/factory/entry_points/ tests/commands/test_generate_entry_point.py --no-cov -q`
 
-- [ ] T014 [US1] Write failing tests for `EntryPointRestApi.build()` in `tests/factory/entry_points/test_ep_restapi.py` (verifies files queued: app.py, server.py, rest_controller, exception_handler, test stubs; add_dependency called with fastapi deps; delete_file called for main.py; scripts param set)
-- [ ] T015 [US1] Implement `EntryPointRestApi` in `src/scaffold_ca_python/factory/entry_points/ep_restapi.py` — imports only `ModuleBuilder`, `ModuleFactory`, `Path`, domain models
-- [ ] T016 [US1] Write failing tests for `EntryPointAgent.build()` in `tests/factory/entry_points/test_ep_agent.py` (files queued, a2a-sdk dep, kafka/mcp-client flag handling, main.py overwrite)
-- [ ] T017 [US1] Implement `EntryPointAgent` in `src/scaffold_ca_python/factory/entry_points/ep_agent.py`
-- [ ] T018 [P] [US1] Write failing tests for `EntryPointMcp.build()` in `tests/factory/entry_points/test_ep_mcp.py`
-- [ ] T019 [P] [US1] Implement `EntryPointMcp` in `src/scaffold_ca_python/factory/entry_points/ep_mcp.py`
-- [ ] T020 [P] [US1] Write failing tests for `EntryPointGeneric.build()` in `tests/factory/entry_points/test_ep_generic.py`
-- [ ] T021 [P] [US1] Implement `EntryPointGeneric` in `src/scaffold_ca_python/factory/entry_points/ep_generic.py`
-- [ ] T022 [US1] Replace `_ALLOWED_TYPES` tuple with `_REGISTRY: dict[str, type[ModuleFactory]]` in `src/scaffold_ca_python/commands/generate_entry_point.py`; remove all factory/file/dep imports; reduce `_generate_entry_point_impl` to: validate flags → exclusivity guard → build context → lookup factory → construct builder → `factory().build(builder)` → `builder.persist()`
-- [ ] T023 [US1] Run `uv run pytest tests/factory/entry_points/ tests/commands/test_generate_entry_point.py --no-cov -q` and confirm all pass
+- [x] T014 [US1] Write failing tests for `EntryPointRestApi.build()` in `tests/factory/entry_points/test_ep_restapi.py` (verifies files queued: app.py, server.py, rest_controller, exception_handler, test stubs; add_dependency called with fastapi deps; delete_file called for main.py; scripts param set)
+- [x] T015 [US1] Implement `EntryPointRestApi` in `src/scaffold_ca_python/factory/entry_points/ep_restapi.py` — imports only `ModuleBuilder`, `ModuleFactory`, `Path`, domain models
+- [x] T016 [US1] Write failing tests for `EntryPointAgent.build()` in `tests/factory/entry_points/test_ep_agent.py` (files queued, a2a-sdk dep, kafka/mcp-client flag handling, main.py overwrite)
+- [x] T017 [US1] Implement `EntryPointAgent` in `src/scaffold_ca_python/factory/entry_points/ep_agent.py`
+- [x] T018 [P] [US1] Write failing tests for `EntryPointMcp.build()` in `tests/factory/entry_points/test_ep_mcp.py`
+- [x] T019 [P] [US1] Implement `EntryPointMcp` in `src/scaffold_ca_python/factory/entry_points/ep_mcp.py`
+- [x] T020 [P] [US1] Write failing tests for `EntryPointGeneric.build()` in `tests/factory/entry_points/test_ep_generic.py`
+- [x] T021 [P] [US1] Implement `EntryPointGeneric` in `src/scaffold_ca_python/factory/entry_points/ep_generic.py`
+- [x] T022 [US1] Replace `_ALLOWED_TYPES` tuple with `_REGISTRY: dict[str, type[ModuleFactory]]` in `src/scaffold_ca_python/commands/generate_entry_point.py`; remove all factory/file/dep imports; reduce `_generate_entry_point_impl` to: validate flags → exclusivity guard → build context → lookup factory → construct builder → `factory().build(builder)` → `builder.persist()`
+- [x] T023 [US1] Run `uv run pytest tests/factory/entry_points/ tests/commands/test_generate_entry_point.py --no-cov -q` and confirm all pass
 
 ---
 

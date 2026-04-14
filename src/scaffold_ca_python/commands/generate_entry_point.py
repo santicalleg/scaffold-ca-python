@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import importlib.resources
 import json
 import tomllib
 from pathlib import Path
@@ -13,37 +12,27 @@ import yaml
 from rich.console import Console
 from rich.tree import Tree
 
-from scaffold_ca_python.core.file_writer import FileWriter
+from scaffold_ca_python.core.module_builder import ModuleBuilder
 from scaffold_ca_python.core.name_utils import ScaffoldError
-from scaffold_ca_python.core.project_detector import find_project_root, resolve_tests_root
-from scaffold_ca_python.core.pyproject_writer import (
-    dry_run_inject,
-    dry_run_scripts_update,
-    inject_dependencies,
-    update_project_scripts,
-)
-from scaffold_ca_python.core.template_renderer import TemplateRenderer
+from scaffold_ca_python.core.project_detector import find_project_root
+from scaffold_ca_python.factory import ModuleFactory
+from scaffold_ca_python.factory.entry_points.ep_agent import EntryPointAgent
+from scaffold_ca_python.factory.entry_points.ep_generic import EntryPointGeneric
+from scaffold_ca_python.factory.entry_points.ep_mcp import EntryPointMcp
+from scaffold_ca_python.factory.entry_points.ep_restapi import EntryPointRestApi
 from scaffold_ca_python.models.context import ModuleContext, ProjectContext
-from scaffold_ca_python.models.file_operation import CreateFile, FileOperation, GeneratedFile
 from scaffold_ca_python.models.layer import Layer
 
 console = Console()
-renderer = TemplateRenderer()
-writer = FileWriter()
 
-_ALLOWED_TYPES = ("restapi", "agent", "mcp", "generic")
-_TYPE_HELP = "Entry-point type: restapi, agent, mcp, generic."
-_DEP_MAP: dict[str, list[str]] = {
-    "restapi": [
-        "fastapi[standard]>=0.135.2",
-        "uvicorn[standard]>=0.20",
-        "dependency-injector>=4.49.0",
-        "pydantic-settings>=2.13.1",
-    ],
-    "agent": ["a2a-sdk>=0.1"],
-    "mcp": ["mcp>=1.0"],
-    "generic": [],
+_REGISTRY: dict[str, type[ModuleFactory]] = {
+    "restapi": EntryPointRestApi,
+    "agent": EntryPointAgent,
+    "mcp": EntryPointMcp,
+    "generic": EntryPointGeneric,
 }
+
+_TYPE_HELP = "Entry-point type: restapi, agent, mcp, generic."
 _SWAGGER_HELP = "Path to OpenAPI YAML/JSON (restapi only)."
 _KAFKA_HELP = "Add async Kafka consumer stub (agent type only)."
 _MCP_CLIENT_HELP = "Add MCP tool-call client stub (agent type only)."
@@ -62,6 +51,15 @@ _GEP_EPILOG = (
 )
 
 
+def _load_project_context(project_root: Path) -> ProjectContext:
+    """Load project context from pyproject.toml."""
+    pyproject_path = project_root / "pyproject.toml"
+    with open(pyproject_path, "rb") as f:
+        data = tomllib.load(f)
+    project_name = data.get("project", {}).get("name", "project").replace("-", "_")
+    return ProjectContext(name=project_name)
+
+
 def _generate_entry_point_impl(
     type_: str,
     swagger: str | None,
@@ -70,8 +68,8 @@ def _generate_entry_point_impl(
     dry_run: bool,
 ) -> None:
     # --- Validate type ---
-    if type_ not in _ALLOWED_TYPES:
-        console.print(f"[red]Error:[/red] Unknown type '{type_}'. Allowed: {', '.join(_ALLOWED_TYPES)}.")
+    if type_ not in _REGISTRY:
+        console.print(f"[red]Error:[/red] Unknown type '{type_}'. Allowed: {', '.join(_REGISTRY.keys())}.")
         raise typer.Exit(code=1) from None
 
     # --- Flag compatibility checks ---
@@ -142,7 +140,6 @@ def _generate_entry_point_impl(
 
     pkg = project_ctx.python_package
     src_dir = project_root / "src" / pkg / "infrastructure" / "entry_points" / subdir
-    test_dir = resolve_tests_root(project_root) / "infrastructure" / "entry_points" / subdir
 
     # --- Duplicate guard ---
     if src_dir.exists():
@@ -152,152 +149,59 @@ def _generate_entry_point_impl(
         )
         raise typer.Exit(code=1) from None
 
-    ctx_dict = {
-        **module_ctx.model_dump(),
-        "routes": routes,
-        "enable_kafka": enable_kafka,
-        "enable_mcp_client": enable_mcp_client,
-    }
+    # --- Create builder and get factory from registry ---
+    builder = ModuleBuilder(
+        project_root=project_root,
+        project_ctx=project_ctx,
+        module_ctx=module_ctx,
+        dry_run=dry_run,
+    )
 
-    operations = _build_operations(type_, src_dir, test_dir, ctx_dict, project_root, pkg)
+    # Add flags to builder params for factory use
+    builder.add_param("routes", routes)
+    builder.add_param("enable_kafka", enable_kafka)
+    builder.add_param("enable_mcp_client", enable_mcp_client)
 
-    deps = _DEP_MAP.get(type_, [])
+    # Get factory class and instantiate
+    factory_class = _REGISTRY[type_]
+    factory = factory_class()
 
+    # Invoke factory to build via ModuleBuilder
+    factory.build(builder)
+
+    # Persist all operations
+    created = builder.persist()
+
+    # --- Display results ---
     if dry_run:
-        preview = writer.execute(operations, dry_run=True)
         tree = Tree(f"[bold]{subdir}[/bold] (dry run)")
-        for p in sorted(preview):
+        for p in sorted(created):
             tree.add(str(p.relative_to(project_root)))
         console.print(tree)
-        if deps:
-            would_add = dry_run_inject(project_root, deps)
-            if would_add:
-                console.print(f"[dim]Would add to [project.dependencies]: {', '.join(would_add)}[/dim]")
+        
+        # Check if dependencies were collected by looking at builder internals
+        if builder._dependencies:
+            console.print(f"[dim]Would add to [project.dependencies]: {', '.join(builder._dependencies)}[/dim]")
+        
         if type_ == "restapi":
             main_py = project_root / "src" / pkg / "main.py"
             if main_py.exists():
                 console.print(f"[dim]Would delete: src/{pkg}/main.py[/dim]")
-            if dry_run_scripts_update(project_root, pkg):
-                console.print(f'[dim]Would update [project.scripts]: {pkg} = "{pkg}.server:start_server"[/dim]')
+            console.print(f'[dim]Would update [project.scripts]: {pkg} = "{pkg}.server:start_server"[/dim]')
+        else:
+            console.print(f"[yellow]⚠[/yellow] main.py will be replaced with {type_} entrypoint.")
         return
 
-    created = writer.execute(operations, dry_run=False)
     console.print(f"[green]✓[/green] Entry point [bold]{subdir}[/bold] created. Created {len(created)} file(s).")
 
-    # --- Inject dependencies ------------------------------------------------
-    if deps:
-        added = inject_dependencies(project_root, deps)
-        if added:
-            console.print(f"[green]✓[/green] Added {', '.join(added)} to [project.dependencies].")
-
-    # --- Overwrite main.py with type-specific entrypoint --------------------
-    # restapi no longer writes to main.py — app factory lives in application/app.py
+    # --- Show results for special handling ---
     if type_ == "restapi":
         main_py = project_root / "src" / pkg / "main.py"
-        main_py.unlink(missing_ok=True)
-        console.print(f"[green]\u2713[/green] Deleted src/{pkg}/main.py")
-        if update_project_scripts(project_root, pkg):
-            console.print(f'[green]\u2713[/green] Updated [project.scripts]: {pkg} = "{pkg}.server:start_server"')
-    elif type_ != "restapi":
-        main_py = project_root / "src" / pkg / "main.py"
-        console.print(f"[yellow]⚠[/yellow] main.py will be replaced with {type_} entrypoint.")
-        main_tpl = _tmpl(f"entry_point/{type_}/entrypoint_main.py.jinja2")
-        main_content = renderer.render_string(main_tpl, {**module_ctx.model_dump(), "routes": routes})
-        overwrite_op = CreateFile(
-            file=GeneratedFile(
-                path=main_py,
-                content=main_content,
-                template_name=f"entry_point/{type_}/entrypoint_main.py.jinja2",
-                overwrite=True,
-            )
-        )
-        writer.execute([overwrite_op], dry_run=False)
-
-
-def _build_operations(
-    type_: str,
-    src_dir: Path,
-    test_dir: Path,
-    ctx_dict: dict[str, object],
-    project_root: Path | None = None,
-    pkg: str | None = None,
-) -> list[FileOperation]:
-    """Return the CreateFile operations for the given entry-point type."""
-    base = f"entry_point/{type_}"
-
-    def _src(tpl: str, out: str) -> CreateFile:
-        return CreateFile(
-            file=GeneratedFile(
-                path=src_dir / out,
-                content=renderer.render_string(_tmpl(f"{base}/{tpl}"), ctx_dict),
-                template_name=f"{base}/{tpl}",
-            )
-        )
-
-    def _test(tpl: str, out: str) -> CreateFile:
-        return CreateFile(
-            file=GeneratedFile(
-                path=test_dir / out,
-                content=renderer.render_string(_tmpl(f"{base}/{tpl}"), ctx_dict),
-                template_name=f"{base}/{tpl}",
-                is_test=True,
-            )
-        )
-
-    if type_ == "restapi":
-        assert project_root is not None and pkg is not None
-        app_py_path = project_root / "src" / pkg / "application" / "app.py"
-        server_path = project_root / "src" / pkg / "server.py"
-        test_app_path = resolve_tests_root(project_root) / "application" / "test_app.py"
-        return [
-            CreateFile(
-                file=GeneratedFile(
-                    path=app_py_path,
-                    content=renderer.render_string(_tmpl(f"{base}/app.py.jinja2"), ctx_dict),
-                    template_name=f"{base}/app.py.jinja2",
-                )
-            ),
-            _src("__init__.py.jinja2", "__init__.py"),
-            _src("rest_controller.py.jinja2", "rest_controller.py"),
-            _src("exception_handler.py.jinja2", "exception_handler.py"),
-            CreateFile(
-                file=GeneratedFile(
-                    path=server_path,
-                    content=renderer.render_string(_tmpl(f"{base}/server.py.jinja2"), ctx_dict),
-                    template_name=f"{base}/server.py.jinja2",
-                )
-            ),
-            _test("test_rest_controller.py.jinja2", "test_rest_controller.py"),
-            _test("test_server.py.jinja2", "test_server.py"),
-            _test("test_exception_handler.py.jinja2", "test_exception_handler.py"),
-            CreateFile(
-                file=GeneratedFile(
-                    path=test_app_path,
-                    content=renderer.render_string(_tmpl(f"{base}/test_app.py.jinja2"), ctx_dict),
-                    template_name=f"{base}/test_app.py.jinja2",
-                    is_test=True,
-                )
-            ),
-        ]
-    if type_ == "agent":
-        return [
-            _src("__init__.py.jinja2", "__init__.py"),
-            _src("agent.py.jinja2", "agent.py"),
-            _src("card.py.jinja2", "card.py"),
-            _test("test_agent.py.jinja2", "test_agent.py"),
-        ]
-    if type_ == "mcp":
-        return [
-            _src("__init__.py.jinja2", "__init__.py"),
-            _src("server.py.jinja2", "server.py"),
-            _test("test_server.py.jinja2", "test_server.py"),
-        ]
-    # generic
-    return [
-        _src("__init__.py.jinja2", "__init__.py"),
-        _src("handler.py.jinja2", "entry_point.py"),
-        _test("test_handler.py.jinja2", "test_entry_point.py"),
-    ]
+        if main_py.exists():
+            console.print(f"[green]\u2713[/green] Deleted src/{pkg}/main.py")
+        console.print(f'[green]\u2713[/green] Updated [project.scripts]: {pkg} = "{pkg}.server:start_server"')
+    else:
+        console.print(f"[yellow]⚠[/yellow] main.py replaced with {type_} entrypoint.")
 
 
 def _parse_swagger(path: Path) -> list[tuple[str, str]]:
@@ -383,23 +287,3 @@ def register(app: typer.Typer) -> None:
             typer.echo(ctx.get_help())
             raise typer.Exit(0)
         _generate_entry_point_impl(type_, swagger, enable_kafka, enable_mcp_client, dry_run)
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-
-def _load_project_context(root: Path) -> ProjectContext:
-    pyproject = root / "pyproject.toml"
-    with pyproject.open("rb") as fh:
-        data = tomllib.load(fh)
-    section = data.get("tool", {}).get("scaffold-ca-python", {})
-    return ProjectContext(
-        name=section.get("name", root.name),
-    )
-
-
-def _tmpl(name: str) -> str:
-    ref = importlib.resources.files("scaffold_ca_python.templates").joinpath(name)
-    return ref.read_text(encoding="utf-8")
