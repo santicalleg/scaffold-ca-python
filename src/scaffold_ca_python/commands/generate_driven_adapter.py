@@ -28,16 +28,16 @@ _REGISTRY: dict[str, type[ModuleFactory]] = {
     "generic": DrivenAdapterGeneric,
 }
 
-_TYPE_HELP = "Adapter type: rest-consumer, secrets, generic."
-
+_GDA_HELP = "Scaffold a driven adapter and test stub. Alias 'gda'."
 _GDA_EPILOG = (
     "Types:\n\n"
-    "  rest-consumer    HTTP outbound client (httpx)\n"
-    "  secrets          AWS Secrets Manager (boto3)\n"
-    "  generic          Custom adapter (--name required)\n\n"
+    "  * rest-consumer    HTTP outbound client (httpx)\n\n"
+    "  * secrets          AWS Secrets Manager (boto3)\n\n"
+    "  * generic          Custom adapter (--name required)\n\n"
+    " ==================================================\n\n"
     "Examples:\n\n"
-    "  scaffold gda --type rest-consumer\n"
-    "  scaffold gda --type generic --name MyAdapter\n"
+    "  * scaffold gda --type rest-consumer\n\n"
+    "  * scaffold generate-driven-adapter --type generic --name MyAdapter\n\n"
 )
 
 
@@ -128,9 +128,10 @@ def register(app: typer.Typer) -> None:
 
     @app.command(
         "generate-driven-adapter",
-        help="Scaffold a driven adapter and test stub.",
+        help=_GDA_HELP,
         epilog=_GDA_EPILOG,
     )
+    @app.command("gda", hidden=True, help=_GDA_HELP, epilog=_GDA_EPILOG)
     def generate_driven_adapter(
         ctx: typer.Context,
         type_: Annotated[
@@ -160,21 +161,6 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Scaffold a driven adapter inside infrastructure/driven_adapters/."""
-        if type_ is None:
-            typer.echo(ctx.get_help())
-            raise typer.Exit(0)
-        _generate_driven_adapter_impl(type_, name, dry_run)
-
-    @app.command("gda", hidden=True, help="Alias for generate-driven-adapter.", epilog=_GDA_EPILOG)
-    def gda(
-        ctx: typer.Context,
-        type_: Annotated[
-            str | None, typer.Option("--type", help="Adapter type: rest-consumer, secrets, generic.")
-        ] = None,
-        name: Annotated[str | None, typer.Option("--name", help="Adapter name (required for generic).")] = None,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
-    ) -> None:
-        """Alias for generate-driven-adapter."""
         if type_ is None:
             typer.echo(ctx.get_help())
             raise typer.Exit(0)

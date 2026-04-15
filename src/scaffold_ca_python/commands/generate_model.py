@@ -23,7 +23,12 @@ console = Console()
 _REGISTRY: dict[str, type[ModuleFactory]] = {
     "model": ModelFactory,
 }
-
+_GM_HELP = "Scaffold a Pydantic v2 domain model and test stub. Alias 'gm'."
+_GM_EPILOG = (
+    "Example:\n\n"
+    "  * scaffold gm --name Order\n\n"
+    "  * scaffold generate-model --name Order\n\n"
+)
 
 def _generate_model_impl(name: str, dry_run: bool) -> None:
     # --- Validate name ---
@@ -87,11 +92,13 @@ def _generate_model_impl(name: str, dry_run: bool) -> None:
 def register(app: typer.Typer) -> None:
     """Register gm / generate-model commands onto *app*."""
 
+    # Both names route to the same handler; add further aliases by stacking @app.command before the def.
     @app.command(
         "generate-model",
-        help="Scaffold a Pydantic v2 domain model and test stub.",
-        epilog="Example: scaffold gm --name Order",
+        help=_GM_HELP,
+        epilog=_GM_EPILOG,
     )
+    @app.command("gm", hidden=True, help=_GM_HELP, epilog=_GM_EPILOG)
     def generate_model(
         ctx: typer.Context,
         name: Annotated[
@@ -108,18 +115,6 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Scaffold a domain model in domain/model/."""
-        if name is None:
-            typer.echo(ctx.get_help())
-            raise typer.Exit(0)
-        _generate_model_impl(name, dry_run)
-
-    @app.command("gm", hidden=True, help="Alias for generate-model.")
-    def gm(
-        ctx: typer.Context,
-        name: Annotated[str | None, typer.Option("--name", help="Model name (PascalCase).")] = None,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
-    ) -> None:
-        """Alias for generate-model."""
         if name is None:
             typer.echo(ctx.get_help())
             raise typer.Exit(0)

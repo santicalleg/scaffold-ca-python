@@ -36,18 +36,21 @@ _TYPE_HELP = "Entry-point type: restapi, agent, mcp, generic."
 _SWAGGER_HELP = "Path to OpenAPI YAML/JSON (restapi only)."
 _KAFKA_HELP = "Add async Kafka consumer stub (agent type only)."
 _MCP_CLIENT_HELP = "Add MCP tool-call client stub (agent type only)."
+_GEP_HELP = "Scaffold an entry-point adapter and test stub. Alias 'gep'."
 _GEP_EPILOG = (
     "Types:\n\n"
-    "  restapi    FastAPI REST API entry point\n"
-    "  agent      A2A agent entry point\n"
-    "  mcp        MCP server entry point\n"
-    "  generic    Plain entry point\n\n"
+    "  * restapi    FastAPI REST API entry point\n\n"
+    "  * agent      A2A agent entry point\n\n"
+    "  * mcp        MCP server entry point\n\n"
+    "  * generic    Plain entry point\n\n"
+    " ==================================================\n\n"
     "Notes: --enable-kafka and --enable-mcp-client are agent type only.\n\n"
+    " ==================================================\n\n"
     "Examples:\n\n"
-    "  scaffold gep --type restapi\n"
-    "  scaffold gep --type agent --enable-kafka\n"
-    "  scaffold gep --type mcp\n"
-    "  scaffold gep --type generic\n"
+    "  * scaffold gep --type restapi\n\n"
+    "  * scaffold gep --type agent --enable-kafka\n\n"
+    "  * scaffold gep --type mcp\n\n"
+    "  * scaffold generate-entry-point --type generic\n"
 )
 
 
@@ -230,9 +233,10 @@ def register(app: typer.Typer) -> None:
 
     @app.command(
         "generate-entry-point",
-        help="Scaffold an entry-point adapter and test stub.",
+        help=_GEP_HELP,
         epilog=_GEP_EPILOG,
     )
+    @app.command("gep", hidden=True, help=_GEP_HELP, epilog=_GEP_EPILOG)
     def generate_entry_point(
         ctx: typer.Context,
         type_: Annotated[str | None, typer.Option("--type", help=_TYPE_HELP, rich_help_panel="Required")] = None,
@@ -266,23 +270,6 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Scaffold an entry point inside infrastructure/entry_points/."""
-        if type_ is None:
-            typer.echo(ctx.get_help())
-            raise typer.Exit(0)
-        _generate_entry_point_impl(type_, swagger, enable_kafka, enable_mcp_client, dry_run)
-
-    @app.command("gep", hidden=True, help="Alias for generate-entry-point.", epilog=_GEP_EPILOG)
-    def gep(
-        ctx: typer.Context,
-        type_: Annotated[str | None, typer.Option("--type", help=_TYPE_HELP)] = None,
-        swagger: Annotated[str | None, typer.Option("--swagger", help=_SWAGGER_HELP)] = None,
-        enable_kafka: Annotated[bool, typer.Option("--enable-kafka/--no-enable-kafka", help=_KAFKA_HELP)] = False,
-        enable_mcp_client: Annotated[
-            bool, typer.Option("--enable-mcp-client/--no-enable-mcp-client", help=_MCP_CLIENT_HELP)
-        ] = False,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
-    ) -> None:
-        """Alias for generate-entry-point."""
         if type_ is None:
             typer.echo(ctx.get_help())
             raise typer.Exit(0)

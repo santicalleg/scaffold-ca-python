@@ -24,6 +24,12 @@ _REGISTRY: dict[str, type[ModuleFactory]] = {
     "helper": HelperFactory,
 }
 
+_GH_HELP = "Scaffold a helper utility module and test stub. Alias 'gh'."
+_GH_EPILOG = (
+    "Example:\n\n"
+    "  * scaffold gh --name JsonParser\n\n"
+    "  * scaffold generate-helper --name JsonParser\n\n"
+)
 
 def _generate_helper_impl(name: str, dry_run: bool) -> None:
     # --- Validate name ---
@@ -89,9 +95,10 @@ def register(app: typer.Typer) -> None:
 
     @app.command(
         "generate-helper",
-        help="Scaffold a helper utility module and test stub.",
-        epilog="Example: scaffold gh --name JsonParser",
+        help=_GH_HELP,
+        epilog=_GH_EPILOG,
     )
+    @app.command("gh", hidden=True, help=_GH_HELP, epilog=_GH_EPILOG)
     def generate_helper(
         ctx: typer.Context,
         name: Annotated[
@@ -113,21 +120,10 @@ def register(app: typer.Typer) -> None:
             raise typer.Exit(0)
         _generate_helper_impl(name, dry_run)
 
-    @app.command("gh", hidden=True, help="Alias for generate-helper.")
-    def gh(
-        ctx: typer.Context,
-        name: Annotated[str | None, typer.Option("--name", help="Helper name (PascalCase).")] = None,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
-    ) -> None:
-        """Alias for generate-helper."""
-        if name is None:
-            typer.echo(ctx.get_help())
-            raise typer.Exit(0)
-        _generate_helper_impl(name, dry_run)
-
 
 # ---------------------------------------------------------------------------
-# Helpers
+#
+#  Helpers
 # ---------------------------------------------------------------------------
 
 

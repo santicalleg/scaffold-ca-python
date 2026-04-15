@@ -23,7 +23,12 @@ console = Console()
 _REGISTRY: dict[str, type[ModuleFactory]] = {
     "use_case": UseCaseFactory,
 }
-
+_GUC_HELP = "Scaffold a use case in domain/usecase/. Alias 'guc'."
+_GUC_EPILOG = (
+    "Example:\n\n"
+    "  * scaffold guc --name CreateOrder\n\n"
+    "  * scaffold generate-use-case --name CreateOrder\n\n"
+)
 
 def _generate_use_case_impl(name: str, dry_run: bool) -> None:
     # --- Validate name ---
@@ -89,9 +94,10 @@ def register(app: typer.Typer) -> None:
 
     @app.command(
         "generate-use-case",
-        help="Scaffold an async use case class and test stub.",
-        epilog="Example: scaffold guc --name CreateOrder",
+        help=_GUC_HELP,
+        epilog=_GUC_EPILOG,
     )
+    @app.command("guc", hidden=True, help=_GUC_HELP, epilog=_GUC_EPILOG)
     def generate_use_case(
         ctx: typer.Context,
         name: Annotated[
@@ -108,18 +114,6 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Scaffold a use case in domain/usecase/."""
-        if name is None:
-            typer.echo(ctx.get_help())
-            raise typer.Exit(0)
-        _generate_use_case_impl(name, dry_run)
-
-    @app.command("guc", hidden=True, help="Alias for generate-use-case.")
-    def guc(
-        ctx: typer.Context,
-        name: Annotated[str | None, typer.Option("--name", help="Use case name (PascalCase).")] = None,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
-    ) -> None:
-        """Alias for generate-use-case."""
         if name is None:
             typer.echo(ctx.get_help())
             raise typer.Exit(0)

@@ -15,6 +15,8 @@ Auto-generated from all feature plans. Last updated: 2026-04-14
 - Local filesystem — Path operations only (014-tests-in-src)
 - Python 3.13 + Typer ≥ 0.16, Rich ≥ 14.1, Jinja2 ≥ 3.1, Pydantic v2, uv (015-factory-builder-refactor)
 - File system only (pyproject.toml + generated project files) (015-factory-builder-refactor)
+- Python 3.13+ + yper>=0.16.0, rich>=14.1.0; ruff (linter/formatter), mypy strict (type checker) (016-dedup-command-aliases)
+- N/A — CLI tool, no database (016-dedup-command-aliases)
 
 - Python 3.13 + Typer 0.16.0, Rich 14.1.0 (both already in `pyproject.toml`) (007-cli-usability-enhancements)
 
@@ -34,9 +36,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.13: Follow standard conventions
 
 ## Recent Changes
+- 016-dedup-command-aliases: Added Python 3.13+ + yper>=0.16.0, rich>=14.1.0; ruff (linter/formatter), mypy strict (type checker)
 - 015-factory-builder-refactor: Added Python 3.13 + Typer ≥ 0.16, Rich ≥ 14.1, Jinja2 ≥ 3.1, Pydantic v2, uv
 - 014-tests-in-src: Added Python 3.13 + Typer (CLI), Rich (output formatting), Jinja2 (template rendering), Pydantic v2, pytest 9.0, pytest-cov, ruff, mypy strict, uv (package manager)
-- 012-fix-restapi-test-templates: Added Python 3.13 + Jinja2 (template rendering), Pydantic v2 (generated schema model), FastAPI + Starlette (generated test client), pytest + pytest-cov (testing), ruff (lint/format), mypy strict (types), uv (package management)
 
 
 <!-- MANUAL ADDITIONS START -->

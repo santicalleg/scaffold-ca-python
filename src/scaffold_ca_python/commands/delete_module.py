@@ -23,6 +23,13 @@ _REGISTRY: dict[str, type[ModuleFactory]] = {
     "delete": DeleteModuleFactory,
 }
 
+_DM_HELP = "Delete a previously generated module and its test mirror. Alias 'dm'."
+_DM_EPILOG = (
+    "Examples:\n\n"
+    "  * scaffold dm --name Order\n\n"
+    "  * scaffold delete-module --name MyAdapter\n\n"
+)
+
 
 # ---------------------------------------------------------------------------
 # Module discovery helpers
@@ -163,9 +170,10 @@ def register(app: typer.Typer) -> None:
 
     @app.command(
         "delete-module",
-        help="Delete a previously generated module and its test mirror.",
-        epilog="Example: scaffold dm --name Order",
+        help=_DM_HELP,
+        epilog=_DM_EPILOG,
     )
+    @app.command("dm", hidden=True, help=_DM_HELP, epilog=_DM_EPILOG)
     def delete_module(
         ctx: typer.Context,
         name: Annotated[
@@ -190,19 +198,6 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Delete a module and its test mirror."""
-        if name is None:
-            typer.echo(ctx.get_help())
-            raise typer.Exit(0)
-        _delete_module_impl(name, confirm, dry_run)
-
-    @app.command("dm", hidden=True, help="Alias for delete-module.")
-    def dm(
-        ctx: typer.Context,
-        name: Annotated[str | None, typer.Option("--name", help="Module name (PascalCase).")] = None,
-        confirm: Annotated[bool, typer.Option("--confirm/--no-confirm")] = False,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
-    ) -> None:
-        """Alias for delete-module."""
         if name is None:
             typer.echo(ctx.get_help())
             raise typer.Exit(0)
