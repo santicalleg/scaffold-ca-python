@@ -7,8 +7,29 @@ import pytest
 from {{ project.python_package }}.infrastructure.entry_points.generic.entry_point import EntryPoint
 
 
-@pytest.mark.asyncio
-async def test_entry_point_run_raises_not_implemented() -> None:
-    ep = EntryPoint()
-    with pytest.raises(NotImplementedError):
+class TestEntryPointRun:
+    """Test EntryPoint.run() behavior."""
+
+    @pytest.mark.asyncio
+    async def test_entry_point_run_is_async(self) -> None:
+        """Test that run method is async and callable."""
+        ep = EntryPoint()
+        result = await ep.run()
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_entry_point_run_prints_message(self, capsys: pytest.CaptureFixture[str]) -> None:
+        """Test that run method prints the placeholder message."""
+        ep = EntryPoint()
         await ep.run()
+        captured = capsys.readouterr()
+        assert "Hello from the generic entry point" in captured.out
+
+    @pytest.mark.asyncio
+    async def test_entry_point_run_does_not_raise_exception(self) -> None:
+        """Test that run method executes without raising exceptions."""
+        ep = EntryPoint()
+        try:
+            await ep.run()
+        except Exception as exc:
+            pytest.fail(f"EntryPoint.run() raised {type(exc).__name__}: {exc}")
