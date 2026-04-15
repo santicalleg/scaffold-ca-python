@@ -15,6 +15,12 @@ from scaffold_ca_python.core.structure_validator import StructureValidator
 console = Console()
 _validator = StructureValidator()
 
+_GVS_HELP = "Scan src/ for Clean Architecture import violations. Alias: 'vs'."
+_GVS_EPILOG = (
+    "Example:\n\n"
+    "  * scaffold vs\n\n"
+    "  * scaffold validate-structure\n"
+)
 
 def _validate_structure_impl(dry_run: bool) -> None:
     try:
@@ -68,9 +74,10 @@ def register(app: typer.Typer) -> None:
 
     @app.command(
         "validate-structure",
-        help="Scan src/ for Clean Architecture import violations.",
-        epilog="Example: scaffold vs",
+        help=_GVS_HELP,
+        epilog=_GVS_EPILOG,
     )
+    @app.command("vs", hidden=True, help=_GVS_HELP, epilog=_GVS_EPILOG)
     def validate_structure(
         dry_run: Annotated[
             bool,
@@ -83,14 +90,4 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Validate Clean Architecture layer boundaries in the current project."""
-        _validate_structure_impl(dry_run)
-
-    @app.command("vs", hidden=True, help="Alias for validate-structure.")
-    def vs(
-        dry_run: Annotated[
-            bool,
-            typer.Option("--dry-run/--no-dry-run", help="Print results but always exit 0."),
-        ] = False,
-    ) -> None:
-        """Alias for validate-structure."""
         _validate_structure_impl(dry_run)

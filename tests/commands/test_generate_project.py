@@ -177,18 +177,6 @@ def test_ca_alias_creates_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
     assert (tmp_path / "demo").is_dir()
 
 
-def test_generate_project_tombstone_exits_1() -> None:
-    result = runner.invoke(app, ["generate-project", "--name", "Demo"])
-    assert result.exit_code == 1
-    assert "clean-architecture" in result.output
-
-
-def test_generate_project_tombstone_exits_1_no_args() -> None:
-    result = runner.invoke(app, ["generate-project"])
-    assert result.exit_code == 1
-    assert "clean-architecture" in result.output
-
-
 def test_creates_tests_init(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)

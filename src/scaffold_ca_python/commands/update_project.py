@@ -13,6 +13,12 @@ from scaffold_ca_python.core.project_detector import find_project_root
 
 console = Console()
 
+_GUP = "Update project dependencies via uv lock --upgrade + uv sync. Alias: 'up'"
+_GUP_EPILOG = (
+    "Example:\n\n"
+    "  * scaffold up --dry-run\n\n"
+    "  * scaffold update-project --dry-run"
+)
 
 def _update_project_impl(dry_run: bool) -> None:
     # Locate project root
@@ -62,9 +68,10 @@ def register(app: typer.Typer) -> None:
 
     @app.command(
         "update-project",
-        help="Update project dependencies via uv lock --upgrade + uv sync.",
-        epilog="Example: scaffold up --dry-run",
+        help=_GUP,
+        epilog=_GUP_EPILOG,
     )
+    @app.command("up", hidden=True, help=_GUP, epilog=_GUP_EPILOG)
     def update_project(
         dry_run: Annotated[
             bool,
@@ -77,11 +84,4 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Update dependencies using uv."""
-        _update_project_impl(dry_run)
-
-    @app.command("up", hidden=True, help="Alias for update-project.")
-    def up(
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
-    ) -> None:
-        """Alias for update-project."""
         _update_project_impl(dry_run)

@@ -24,16 +24,16 @@ writer = FileWriter()
 
 _ALLOWED_PROVIDERS = ("github", "azure")
 
-_PROVIDER_HELP = "Pipeline provider (github, azure)."
-
+_GPIPE_HELP = "Scaffold a CI/CD pipeline configuration file. Alias: 'gpipe'"
 _GPIPE_EPILOG = (
     "Providers:\n\n"
-    "  github    GitHub Actions (.github/workflows/ci.yml)\n"
-    "  azure     Azure Pipelines (azure-pipelines.yml)\n\n"
+    "  * github    GitHub Actions (.github/workflows/ci.yml)\n\n"
+    "  * azure     Azure Pipelines (azure-pipelines.yml)\n\n"
+    " ==================================================\n\n"
     "Note: --provider is required.\n\n"
     "Examples:\n\n"
-    "  scaffold gpipe --provider github\n"
-    "  scaffold gpipe --provider azure\n"
+    "  * scaffold gpipe --provider github\n\n"
+    "  * scaffold generate-pipeline --provider azure"
 )
 
 # Module-level option default needed with from __future__ import annotations
@@ -107,9 +107,10 @@ def register(app: typer.Typer) -> None:
 
     @app.command(
         "generate-pipeline",
-        help="Scaffold a CI/CD pipeline configuration file.",
+        help=_GPIPE_HELP,
         epilog=_GPIPE_EPILOG,
     )
+    @app.command("gpipe", hidden=True, help=_GPIPE_HELP, epilog=_GPIPE_EPILOG)
     def generate_pipeline(
         ctx: typer.Context,
         provider: Annotated[
@@ -131,18 +132,6 @@ def register(app: typer.Typer) -> None:
         ] = False,
     ) -> None:
         """Scaffold a CI/CD pipeline file for the specified provider."""
-        if provider is None:
-            typer.echo(ctx.get_help())
-            raise typer.Exit(0)
-        _generate_pipeline_impl(provider, dry_run)
-
-    @app.command("gpipe", hidden=True, help="Alias for generate-pipeline.", epilog=_GPIPE_EPILOG)
-    def gpipe(
-        ctx: typer.Context,
-        provider: Annotated[str | None, typer.Option("--provider", help="Pipeline provider (github, azure).")] = None,
-        dry_run: Annotated[bool, typer.Option("--dry-run/--no-dry-run")] = False,
-    ) -> None:
-        """Alias for generate-pipeline."""
         if provider is None:
             typer.echo(ctx.get_help())
             raise typer.Exit(0)

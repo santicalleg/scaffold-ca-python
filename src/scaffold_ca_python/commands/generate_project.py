@@ -29,7 +29,12 @@ _LAYER_DIRS: list[tuple[str, str]] = [
     ("infrastructure/entry_points", "infrastructure/entry-points"),
     ("infrastructure/helpers", "infrastructure/helpers"),
 ]
-
+_GCA = "Scaffold a new Clean Architecture project. Alias: 'ca'"
+_GCA_EPILOG = (
+    "Examples:\n\n  "
+    "  * scaffold ca --name OrderService\n\n"
+    "  * scaffold clean-architecture --name OrderService"
+)
 
 def _generate_project_impl(
     name: str,
@@ -134,8 +139,14 @@ def register(app: typer.Typer) -> None:
 
     @app.command(
         "clean-architecture",
-        help="Scaffold a new CA project. Alias: ca",
-        epilog="Example: scaffold clean-architecture --name OrderService",
+        help=_GCA,
+        epilog=_GCA_EPILOG,
+    )
+    @app.command(
+        "ca",
+        hidden=True,
+        help=_GCA,
+        epilog=_GCA_EPILOG,
     )
     def clean_architecture(
         ctx: typer.Context,
@@ -146,33 +157,6 @@ def register(app: typer.Typer) -> None:
                 help="Project name (PascalCase or snake_case).",
                 rich_help_panel="Required",
             ),
-        ] = None,
-        dry_run: Annotated[
-            bool,
-            typer.Option(
-                "--dry-run/--no-dry-run",
-                help="Preview files without writing.",
-                rich_help_panel="Options",
-                show_default=True,
-            ),
-        ] = False,
-    ) -> None:
-        """Scaffold a complete Clean Architecture Python project."""
-        if name is None:
-            typer.echo(ctx.get_help())
-            raise typer.Exit(0)
-        _generate_project_impl(name, dry_run)
-
-    @app.command(
-        "ca",
-        hidden=True,
-        help="Scaffold a new CA project. Alias: ca",
-        epilog="Example: scaffold clean-architecture --name OrderService",
-    )
-    def ca(
-        ctx: typer.Context,
-        name: Annotated[
-            str, typer.Option("--name", help="Project name (PascalCase or snake_case).", rich_help_panel="Required")
         ] = None,
         dry_run: Annotated[
             bool,
