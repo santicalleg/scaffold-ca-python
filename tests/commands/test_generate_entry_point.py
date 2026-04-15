@@ -147,13 +147,6 @@ def test_restapi_creates_test_exception_handler(project_root: Path) -> None:
     ).exists()
 
 
-def test_restapi_creates_test_schemas(project_root: Path) -> None:
-    runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
-    assert (
-        project_root / "src" / "tests" / "infrastructure" / "entry_points" / "api" / "v1" / "test_schemas.py"
-    ).exists()
-
-
 # ---------------------------------------------------------------------------
 # Existing file-existence tests
 # ---------------------------------------------------------------------------
@@ -179,12 +172,6 @@ def test_restapi_creates_exception_handler(project_root: Path) -> None:
     assert (
         project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "exception_handler.py"
     ).exists()
-
-
-def test_restapi_creates_schemas(project_root: Path) -> None:
-    result = runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
-    assert result.exit_code == 0
-    assert (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "schemas.py").exists()
 
 
 def test_restapi_creates_server_py(project_root: Path) -> None:
@@ -214,7 +201,6 @@ def test_restapi_dry_run_lists_all_planned_files_and_writes_nothing(project_root
     assert result.exit_code == 0
     assert "rest_controller.py" in result.output
     assert "exception_handler.py" in result.output
-    assert "schemas.py" in result.output
     assert "server.py" in result.output
     assert not (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api").exists()
 
@@ -231,19 +217,6 @@ def test_swagger_injects_routes(project_root: Path, swagger_file: Path) -> None:
         catch_exceptions=False,
     )
     assert result.exit_code == 0
-
-
-def test_swagger_schemas_contains_routes(project_root: Path, swagger_file: Path) -> None:
-    runner.invoke(
-        app,
-        ["gep", "--type", "restapi", "--swagger", str(swagger_file)],
-        catch_exceptions=False,
-    )
-    content = (
-        project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "api" / "v1" / "schemas.py"
-    ).read_text()
-    # routes from OpenAPI spec should be mentioned
-    assert "/users" in content or "/orders" in content or "routes" in content.lower()
 
 
 # ---------------------------------------------------------------------------

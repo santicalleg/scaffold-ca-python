@@ -26,11 +26,6 @@ def _tmpl(name: str) -> str:
 # ---------------------------------------------------------------------------
 
 
-def test_restapi_router_has_async_def() -> None:
-    out = renderer.render_string(_tmpl("entry_point/restapi/router.py.jinja2"), _ctx().model_dump())
-    assert "async def" in out
-
-
 def test_entry_point_restapi_rest_controller_has_apirouter() -> None:
     out = renderer.render_string(_tmpl("entry_point/restapi/rest_controller.py.jinja2"), _ctx().model_dump())
     assert "APIRouter" in out
@@ -113,11 +108,6 @@ def test_entry_point_restapi_test_exception_handler_template_has_status_codes() 
     assert "422" in out or "HTTPException" in out
 
 
-def test_entry_point_restapi_test_schemas_template_has_example_response() -> None:
-    out = renderer.render_string(_tmpl("entry_point/restapi/test_schemas.py.jinja2"), _ctx().model_dump())
-    assert "ExampleResponse" in out
-
-
 # ---------------------------------------------------------------------------
 # restapi — test_rest_controller.py template correctness (T004, T005)
 # ---------------------------------------------------------------------------
@@ -132,21 +122,6 @@ def test_generated_test_rest_controller_imports_application_app() -> None:
 def test_generated_test_rest_controller_has_no_duplicate_docstring() -> None:
     out = renderer.render_string(_tmpl("entry_point/restapi/test_rest_controller.py.jinja2"), _ctx().model_dump())
     assert out.count('"""Tests') == 1
-
-
-# ---------------------------------------------------------------------------
-# restapi — schemas.py template (T007, T008)
-# ---------------------------------------------------------------------------
-
-
-def test_entry_point_restapi_schemas_template_has_example_response() -> None:
-    out = renderer.render_string(_tmpl("entry_point/restapi/schemas.py.jinja2"), _ctx().model_dump())
-    assert "ExampleResponse" in out
-
-
-def test_entry_point_restapi_schemas_template_has_base_model() -> None:
-    out = renderer.render_string(_tmpl("entry_point/restapi/schemas.py.jinja2"), _ctx().model_dump())
-    assert "BaseModel" in out
 
 
 # ---------------------------------------------------------------------------
