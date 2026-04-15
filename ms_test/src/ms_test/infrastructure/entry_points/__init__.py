@@ -1,1 +1,0 @@
-"""infrastructure/entry-points layer."""

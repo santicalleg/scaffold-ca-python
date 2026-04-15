@@ -1,1 +1,0 @@
-"""infrastructure/driven-adapters layer."""
