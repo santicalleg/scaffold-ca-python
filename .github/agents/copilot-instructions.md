@@ -1,6 +1,6 @@
 # scaffold-ca-python Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-15
+Auto-generated from all feature plans. Last updated: 2026-04-16
 
 ## Active Technologies
 - Python 3.13 + Typer 0.16, Jinja2 3.1, Pydantic v2, Rich 14, uv (dep management) (008-fastapi-entrypoint-baseline)
@@ -19,6 +19,8 @@ Auto-generated from all feature plans. Last updated: 2026-04-15
 - N/A — CLI tool, no database (016-dedup-command-aliases)
 - Python 3.13+ + yper ≥ 0.16, pydantic ≥ 2.0, rich ≥ 14.1, jinja2 ≥ 3.1 (017-pep8-naming-validation)
 - N/A (file generation only) (017-pep8-naming-validation)
+- Python 3.13+ + Typer (CLI), Rich (output), Jinja2 (templates), Pydantic v2 (context models), `mcp>=1.0` (generated project dep), `starlette` (generated project dep), `uvicorn` (generated project dep), `dependency-injector` (generated project dep) (019-mcp-entry-point-restructure)
+- N/A — file system writes only (019-mcp-entry-point-restructure)
 
 - Python 3.13 + Typer 0.16.0, Rich 14.1.0 (both already in `pyproject.toml`) (007-cli-usability-enhancements)
 
@@ -38,9 +40,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.13: Follow standard conventions
 
 ## Recent Changes
+- 019-mcp-entry-point-restructure: Added Python 3.13+ + Typer (CLI), Rich (output), Jinja2 (templates), Pydantic v2 (context models), `mcp>=1.0` (generated project dep), `starlette` (generated project dep), `uvicorn` (generated project dep), `dependency-injector` (generated project dep)
 - 017-pep8-naming-validation: Added Python 3.13+ + yper ≥ 0.16, pydantic ≥ 2.0, rich ≥ 14.1, jinja2 ≥ 3.1
 - 016-dedup-command-aliases: Added Python 3.13+ + yper>=0.16.0, rich>=14.1.0; ruff (linter/formatter), mypy strict (type checker)
-- 015-factory-builder-refactor: Added Python 3.13 + Typer ≥ 0.16, Rich ≥ 14.1, Jinja2 ≥ 3.1, Pydantic v2, uv
 
 
 <!-- MANUAL ADDITIONS START -->
