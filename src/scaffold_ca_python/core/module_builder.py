@@ -108,10 +108,11 @@ class ModuleBuilder:
 
         # Optional script update hook used by entry-point factory implementations.
         if bool(self._params.get("scripts_entry", False)):
-            pkg = self.project_ctx.python_package
+            pkg = self.project_ctx
+            entry_fn: str = str(self._params.get("scripts_entry_fn", "start_server"))
             if self.dry_run:
-                dry_run_scripts_update(self.project_root, pkg)
+                dry_run_scripts_update(self.project_root, pkg, entry_fn)
             else:
-                update_project_scripts(self.project_root, pkg)
+                update_project_scripts(self.project_root, pkg, entry_fn)
 
         return paths

@@ -1,0 +1,29 @@
+"""MCP prompts binding — register FastMCP prompts via dependency injection."""
+
+from __future__ import annotations
+
+from dependency_injector.wiring import Provide, inject
+from mcp.server.fastmcp import FastMCP
+
+from {{ project.python_package }}.application.config.container import Container
+
+
+@inject
+def bind_prompts(
+    mcp: FastMCP,
+    # Replace with your actual use-case injection:
+    # prompt_usecase: SomeUseCase = Provide[Container.some_usecase],
+) -> None:
+    """Bind all MCP prompts to the server instance.
+
+    Called inside ``lifespan`` in ``application/app.py`` when
+    ``--with-prompts`` was used during project generation.  Unlike
+    ``bind_tools`` and ``bind_resources``, this function is **synchronous**
+    because prompt registration does not require I/O.  Add one
+    ``@mcp.prompt`` decorated inner function per prompt template.
+    """
+
+    @mcp.prompt()
+    async def example_prompt(topic: str) -> str:
+        """Example prompt stub — replace with your implementation."""
+        return f"You are an expert on {topic}. Answer concisely."

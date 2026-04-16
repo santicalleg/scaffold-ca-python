@@ -54,17 +54,17 @@ def test_agent_main_uses_asyncio() -> None:
     assert "asyncio" in out
 
 
-# --- mcp entrypoint_main.py -----------------------------------------------
+# --- mcp entrypoint_main.py (Phase 4: migrated to server.py.jinja2) ----------
 
 
 def test_mcp_main_has_def_main() -> None:
-    out = _render("entry_point/mcp/entrypoint_main.py.jinja2")
+    out = _render("entry_point/mcp/server.py.jinja2")
     assert "def main" in out
 
 
 def test_mcp_main_uses_asyncio() -> None:
-    out = _render("entry_point/mcp/entrypoint_main.py.jinja2")
-    assert "asyncio" in out
+    out = _render("entry_point/mcp/server.py.jinja2")
+    assert "uvicorn" in out
 
 
 # --- generic entrypoint_main.py -------------------------------------------

@@ -1,0 +1,14 @@
+"""Tests for {{ project.python_package }}.infrastructure.entry_points.mcp_server.tools."""
+
+from __future__ import annotations
+
+import asyncio
+import inspect
+
+from {{ project.python_package }}.infrastructure.entry_points.mcp_server.tools import bind_tools
+
+
+def test_bind_tools_is_async_callable() -> None:
+    """bind_tools must be an async function (or wrap one via @inject)."""
+    fn = getattr(bind_tools, "__wrapped__", bind_tools)
+    assert inspect.iscoroutinefunction(fn), "bind_tools must be async"

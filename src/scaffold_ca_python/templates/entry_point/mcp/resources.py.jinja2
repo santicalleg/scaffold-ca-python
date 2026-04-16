@@ -1,0 +1,28 @@
+"""MCP resources binding — register FastMCP resources via dependency injection."""
+
+from __future__ import annotations
+
+from dependency_injector.wiring import Provide, inject
+from mcp.server.fastmcp import FastMCP
+
+from {{ project.python_package }}.application.config.container import Container
+
+
+@inject
+async def bind_resources(
+    mcp: FastMCP,
+    # Replace with your actual use-case injection:
+    # some_usecase: SomeUseCase = Provide[Container.usecase_container.some_usecase],
+) -> None:
+    """Bind all MCP resources to the server instance.
+
+    Called inside ``lifespan`` in ``application/app.py`` when
+    ``--with-resources`` was used during project generation.  Add one
+    ``@mcp.resource`` decorated inner function per resource your server
+    exposes.
+    """
+
+    @mcp.resource("file://example_resource", mime_type="application/json")
+    async def example_resource() -> dict[str, object]:
+        """Example resource stub — replace with your implementation."""
+        return {"message": "example resource data"}

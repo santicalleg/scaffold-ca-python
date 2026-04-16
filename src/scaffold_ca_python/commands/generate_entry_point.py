@@ -68,6 +68,8 @@ def _generate_entry_point_impl(
     swagger: str | None,
     enable_kafka: bool,
     enable_mcp_client: bool,
+    with_resources: bool,
+    with_prompts: bool,
     dry_run: bool,
 ) -> None:
     # --- Validate type ---
@@ -82,6 +84,10 @@ def _generate_entry_point_impl(
 
     if enable_mcp_client and type_ == "mcp":
         console.print("[red]Error:[/red] --enable-mcp-client is not valid with --type mcp.")
+        raise typer.Exit(code=1) from None
+
+    if (with_resources or with_prompts) and type_ != "mcp":
+        console.print("[red]Error:[/red] --with-resources and --with-prompts are only valid with --type mcp.")
         raise typer.Exit(code=1) from None
 
     # --- Validate swagger path ---
@@ -164,6 +170,8 @@ def _generate_entry_point_impl(
     builder.add_param("routes", routes)
     builder.add_param("enable_kafka", enable_kafka)
     builder.add_param("enable_mcp_client", enable_mcp_client)
+    builder.add_param("with_resources", with_resources)
+    builder.add_param("with_prompts", with_prompts)
 
     # Get factory class and instantiate
     factory_class = _REGISTRY[type_]
@@ -259,6 +267,24 @@ def register(app: typer.Typer) -> None:
                 show_default=True,
             ),
         ] = False,
+        with_resources: Annotated[
+            bool,
+            typer.Option(
+                "--with-resources/--no-with-resources",
+                help="Generate resources.py primitive (mcp only).",
+                rich_help_panel="Options",
+                show_default=True,
+            ),
+        ] = False,
+        with_prompts: Annotated[
+            bool,
+            typer.Option(
+                "--with-prompts/--no-with-prompts",
+                help="Generate prompts.py primitive (mcp only).",
+                rich_help_panel="Options",
+                show_default=True,
+            ),
+        ] = False,
         dry_run: Annotated[
             bool,
             typer.Option(
@@ -273,4 +299,6 @@ def register(app: typer.Typer) -> None:
         if type_ is None:
             typer.echo(ctx.get_help())
             raise typer.Exit(0)
-        _generate_entry_point_impl(type_, swagger, enable_kafka, enable_mcp_client, dry_run)
+        _generate_entry_point_impl(
+            type_, swagger, enable_kafka, enable_mcp_client, with_resources, with_prompts, dry_run
+        )

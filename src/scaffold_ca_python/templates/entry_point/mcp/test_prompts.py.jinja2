@@ -1,0 +1,14 @@
+"""Tests for {{ project.python_package }}.infrastructure.entry_points.mcp_server.prompts."""
+
+from __future__ import annotations
+
+import inspect
+
+from {{ project.python_package }}.infrastructure.entry_points.mcp_server.prompts import bind_prompts
+
+
+def test_bind_prompts_is_callable() -> None:
+    """bind_prompts must be a regular (sync) callable."""
+    fn = getattr(bind_prompts, "__wrapped__", bind_prompts)
+    assert callable(fn), "bind_prompts must be callable"
+    assert not inspect.iscoroutinefunction(fn), "bind_prompts must be sync, not async"

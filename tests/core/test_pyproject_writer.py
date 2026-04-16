@@ -11,6 +11,7 @@ from scaffold_ca_python.core.pyproject_writer import (
     inject_dependencies,
     update_project_scripts,
 )
+from scaffold_ca_python.models.context import ProjectContext
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -184,7 +185,7 @@ def _make_pyproject_with_scripts(tmp_path: Path, entry: str) -> Path:
 name = "my_app"
 
 [project.scripts]
-my_app = "{entry}"
+my-app = "{entry}"
 
 [tool.scaffold-ca-python]
 name = "MyApp"
@@ -219,25 +220,25 @@ def _read_scripts(pyproject: Path) -> dict[str, str]:
 def test_update_project_scripts_changes_entry(tmp_path: Path) -> None:
     """T002: updates main:main → server:start_server and returns True."""
     pyproject = _make_pyproject_with_scripts(tmp_path, "my_app.main:main")
-    result = update_project_scripts(tmp_path, "my_app")
+    result = update_project_scripts(tmp_path, ProjectContext(name="my-app"))
     assert result is True
-    assert _read_scripts(pyproject)["my_app"] == "my_app.server:start_server"
+    assert _read_scripts(pyproject)["my-app"] == "my_app.server:start_server"
 
 
 def test_update_project_scripts_is_idempotent(tmp_path: Path) -> None:
     """T003: second call returns False and leaves entry unchanged."""
     pyproject = _make_pyproject_with_scripts(tmp_path, "my_app.server:start_server")
-    result = update_project_scripts(tmp_path, "my_app")
+    result = update_project_scripts(tmp_path, ProjectContext(name="my-app"), entry_fn="start_server")
     assert result is False
-    assert _read_scripts(pyproject)["my_app"] == "my_app.server:start_server"
+    assert _read_scripts(pyproject)["my-app"] == "my_app.server:start_server"
 
 
 def test_update_project_scripts_creates_section_when_absent(tmp_path: Path) -> None:
     """T004: creates [project.scripts] when missing and writes correct entry."""
     pyproject = _make_pyproject_without_scripts(tmp_path)
-    result = update_project_scripts(tmp_path, "my_app")
+    result = update_project_scripts(tmp_path, ProjectContext(name="my-app"))
     assert result is True
-    assert _read_scripts(pyproject)["my_app"] == "my_app.server:start_server"
+    assert _read_scripts(pyproject)["my-app"] == "my_app.server:start_server"
 
 
 # ---------------------------------------------------------------------------
@@ -249,7 +250,7 @@ def test_dry_run_scripts_update_returns_true_when_change_needed(tmp_path: Path) 
     """T005: returns True (change needed) but does NOT write to disk."""
     pyproject = _make_pyproject_with_scripts(tmp_path, "my_app.main:main")
     original = pyproject.read_bytes()
-    result = dry_run_scripts_update(tmp_path, "my_app")
+    result = dry_run_scripts_update(tmp_path, ProjectContext(name="my-app"))
     assert result is True
     assert pyproject.read_bytes() == original
 
@@ -257,7 +258,7 @@ def test_dry_run_scripts_update_returns_true_when_change_needed(tmp_path: Path) 
 def test_dry_run_scripts_update_returns_false_when_already_correct(tmp_path: Path) -> None:
     """T006: returns False when entry already matches server:start_server."""
     _make_pyproject_with_scripts(tmp_path, "my_app.server:start_server")
-    result = dry_run_scripts_update(tmp_path, "my_app")
+    result = dry_run_scripts_update(tmp_path, ProjectContext(name="my-app"), entry_fn="start_server")
     assert result is False
 
 
@@ -265,5 +266,56 @@ def test_dry_run_scripts_update_never_writes_to_disk(tmp_path: Path) -> None:
     """T007: raw file bytes are identical before and after the call."""
     pyproject = _make_pyproject_with_scripts(tmp_path, "my_app.main:main")
     before = pyproject.read_bytes()
-    dry_run_scripts_update(tmp_path, "my_app")
+    dry_run_scripts_update(tmp_path, ProjectContext(name="my-app"))
     assert pyproject.read_bytes() == before
+
+
+# ---------------------------------------------------------------------------
+# entry_fn parameter — custom entry function (T005 additions from 019 tasks)
+# ---------------------------------------------------------------------------
+
+
+def test_update_project_scripts_default_uses_start_server(tmp_path: Path) -> None:
+    """Default entry_fn='start_server' preserves existing behaviour."""
+    pyproject = _make_pyproject_with_scripts(tmp_path, "my_app.main:main")
+    update_project_scripts(tmp_path, ProjectContext(name="my-app"))
+    assert _read_scripts(pyproject)["my-app"] == "my_app.server:start_server"
+
+
+def test_update_project_scripts_custom_entry_fn_writes_main(tmp_path: Path) -> None:
+    """entry_fn='main' writes <pkg>.server:main (used by MCP entry point)."""
+    pyproject = _make_pyproject_with_scripts(tmp_path, "my_app.main:main")
+    result = update_project_scripts(tmp_path, ProjectContext(name="my-app"), entry_fn="main")
+    assert result is True
+    assert _read_scripts(pyproject)["my-app"] == "my_app.server:main"
+
+
+def test_update_project_scripts_custom_entry_fn_is_idempotent(tmp_path: Path) -> None:
+    """Second call with entry_fn='main' returns False when entry already correct."""
+    pyproject = _make_pyproject_with_scripts(tmp_path, "my_app.server:main")
+    result = update_project_scripts(tmp_path, ProjectContext(name="my-app"), entry_fn="main")
+    assert result is False
+    assert _read_scripts(pyproject)["my-app"] == "my_app.server:main"
+
+
+def test_dry_run_scripts_update_default_uses_start_server(tmp_path: Path) -> None:
+    """Default entry_fn='start_server' in dry_run preserves existing behaviour."""
+    _make_pyproject_with_scripts(tmp_path, "my_app.server:start_server")
+    result = dry_run_scripts_update(tmp_path, ProjectContext(name="my-app"))
+    assert result is False
+
+
+def test_dry_run_scripts_update_custom_entry_fn_detects_change(tmp_path: Path) -> None:
+    """entry_fn='main' returns True when entry is currently start_server."""
+    pyproject = _make_pyproject_with_scripts(tmp_path, "my_app.server:start_server")
+    original = pyproject.read_bytes()
+    result = dry_run_scripts_update(tmp_path, ProjectContext(name="my-app"), entry_fn="main")
+    assert result is True
+    assert pyproject.read_bytes() == original  # never wrote to disk
+
+
+def test_dry_run_scripts_update_custom_entry_fn_no_change_needed(tmp_path: Path) -> None:
+    """entry_fn='main' returns False when entry already equals <pkg>.server:main."""
+    _make_pyproject_with_scripts(tmp_path, "my_app.server:main")
+    result = dry_run_scripts_update(tmp_path, ProjectContext(name="my-app"), entry_fn="main")
+    assert result is False

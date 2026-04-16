@@ -155,18 +155,149 @@ def test_agent_without_kafka_flag_excludes_stub() -> None:
 
 
 # ---------------------------------------------------------------------------
-# mcp
+# mcp — tools.py template (T006)
 # ---------------------------------------------------------------------------
 
 
-def test_mcp_server_has_list_tools() -> None:
-    out = renderer.render_string(_tmpl("entry_point/mcp/server.py.jinja2"), _ctx().model_dump())
-    assert "list_tools" in out
+def test_mcp_tools_has_bind_tools() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/tools.py.jinja2"), _ctx().model_dump())
+    assert "bind_tools" in out
 
 
-def test_mcp_server_has_async_def() -> None:
+def test_mcp_tools_has_inject_decorator() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/tools.py.jinja2"), _ctx().model_dump())
+    assert "@inject" in out
+
+
+def test_mcp_tools_has_fastmcp_import() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/tools.py.jinja2"), _ctx().model_dump())
+    assert "from mcp.server.fastmcp import FastMCP" in out
+
+
+def test_mcp_tools_is_async() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/tools.py.jinja2"), _ctx().model_dump())
+    assert "async def bind_tools" in out
+
+
+# ---------------------------------------------------------------------------
+# mcp — resources.py template (T007)
+# ---------------------------------------------------------------------------
+
+
+def test_mcp_resources_has_bind_resources() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/resources.py.jinja2"), _ctx().model_dump())
+    assert "bind_resources" in out
+
+
+def test_mcp_resources_has_inject_decorator() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/resources.py.jinja2"), _ctx().model_dump())
+    assert "@inject" in out
+
+
+def test_mcp_resources_has_fastmcp_import() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/resources.py.jinja2"), _ctx().model_dump())
+    assert "from mcp.server.fastmcp import FastMCP" in out
+
+
+def test_mcp_resources_is_async() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/resources.py.jinja2"), _ctx().model_dump())
+    assert "async def bind_resources" in out
+
+
+# ---------------------------------------------------------------------------
+# mcp — prompts.py template (T007)
+# ---------------------------------------------------------------------------
+
+
+def test_mcp_prompts_has_bind_prompts() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/prompts.py.jinja2"), _ctx().model_dump())
+    assert "bind_prompts" in out
+
+
+def test_mcp_prompts_has_inject_decorator() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/prompts.py.jinja2"), _ctx().model_dump())
+    assert "@inject" in out
+
+
+def test_mcp_prompts_has_fastmcp_import() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/prompts.py.jinja2"), _ctx().model_dump())
+    assert "from mcp.server.fastmcp import FastMCP" in out
+
+
+def test_mcp_prompts_is_sync_not_async() -> None:
+    """bind_prompts is intentionally sync (unlike bind_tools/bind_resources)."""
+    out = renderer.render_string(_tmpl("entry_point/mcp/prompts.py.jinja2"), _ctx().model_dump())
+    assert "def bind_prompts" in out
+    assert "async def bind_prompts" not in out
+
+
+# ---------------------------------------------------------------------------
+# mcp — server.py (uvicorn entrypoint) — Phase 4 / T021
+# ---------------------------------------------------------------------------
+
+
+def test_mcp_server_has_main_function() -> None:
     out = renderer.render_string(_tmpl("entry_point/mcp/server.py.jinja2"), _ctx().model_dump())
-    assert "async def" in out
+    assert "def main" in out
+
+
+def test_mcp_server_has_uvicorn_run() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/server.py.jinja2"), _ctx().model_dump())
+    assert "uvicorn.run" in out
+
+
+def test_mcp_server_imports_app() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/server.py.jinja2"), _ctx().model_dump())
+    assert "import app" in out
+
+
+# ---------------------------------------------------------------------------
+# mcp — app.py (composition root) — Phase 5 / T026–T027
+# ---------------------------------------------------------------------------
+
+def _app_ctx(*, with_resources: bool = False, with_prompts: bool = False) -> dict[str, object]:
+    return {**_ctx().model_dump(), "with_resources": with_resources, "with_prompts": with_prompts}
+
+
+def test_mcp_app_has_fastmcp_instance() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/app.py.jinja2"), _app_ctx())
+    assert "FastMCP" in out
+
+
+def test_mcp_app_has_start_server() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/app.py.jinja2"), _app_ctx())
+    assert "start_server" in out
+
+
+def test_mcp_app_has_lifespan() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/app.py.jinja2"), _app_ctx())
+    assert "lifespan" in out
+    assert "asynccontextmanager" in out
+
+
+def test_mcp_app_has_streamable_http_app() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/app.py.jinja2"), _app_ctx())
+    assert "streamable_http_app" in out
+
+
+def test_mcp_app_with_resources_includes_bind_resources() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/app.py.jinja2"), _app_ctx(with_resources=True))
+    assert "bind_resources" in out
+
+
+def test_mcp_app_without_resources_excludes_bind_resources() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/app.py.jinja2"), _app_ctx(with_resources=False))
+    assert "bind_resources" not in out
+
+
+def test_mcp_app_with_prompts_includes_bind_prompts() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/app.py.jinja2"), _app_ctx(with_prompts=True))
+    assert "bind_prompts" in out
+
+
+def test_mcp_app_without_prompts_excludes_bind_prompts() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/app.py.jinja2"), _app_ctx(with_prompts=False))
+    assert "bind_prompts" not in out
 
 
 # ---------------------------------------------------------------------------

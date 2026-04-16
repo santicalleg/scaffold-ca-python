@@ -273,18 +273,98 @@ def test_mcp_creates_init(project_root: Path) -> None:
     assert (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "mcp_server" / "__init__.py").exists()
 
 
-def test_mcp_creates_server(project_root: Path) -> None:
+def test_mcp_creates_tools_py(project_root: Path) -> None:
+    """T009: base mcp run creates tools.py (replacing old monolithic server.py)."""
     result = runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "mcp_server" / "server.py").exists()
+    assert (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "mcp_server" / "tools.py").exists()
 
 
-def test_mcp_creates_test(project_root: Path) -> None:
+def test_mcp_no_monolithic_server_py_in_mcp_server(project_root: Path) -> None:
+    """T009: old monolithic server.py must NOT exist inside mcp_server/ after restructure."""
+    runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
+    server_py = project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "mcp_server" / "server.py"
+    assert not server_py.exists()
+
+
+def test_mcp_creates_test_tools(project_root: Path) -> None:
+    """T009: base mcp run creates test_tools.py (replacing old test_server.py)."""
     result = runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (
-        project_root / "src" / "tests" / "infrastructure" / "entry_points" / "mcp_server" / "test_server.py"
+        project_root / "src" / "tests" / "infrastructure" / "entry_points" / "mcp_server" / "test_tools.py"
     ).exists()
+
+
+def test_mcp_with_resources_creates_resources_py(project_root: Path) -> None:
+    """T009: --with-resources creates resources.py in mcp_server/."""
+    result = runner.invoke(app, ["gep", "--type", "mcp", "--with-resources"], catch_exceptions=False)
+    assert result.exit_code == 0
+    resources_py = project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "mcp_server" / "resources.py"
+    assert resources_py.exists()
+
+
+def test_mcp_with_resources_creates_test_resources_py(project_root: Path) -> None:
+    """T009: --with-resources also creates test_resources.py."""
+    result = runner.invoke(app, ["gep", "--type", "mcp", "--with-resources"], catch_exceptions=False)
+    assert result.exit_code == 0
+    assert (
+        project_root / "src" / "tests" / "infrastructure" / "entry_points" / "mcp_server" / "test_resources.py"
+    ).exists()
+
+
+def test_mcp_without_resources_no_resources_py(project_root: Path) -> None:
+    """T009: without --with-resources no resources.py is created."""
+    runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
+    resources_py = project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "mcp_server" / "resources.py"
+    assert not resources_py.exists()
+
+
+def test_mcp_with_prompts_creates_prompts_py(project_root: Path) -> None:
+    """T009: --with-prompts creates prompts.py in mcp_server/."""
+    result = runner.invoke(app, ["gep", "--type", "mcp", "--with-prompts"], catch_exceptions=False)
+    assert result.exit_code == 0
+    assert (project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "mcp_server" / "prompts.py").exists()
+
+
+def test_mcp_with_prompts_creates_test_prompts_py(project_root: Path) -> None:
+    """T009: --with-prompts also creates test_prompts.py."""
+    result = runner.invoke(app, ["gep", "--type", "mcp", "--with-prompts"], catch_exceptions=False)
+    assert result.exit_code == 0
+    assert (
+        project_root / "src" / "tests" / "infrastructure" / "entry_points" / "mcp_server" / "test_prompts.py"
+    ).exists()
+
+
+def test_mcp_without_prompts_no_prompts_py(project_root: Path) -> None:
+    """T009: without --with-prompts no prompts.py is created."""
+    runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
+    prompts_py = project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "mcp_server" / "prompts.py"
+    assert not prompts_py.exists()
+
+
+def test_mcp_with_all_flags_creates_all_primitive_files(project_root: Path) -> None:
+    """T009 / SC-002: --with-resources --with-prompts generates all three primitive files."""
+    result = runner.invoke(app, ["gep", "--type", "mcp", "--with-resources", "--with-prompts"], catch_exceptions=False)
+    assert result.exit_code == 0
+    mcp_dir = project_root / "src" / "my_app" / "infrastructure" / "entry_points" / "mcp_server"
+    assert (mcp_dir / "tools.py").exists()
+    assert (mcp_dir / "resources.py").exists()
+    assert (mcp_dir / "prompts.py").exists()
+
+
+def test_mcp_flags_rejected_for_restapi_type(project_root: Path) -> None:
+    """T009 / FR-012: --with-resources with non-mcp type exits 1 with hint."""
+    result = runner.invoke(app, ["gep", "--type", "restapi", "--with-resources"])
+    assert result.exit_code == 1
+    assert "only valid with --type mcp" in result.output
+
+
+def test_mcp_prompts_flag_rejected_for_agent_type(project_root: Path) -> None:
+    """T009 / FR-012: --with-prompts with non-mcp type exits 1 with hint."""
+    result = runner.invoke(app, ["gep", "--type", "agent", "--with-prompts"])
+    assert result.exit_code == 1
+    assert "only valid with --type mcp" in result.output
 
 
 # ---------------------------------------------------------------------------
@@ -395,11 +475,20 @@ def test_agent_overwrites_main_py(project_root: Path) -> None:
 
 
 def test_mcp_overwrites_main_py(project_root: Path) -> None:
-    main_py = project_root / "src" / "my_app" / "main.py"
+    """Phase 4 / T025: gep --type mcp writes server.py at the package root.
+
+    When T025 is implemented, ep_mcp.py will:
+      - add server.py.jinja2 at <pkg>/server.py (uvicorn entrypoint)
+      - set scripts_entry=True so pyproject.toml [project.scripts] is updated
+
+    Until then this test must remain xfail (strict) so it is visible as a
+    Phase 4 obligation.
+    """
+    server_py = project_root / "src" / "my_app" / "server.py"
     runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
-    content = main_py.read_text()
-    assert "def main" in content
-    assert "asyncio" in content
+    assert server_py.exists(), "server.py must exist after gep --type mcp (Phase 4)"
+    content = server_py.read_text()
+    assert "uvicorn" in content
 
 
 def test_generic_overwrites_main_py(project_root: Path) -> None:
@@ -640,7 +729,7 @@ def test_restapi_updates_project_scripts(project_root: Path) -> None:
     runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
     with (project_root / "pyproject.toml").open("rb") as fh:
         data = tomllib.load(fh)
-    assert data["project"]["scripts"]["my_app"] == "my_app.server:start_server"
+    assert data["project"]["scripts"]["my-app"] == "my_app.server:start_server"
 
 
 def test_restapi_dry_run_reports_scripts_update(project_root: Path) -> None:
@@ -665,14 +754,30 @@ def test_agent_does_not_change_project_scripts(project_root: Path) -> None:
     assert data["project"]["scripts"]["my-app"] == "my_app.main:main"
 
 
-def test_mcp_does_not_change_project_scripts(project_root: Path) -> None:
-    """T018: gep --type mcp must NOT modify [project.scripts]."""
+def test_mcp_updates_pyproject_scripts_to_server_main(project_root: Path) -> None:
+    """Phase 4 / T023: gep --type mcp must update [project.scripts] to <pkg>.server:main."""
     import tomllib
 
     runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
     with (project_root / "pyproject.toml").open("rb") as fh:
         data = tomllib.load(fh)
-    assert data["project"]["scripts"]["my-app"] == "my_app.main:main"
+    assert data["project"]["scripts"]["my-app"] == "my_app.server:main"
+
+
+def test_mcp_creates_server_py_at_package_root(project_root: Path) -> None:
+    """Phase 4 / T023: gep --type mcp must create server.py at <pkg> root."""
+    runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
+    server_py = project_root / "src" / "my_app" / "server.py"
+    assert server_py.exists(), "server.py must be created at the package root"
+    assert "uvicorn" in server_py.read_text()
+
+
+def test_mcp_deletes_main_py(project_root: Path) -> None:
+    """Phase 4 / T023: gep --type mcp must delete main.py after creating server.py."""
+    main_py = project_root / "src" / "my_app" / "main.py"
+    assert main_py.exists(), "fixture must provide main.py"
+    runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
+    assert not main_py.exists(), "main.py must be deleted after gep --type mcp"
 
 
 def test_generic_does_not_change_project_scripts(project_root: Path) -> None:
@@ -711,3 +816,23 @@ def test_gep_generic_not_blocked_when_restapi_exists(project_root: Path) -> None
     runner.invoke(app, ["gep", "--type", "restapi"], catch_exceptions=False)
     result = runner.invoke(app, ["gep", "--type", "generic"], catch_exceptions=False)
     assert result.exit_code == 0
+
+
+# ---------------------------------------------------------------------------
+# Phase 5 / T029 — application/app.py composition root (US3)
+# ---------------------------------------------------------------------------
+
+
+def test_mcp_creates_app_py(project_root: Path) -> None:
+    """T029: gep --type mcp must create application/app.py."""
+    runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
+    app_py = project_root / "src" / "my_app" / "application" / "app.py"
+    assert app_py.exists(), "application/app.py must be created by gep --type mcp"
+
+
+def test_mcp_app_py_with_resources_contains_bind_resources(project_root: Path) -> None:
+    """T029: gep --type mcp --with-resources must include bind_resources in app.py."""
+    runner.invoke(app, ["gep", "--type", "mcp", "--with-resources"], catch_exceptions=False)
+    app_py = project_root / "src" / "my_app" / "application" / "app.py"
+    assert app_py.exists()
+    assert "bind_resources" in app_py.read_text(encoding="utf-8")

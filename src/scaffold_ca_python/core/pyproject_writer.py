@@ -7,6 +7,8 @@ from pathlib import Path
 
 import tomli_w
 
+from scaffold_ca_python.models.context import ProjectContext
+
 
 def _name_prefix(package: str) -> str:
     """Extract the bare package name, stripping version specifier and extras.
@@ -100,10 +102,10 @@ def dry_run_inject(project_root: Path, packages: list[str]) -> list[str]:
     return _missing(deps, packages)
 
 
-def update_project_scripts(project_root: Path, pkg: str) -> bool:
-    """Rewrite ``[project.scripts]`` so the CLI entry calls ``start_server()``.
+def update_project_scripts(project_root: Path, pkg: ProjectContext, entry_fn: str = "start_server") -> bool:
+    """Rewrite ``[project.scripts]`` so the CLI entry calls *entry_fn*.
 
-    Sets ``<pkg> = "<pkg>.server:start_server"`` in ``pyproject.toml``.
+    Sets ``<pkg> = "<pkg>.server:<entry_fn>"`` in ``pyproject.toml``.
     Idempotent: returns ``False`` immediately when the entry already has the
     correct value, leaving the file unchanged.
 
@@ -113,6 +115,9 @@ def update_project_scripts(project_root: Path, pkg: str) -> bool:
         Directory containing ``pyproject.toml``.
     pkg:
         The Python package name (e.g. ``"my_app"``).
+    entry_fn:
+        The function name in ``server.py`` to use as the entry point
+        (default ``"start_server"``).  Pass ``"main"`` for MCP projects.
 
     Returns
     -------
@@ -123,18 +128,18 @@ def update_project_scripts(project_root: Path, pkg: str) -> bool:
     with pyproject.open("rb") as fh:
         data = tomllib.load(fh)
 
-    new_value = f"{pkg}.server:start_server"
+    new_value = f"{pkg.python_package}.server:{entry_fn}"
     scripts: dict[str, str] = data.setdefault("project", {}).setdefault("scripts", {})
-    if scripts.get(pkg) == new_value:
+    if scripts.get(pkg.python_package_script) == new_value:
         return False
 
-    scripts[pkg] = new_value
+    scripts[pkg.python_package_script] = new_value
     with pyproject.open("wb") as fh:
         tomli_w.dump(data, fh)
     return True
 
 
-def dry_run_scripts_update(project_root: Path, pkg: str) -> bool:
+def dry_run_scripts_update(project_root: Path, pkg: ProjectContext, entry_fn: str = "start_server") -> bool:
     """Return whether ``update_project_scripts`` *would* write to disk.
 
     Read-only: never modifies ``pyproject.toml``.
@@ -145,17 +150,20 @@ def dry_run_scripts_update(project_root: Path, pkg: str) -> bool:
         Directory containing ``pyproject.toml``.
     pkg:
         The Python package name (e.g. ``"my_app"``).
+    entry_fn:
+        The function name in ``server.py`` to use as the entry point
+        (default ``"start_server"``).  Pass ``"main"`` for MCP projects.
 
     Returns
     -------
     bool
-        ``True`` if the current entry differs from ``<pkg>.server:start_server``,
+        ``True`` if the current entry differs from ``<pkg>.server:<entry_fn>``,
         ``False`` if no change would be needed.
     """
     pyproject = project_root / "pyproject.toml"
     with pyproject.open("rb") as fh:
         data = tomllib.load(fh)
 
-    new_value = f"{pkg}.server:start_server"
+    new_value = f"{pkg.python_package}.server:{entry_fn}"
     scripts: dict[str, str] = data.get("project", {}).get("scripts", {})
-    return scripts.get(pkg) != new_value
+    return scripts.get(pkg.python_package_script) != new_value

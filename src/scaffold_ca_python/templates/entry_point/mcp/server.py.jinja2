@@ -1,73 +1,27 @@
-"""Model Context Protocol server entry point."""
+"""MCP server entrypoint — run with ``<pkg>-server`` or ``python -m <pkg>.server``."""
 
 from __future__ import annotations
 
+import sys
 
-# ---------------------------------------------------------------------------
-# Tools
-# ---------------------------------------------------------------------------
+import uvicorn
 
-
-async def list_tools() -> list[dict[str, object]]:
-    """Return the list of tools exposed by this MCP server."""
-    return [
-        {
-            "name": "example_tool",
-            "description": "Replace with your actual tool definition.",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "input": {"type": "string", "description": "Tool input."},
-                },
-                "required": ["input"],
-            },
-        }
-    ]
+from {{ project.python_package }}.application.config.config import settings
+from {{ project.python_package }}.application import app
 
 
-async def call_tool(name: str, arguments: dict[str, object]) -> list[dict[str, object]]:
-    """Dispatch a tool call to the matching handler.
+def main() -> None:
+    """Start the MCP server via uvicorn.
 
-    Args:
-        name: Name of the tool to invoke.
-        arguments: Tool input arguments.
-
-    Returns:
-        A list of MCP content blocks.
-
-    Raises:
-        ValueError: When no handler exists for *name*.
+    The ASGI app is obtained from :func:`app.start_server` which wires the DI
+    container and mounts the FastMCP ``streamable_http_app``.
     """
-    if name == "example_tool":
-        return [{"type": "text", "text": f"TODO: implement {name}"}]
-    raise ValueError(f"Unknown tool: {name}")
+    uvicorn.run(
+        app.start_server(),
+        host=settings.HOST,
+        port=settings.PORT,
+    )
 
 
-# ---------------------------------------------------------------------------
-# Resources
-# ---------------------------------------------------------------------------
-
-
-async def list_resources() -> list[dict[str, object]]:
-    """Return the list of resources exposed by this MCP server."""
-    return []
-
-
-async def read_resource(uri: str) -> str:
-    """Return the content of a resource by URI."""
-    raise NotImplementedError(f"Resource not implemented: {uri}")
-
-
-# ---------------------------------------------------------------------------
-# Prompts
-# ---------------------------------------------------------------------------
-
-
-async def list_prompts() -> list[dict[str, object]]:
-    """Return the list of prompt templates exposed by this MCP server."""
-    return []
-
-
-async def get_prompt(name: str, arguments: dict[str, object] | None = None) -> dict[str, object]:
-    """Return a rendered prompt template."""
-    raise NotImplementedError(f"Prompt not implemented: {name}")
+if __name__ == "__main__":
+    sys.exit(main())
