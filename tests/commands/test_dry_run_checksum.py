@@ -42,15 +42,15 @@ def _dir_hash(root: Path) -> str:
 @pytest.fixture()
 def project_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.chdir(tmp_path)
-    runner.invoke(app, ["ca", "--name", "MyApp"], catch_exceptions=False)
-    project_dir = tmp_path / "my_app"
+    runner.invoke(app, ["ca", "--name", "my-app"], catch_exceptions=False)
+    project_dir = tmp_path / "my-app"
     monkeypatch.chdir(project_dir)
     return project_dir
 
 
 @pytest.fixture()
 def project_with_model(project_root: Path) -> Path:
-    runner.invoke(app, ["gm", "--name", "Order"], catch_exceptions=False)
+    runner.invoke(app, ["gm", "--name", "order"], catch_exceptions=False)
     return project_root
 
 
@@ -62,7 +62,7 @@ def project_with_model(project_root: Path) -> Path:
 def test_ca_dry_run_does_not_change_fs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     before = _dir_hash(tmp_path)
-    runner.invoke(app, ["ca", "--name", "MyApp", "--dry-run"], catch_exceptions=False)
+    runner.invoke(app, ["ca", "--name", "my-app", "--dry-run"], catch_exceptions=False)
     after = _dir_hash(tmp_path)
     assert before == after
 
@@ -74,7 +74,7 @@ def test_ca_dry_run_does_not_change_fs(tmp_path: Path, monkeypatch: pytest.Monke
 
 def test_gm_dry_run_does_not_change_fs(project_root: Path) -> None:
     before = _dir_hash(project_root)
-    runner.invoke(app, ["gm", "--name", "Product", "--dry-run"], catch_exceptions=False)
+    runner.invoke(app, ["gm", "--name", "product", "--dry-run"], catch_exceptions=False)
     after = _dir_hash(project_root)
     assert before == after
 
@@ -86,7 +86,7 @@ def test_gm_dry_run_does_not_change_fs(project_root: Path) -> None:
 
 def test_guc_dry_run_does_not_change_fs(project_root: Path) -> None:
     before = _dir_hash(project_root)
-    runner.invoke(app, ["guc", "--name", "CreateOrder", "--dry-run"], catch_exceptions=False)
+    runner.invoke(app, ["guc", "--name", "create-order", "--dry-run"], catch_exceptions=False)
     after = _dir_hash(project_root)
     assert before == after
 
@@ -122,7 +122,7 @@ def test_gep_dry_run_does_not_change_fs(project_root: Path) -> None:
 
 def test_gh_dry_run_does_not_change_fs(project_root: Path) -> None:
     before = _dir_hash(project_root)
-    runner.invoke(app, ["gh", "--name", "LogHelper", "--dry-run"], catch_exceptions=False)
+    runner.invoke(app, ["gh", "--name", "log-helper", "--dry-run"], catch_exceptions=False)
     after = _dir_hash(project_root)
     assert before == after
 
@@ -158,7 +158,7 @@ def test_vs_dry_run_does_not_change_fs(project_root: Path) -> None:
 
 def test_dm_dry_run_does_not_change_fs(project_with_model: Path) -> None:
     before = _dir_hash(project_with_model)
-    runner.invoke(app, ["dm", "--name", "Order", "--dry-run"], catch_exceptions=False)
+    runner.invoke(app, ["dm", "--name", "order", "--dry-run"], catch_exceptions=False)
     after = _dir_hash(project_with_model)
     assert before == after
 

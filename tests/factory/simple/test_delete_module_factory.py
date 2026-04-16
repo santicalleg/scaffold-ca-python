@@ -10,10 +10,10 @@ from scaffold_ca_python.models.layer import Layer
 
 
 def _project_ctx() -> ProjectContext:
-    return ProjectContext(name="MsDemo")
+    return ProjectContext(name="ms-demo")
 
 
-def _module_ctx(project: ProjectContext, name: str = "OrderHandler") -> ModuleContext:
+def _module_ctx(project: ProjectContext, name: str = "order-handler") -> ModuleContext:
     return ModuleContext(name=name, layer=Layer.HELPERS, project=project)
 
 
@@ -59,7 +59,7 @@ def test_delete_module_removes_helper(tmp_path: Path) -> None:
     builder = ModuleBuilder(
         project_root=tmp_path,
         project_ctx=project,
-        module_ctx=_module_ctx(project, "OrderHandler"),
+        module_ctx=_module_ctx(project, "order-handler"),
         dry_run=False,
     )
 
@@ -87,7 +87,7 @@ def test_delete_module_dry_run_presets_deletion(tmp_path: Path) -> None:
     builder = ModuleBuilder(
         project_root=tmp_path,
         project_ctx=project,
-        module_ctx=_module_ctx(project, "OrderHandler"),
+        module_ctx=_module_ctx(project, "order-handler"),
         dry_run=True,
     )
 

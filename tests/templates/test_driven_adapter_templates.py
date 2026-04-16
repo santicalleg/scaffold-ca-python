@@ -10,10 +10,10 @@ renderer = TemplateRenderer()
 
 
 def _project() -> ProjectContext:
-    return ProjectContext(name="MyApp")
+    return ProjectContext(name="my-app")
 
 
-def _ctx(name: str = "MyAdapter") -> ModuleContext:
+def _ctx(name: str = "my-adapter") -> ModuleContext:
     return ModuleContext(name=name, layer=Layer.DRIVEN_ADAPTERS, project=_project())
 
 
@@ -62,13 +62,13 @@ def test_secrets_has_async_methods() -> None:
 
 
 def test_generic_class_name_present() -> None:
-    ctx = _ctx("PaymentGateway")
+    ctx = _ctx("payment-gateway")
     out = renderer.render_string(_tmpl("driven_adapter/generic/adapter.py.jinja2"), ctx.model_dump())
     assert "PaymentGateway" in out
 
 
 def test_generic_has_adapter_suffix() -> None:
-    ctx = _ctx("PaymentGateway")
+    ctx = _ctx("payment-gateway")
     out = renderer.render_string(_tmpl("driven_adapter/generic/adapter.py.jinja2"), ctx.model_dump())
     assert "PaymentGatewayAdapter" in out
 

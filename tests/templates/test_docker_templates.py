@@ -9,7 +9,7 @@ renderer = TemplateRenderer()
 
 
 def _ctx() -> ProjectContext:
-    return ProjectContext(name="OrderService")
+    return ProjectContext(name="order-service")
 
 
 def _tmpl(name: str) -> str:

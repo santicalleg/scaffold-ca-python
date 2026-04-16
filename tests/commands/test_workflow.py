@@ -24,9 +24,9 @@ runner = CliRunner()
 @pytest.fixture()
 def workflow_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "OrderService"], catch_exceptions=False)
+    result = runner.invoke(app, ["ca", "--name", "order-service"], catch_exceptions=False)
     assert result.exit_code == 0, f"ca failed: {result.output}"
-    project_dir = tmp_path / "order_service"
+    project_dir = tmp_path / "order-service"
     monkeypatch.chdir(project_dir)
     return project_dir
 
@@ -36,13 +36,13 @@ def test_workflow_ca_creates_project(workflow_root: Path) -> None:
 
 
 def test_workflow_gm_creates_model(workflow_root: Path) -> None:
-    result = runner.invoke(app, ["gm", "--name", "Order"], catch_exceptions=False)
+    result = runner.invoke(app, ["gm", "--name", "order"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (workflow_root / "src" / "order_service" / "domain" / "model" / "order.py").exists()
 
 
 def test_workflow_guc_creates_use_case(workflow_root: Path) -> None:
-    result = runner.invoke(app, ["guc", "--name", "CreateOrder"], catch_exceptions=False)
+    result = runner.invoke(app, ["guc", "--name", "create-order"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (workflow_root / "src" / "order_service" / "domain" / "usecase" / "create_order.py").exists()
 
@@ -82,22 +82,22 @@ def test_workflow_vs_exits_0_on_clean_project(workflow_root: Path) -> None:
 @pytest.fixture()
 def full_walkthrough_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.chdir(tmp_path)
-    runner.invoke(app, ["ca", "--name", "MyApp"], catch_exceptions=False)
-    project_dir = tmp_path / "my_app"
+    runner.invoke(app, ["ca", "--name", "my-app"], catch_exceptions=False)
+    project_dir = tmp_path / "my-app"
     monkeypatch.chdir(project_dir)
     return project_dir
 
 
 def test_full_walkthrough_complete(full_walkthrough_root: Path) -> None:
     steps = [
-        (["gm", "--name", "Product"], "gm"),
-        (["guc", "--name", "CreateProduct"], "guc"),
+        (["gm", "--name", "product"], "gm"),
+        (["guc", "--name", "create-product"], "guc"),
         (["gda", "--type", "rest-consumer"], "gda"),
         (["gep", "--type", "restapi"], "gep"),
-        (["gh", "--name", "LogHelper"], "gh"),
+        (["gh", "--name", "log-helper"], "gh"),
         (["gpipe", "--provider", "azure"], "gpipe"),
         (["vs"], "vs"),
-        (["dm", "--name", "Product", "--confirm"], "dm"),
+        (["dm", "--name", "product", "--confirm"], "dm"),
     ]
     for args, label in steps:
         result = runner.invoke(app, args, catch_exceptions=False)

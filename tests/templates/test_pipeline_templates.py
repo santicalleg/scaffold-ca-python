@@ -9,7 +9,7 @@ renderer = TemplateRenderer()
 
 
 def _project() -> ProjectContext:
-    return ProjectContext(name="MyApp")
+    return ProjectContext(name="my-app")
 
 
 def _tmpl(name: str) -> str:

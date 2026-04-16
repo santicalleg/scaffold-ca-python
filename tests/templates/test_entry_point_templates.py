@@ -10,10 +10,10 @@ renderer = TemplateRenderer()
 
 
 def _project() -> ProjectContext:
-    return ProjectContext(name="MyApp")
+    return ProjectContext(name="my-app")
 
 
-def _ctx(name: str = "MyApp", subtype: str | None = None) -> ModuleContext:
+def _ctx(name: str = "my-app", subtype: str | None = None) -> ModuleContext:
     return ModuleContext(name=name, layer=Layer.ENTRY_POINTS, project=_project(), subtype=subtype)
 
 
@@ -130,7 +130,7 @@ def test_generated_test_rest_controller_has_no_duplicate_docstring() -> None:
 
 
 def test_agent_has_class_name() -> None:
-    ctx = _ctx("MyApp")
+    ctx = _ctx("my-app")
     out = renderer.render_string(_tmpl("entry_point/agent/agent.py.jinja2"), ctx.model_dump())
     assert "Agent" in out
 

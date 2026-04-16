@@ -10,10 +10,10 @@ from scaffold_ca_python.models.layer import Layer
 
 
 def _project_ctx() -> ProjectContext:
-    return ProjectContext(name="MsDemo")
+    return ProjectContext(name="ms-demo")
 
 
-def _module_ctx(project: ProjectContext, name: str = "CustomAdapter") -> ModuleContext:
+def _module_ctx(project: ProjectContext, name: str = "custom-adapter") -> ModuleContext:
     return ModuleContext(name=name, layer=Layer.DRIVEN_ADAPTERS, project=project)
 
 

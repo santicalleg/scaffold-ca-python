@@ -10,11 +10,11 @@ renderer = TemplateRenderer()
 
 
 def _project() -> ProjectContext:
-    return ProjectContext(name="MyApp")
+    return ProjectContext(name="my-app")
 
 
 def _ctx() -> ModuleContext:
-    return ModuleContext(name="Order", layer=Layer.DOMAIN_MODEL, project=_project())
+    return ModuleContext(name="order", layer=Layer.DOMAIN_MODEL, project=_project())
 
 
 def _tmpl(name: str) -> str:

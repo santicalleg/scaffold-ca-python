@@ -1,9 +1,6 @@
 """Use-case DI container."""
 from dependency_injector import containers, providers
 
-from {{ python_package }}.application.config.driven_adapters_container import DAContainer
-
-
 class UseCaseContainer(containers.DeclarativeContainer):
     """Wire use-case singletons here, injecting driven adapters."""
 

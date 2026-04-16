@@ -21,8 +21,8 @@ runner = CliRunner()
 def project_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Bootstrap a minimal CA project root and chdir into it."""
     monkeypatch.chdir(tmp_path)
-    runner.invoke(app, ["ca", "--name", "MyApp"], catch_exceptions=False)
-    project_dir = tmp_path / "my_app"
+    runner.invoke(app, ["ca", "--name", "my-app"], catch_exceptions=False)
+    project_dir = tmp_path / "my-app"
     monkeypatch.chdir(project_dir)
     return project_dir
 

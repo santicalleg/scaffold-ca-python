@@ -72,10 +72,10 @@ def _generate_driven_adapter_impl(type_: str, name: str | None, dry_run: bool) -
     # --- Determine module context and subdir from type/name ---
     if type_ == "rest-consumer":
         subdir = "rest_consumer"
-        module_ctx = ModuleContext(name="RestConsumer", layer=Layer.DRIVEN_ADAPTERS, project=project_ctx)
+        module_ctx = ModuleContext(name="rest_consumer", layer=Layer.DRIVEN_ADAPTERS, project=project_ctx)
     elif type_ == "secrets":
         subdir = "secrets"
-        module_ctx = ModuleContext(name="Secrets", layer=Layer.DRIVEN_ADAPTERS, project=project_ctx)
+        module_ctx = ModuleContext(name="secrets", layer=Layer.DRIVEN_ADAPTERS, project=project_ctx)
     else:  # generic
         assert name is not None  # validated above
         subdir = to_snake_case(name)

@@ -12,18 +12,18 @@ from scaffold_ca_python.models.layer import Layer
 
 
 def test_project_context_valid() -> None:
-    ctx = ProjectContext(name="MyProject")
-    assert ctx.name == "MyProject"
+    ctx = ProjectContext(name="my-project")
+    assert ctx.name == "my-project"
     assert ctx.python_package == "my_project"
 
 
 def test_project_context_python_package_derived_from_name() -> None:
-    ctx = ProjectContext(name="MyProject")
+    ctx = ProjectContext(name="my-project")
     assert ctx.python_package == "my_project"
 
 
 def test_project_context_python_package_with_numbers() -> None:
-    ctx = ProjectContext(name="Project2025")
+    ctx = ProjectContext(name="project2025")
     assert ctx.python_package == "project2025"
 
 
@@ -37,9 +37,9 @@ def test_project_context_name_rejects_spaces() -> None:
         ProjectContext(name="My Project")
 
 
-def test_project_context_name_rejects_hyphens() -> None:
-    with pytest.raises(ValidationError):
-        ProjectContext(name="my-project")
+def test_project_context_name_accepts_hyphens() -> None:
+    ctx = ProjectContext(name="my-project")
+    assert ctx.python_package == "my_project"
 
 
 def test_project_context_name_rejects_empty() -> None:
@@ -48,8 +48,8 @@ def test_project_context_name_rejects_empty() -> None:
 
 
 def test_project_context_name_allows_underscores() -> None:
-    ctx = ProjectContext(name="My_Project")
-    assert ctx.name == "My_Project"
+    ctx = ProjectContext(name="my_project")
+    assert ctx.name == "my_project"
 
 
 # ---------------------------------------------------------------------------
@@ -58,12 +58,12 @@ def test_project_context_name_allows_underscores() -> None:
 
 
 def _make_project() -> ProjectContext:
-    return ProjectContext(name="MyProject")
+    return ProjectContext(name="my-project")
 
 
 def test_module_context_valid() -> None:
-    ctx = ModuleContext(name="Order", layer=Layer.DOMAIN_MODEL, project=_make_project())
-    assert ctx.name == "Order"
+    ctx = ModuleContext(name="order", layer=Layer.DOMAIN_MODEL, project=_make_project())
+    assert ctx.name == "order"
     assert ctx.layer == Layer.DOMAIN_MODEL
 
 
@@ -73,18 +73,18 @@ def test_module_context_class_name_is_pascal_case() -> None:
 
 
 def test_module_context_module_name_is_snake_case() -> None:
-    ctx = ModuleContext(name="MyOrder", layer=Layer.DOMAIN_MODEL, project=_make_project())
+    ctx = ModuleContext(name="my-order", layer=Layer.DOMAIN_MODEL, project=_make_project())
     assert ctx.module_name == "my_order"
 
 
 def test_module_context_subtype_defaults_to_none() -> None:
-    ctx = ModuleContext(name="Order", layer=Layer.DOMAIN_MODEL, project=_make_project())
+    ctx = ModuleContext(name="order", layer=Layer.DOMAIN_MODEL, project=_make_project())
     assert ctx.subtype is None
 
 
 def test_module_context_subtype_can_be_set() -> None:
     ctx = ModuleContext(
-        name="RestAdapter",
+        name="rest-adapter",
         layer=Layer.DRIVEN_ADAPTERS,
         subtype="rest-consumer",
         project=_make_project(),

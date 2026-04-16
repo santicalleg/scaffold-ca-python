@@ -17,16 +17,16 @@ runner = CliRunner()
 
 def test_creates_project_directory(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
+    result = runner.invoke(app, ["ca", "--name", "my-project"], catch_exceptions=False)
     assert result.exit_code == 0
-    assert (tmp_path / "my_project").is_dir()
+    assert (tmp_path / "my-project").is_dir()
 
 
 def test_creates_all_layer_directories(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
+    result = runner.invoke(app, ["ca", "--name", "my-project"], catch_exceptions=False)
     assert result.exit_code == 0
-    root = tmp_path / "my_project"
+    root = tmp_path / "my-project"
     assert (root / "src" / "my_project" / "application" / "__init__.py").exists()
     assert (root / "src" / "my_project" / "domain" / "model" / "__init__.py").exists()
     assert (root / "src" / "my_project" / "domain" / "usecase" / "__init__.py").exists()
@@ -37,9 +37,9 @@ def test_creates_all_layer_directories(tmp_path: Path, monkeypatch: pytest.Monke
 
 def test_creates_config_files(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
+    result = runner.invoke(app, ["ca", "--name", "my-project"], catch_exceptions=False)
     assert result.exit_code == 0
-    root = tmp_path / "my_project"
+    root = tmp_path / "my-project"
     assert (root / "pyproject.toml").exists()
     assert (root / "README.md").exists()
     assert (root / ".gitignore").exists()
@@ -54,23 +54,23 @@ def test_creates_config_files(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
 
 def test_python_version_file_contains_version(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
-    content = (tmp_path / "my_project" / ".python-version").read_text()
+    runner.invoke(app, ["ca", "--name", "my-project"], catch_exceptions=False)
+    content = (tmp_path / "my-project" / ".python-version").read_text()
     assert "3.13" in content
 
 
 def test_pyproject_has_ruff_lint_section(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
-    content = (tmp_path / "my_project" / "pyproject.toml").read_text()
+    runner.invoke(app, ["ca", "--name", "my-project"], catch_exceptions=False)
+    content = (tmp_path / "my-project" / "pyproject.toml").read_text()
     assert "[tool.ruff.lint]" in content
 
 
 def test_creates_di_config_files(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
+    result = runner.invoke(app, ["ca", "--name", "my-project"], catch_exceptions=False)
     assert result.exit_code == 0
-    cfg = tmp_path / "my_project" / "src" / "my_project" / "application" / "config"
+    cfg = tmp_path / "my-project" / "src" / "my_project" / "application" / "config"
     assert (cfg / "__init__.py").exists()
     assert (cfg / "config.py").exists()
     assert (cfg / "driven_adapters_container.py").exists()
@@ -80,17 +80,17 @@ def test_creates_di_config_files(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 
 def test_pyproject_has_di_dependencies(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
-    content = (tmp_path / "my_project" / "pyproject.toml").read_text()
+    runner.invoke(app, ["ca", "--name", "my-project"], catch_exceptions=False)
+    content = (tmp_path / "my-project" / "pyproject.toml").read_text()
     assert "dependency-injector" in content
     assert "pydantic-settings" in content
 
 
 def test_creates_main_py(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
+    result = runner.invoke(app, ["ca", "--name", "my-project"], catch_exceptions=False)
     assert result.exit_code == 0
-    main_py = tmp_path / "my_project" / "src" / "my_project" / "main.py"
+    main_py = tmp_path / "my-project" / "src" / "my_project" / "main.py"
     assert main_py.exists()
     content = main_py.read_text()
     assert "def main" in content
@@ -98,23 +98,23 @@ def test_creates_main_py(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Non
 
 def test_pyproject_has_scripts_entry(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
-    content = (tmp_path / "my_project" / "pyproject.toml").read_text()
+    runner.invoke(app, ["ca", "--name", "my-project"], catch_exceptions=False)
+    content = (tmp_path / "my-project" / "pyproject.toml").read_text()
     assert "[project.scripts]" in content
     assert "my_project.main:main" in content
 
 
 def test_pyproject_contains_scaffold_section(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
-    content = (tmp_path / "my_project" / "pyproject.toml").read_text()
+    runner.invoke(app, ["ca", "--name", "my-project"], catch_exceptions=False)
+    content = (tmp_path / "my-project" / "pyproject.toml").read_text()
     assert "[tool.scaffold-ca-python]" in content
-    assert "MyProject" in content
+    assert "my-project" in content
 
 
 def test_package_flag_is_not_accepted(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "SimpleApp", "--package", "com.example"])
+    result = runner.invoke(app, ["ca", "--name", "simple-app", "--package", "com.example"])
     assert result.exit_code != 0
 
 
@@ -125,14 +125,14 @@ def test_package_flag_is_not_accepted(tmp_path: Path, monkeypatch: pytest.Monkey
 
 def test_clean_architecture_creates_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["clean-architecture", "--name", "Demo"], catch_exceptions=False)
+    result = runner.invoke(app, ["clean-architecture", "--name", "demo"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (tmp_path / "demo").is_dir()
 
 
 def test_clean_architecture_dry_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["clean-architecture", "--dry-run", "--name", "Demo"], catch_exceptions=False)
+    result = runner.invoke(app, ["clean-architecture", "--dry-run", "--name", "demo"], catch_exceptions=False)
     assert result.exit_code == 0
     assert not (tmp_path / "demo").exists()
 
@@ -172,27 +172,27 @@ def test_ca_help_identical_to_clean_architecture_help() -> None:
 
 def test_ca_alias_creates_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "Demo"], catch_exceptions=False)
+    result = runner.invoke(app, ["ca", "--name", "demo"], catch_exceptions=False)
     assert result.exit_code == 0
     assert (tmp_path / "demo").is_dir()
 
 
 def test_creates_tests_init(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
-    assert (tmp_path / "my_project" / "src" / "tests" / "__init__.py").exists()
+    runner.invoke(app, ["ca", "--name", "my-project"], catch_exceptions=False)
+    assert (tmp_path / "my-project" / "src" / "tests" / "__init__.py").exists()
 
 
 def test_ca_creates_src_tests_init(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
-    assert (tmp_path / "my_project" / "src" / "tests" / "__init__.py").exists()
-    assert not (tmp_path / "my_project" / "tests").exists()
+    runner.invoke(app, ["ca", "--name", "my-project"], catch_exceptions=False)
+    assert (tmp_path / "my-project" / "src" / "tests" / "__init__.py").exists()
+    assert not (tmp_path / "my-project" / "tests").exists()
 
 
 def test_ca_dry_run_shows_src_tests_init(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "MyProject", "--dry-run"], catch_exceptions=False)
+    result = runner.invoke(app, ["ca", "--name", "my-project", "--dry-run"], catch_exceptions=False)
     assert "src/tests/__init__.py" in result.output
     assert result.output.count("tests/__init__.py") == result.output.count("src/tests/__init__.py")
 
@@ -204,15 +204,15 @@ def test_ca_dry_run_shows_src_tests_init(tmp_path: Path, monkeypatch: pytest.Mon
 
 def test_dry_run_writes_nothing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "DryProject", "--dry-run"], catch_exceptions=False)
+    result = runner.invoke(app, ["ca", "--name", "dry-project", "--dry-run"], catch_exceptions=False)
     assert result.exit_code == 0
     assert not (tmp_path / "dry_project").exists()
 
 
 def test_dry_run_prints_file_list(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "DryProject", "--dry-run"], catch_exceptions=False)
-    assert "pyproject.toml" in result.output or "dry_project" in result.output
+    result = runner.invoke(app, ["ca", "--name", "dry-project", "--dry-run"], catch_exceptions=False)
+    assert "pyproject.toml" in result.output or "dry-project" in result.output
 
 
 # ---------------------------------------------------------------------------
@@ -222,8 +222,8 @@ def test_dry_run_prints_file_list(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
 
 def test_duplicate_project_exits_1(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    runner.invoke(app, ["ca", "--name", "MyProject"], catch_exceptions=False)
-    result = runner.invoke(app, ["ca", "--name", "MyProject"])
+    runner.invoke(app, ["ca", "--name", "my-project"], catch_exceptions=False)
+    result = runner.invoke(app, ["ca", "--name", "my-project"])
     assert result.exit_code == 1
 
 
@@ -233,7 +233,19 @@ def test_invalid_name_exits_1(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     assert result.exit_code != 0
 
 
-def test_hyphen_in_name_exits_1(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_pascal_case_name_exits_1(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
-    result = runner.invoke(app, ["ca", "--name", "my-project"])
-    assert result.exit_code != 0
+    result = runner.invoke(app, ["ca", "--name", "MyProject"])
+    assert result.exit_code == 1
+    assert "kebab-case" in result.output
+
+
+def test_kebab_name_generates_snake_case_files(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    result = runner.invoke(app, ["ca", "--name", "my-project", "--dry-run"], catch_exceptions=False)
+    assert result.exit_code == 0
+    for line in result.output.splitlines():
+        stripped = line.strip()
+        if stripped.endswith(".py"):
+            stem = stripped.split("/")[-1][:-3]
+            assert stem == stem.lower() and "-" not in stem

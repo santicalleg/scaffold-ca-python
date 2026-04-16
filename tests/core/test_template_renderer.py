@@ -21,12 +21,12 @@ def renderer() -> TemplateRenderer:
 
 @pytest.fixture()
 def project_ctx() -> ProjectContext:
-    return ProjectContext(name="MyApp")
+    return ProjectContext(name="my-app")
 
 
 @pytest.fixture()
 def module_ctx(project_ctx: ProjectContext) -> ModuleContext:
-    return ModuleContext(name="Order", layer=Layer.DOMAIN_MODEL, project=project_ctx)
+    return ModuleContext(name="order", layer=Layer.DOMAIN_MODEL, project=project_ctx)
 
 
 # ---------------------------------------------------------------------------
@@ -67,7 +67,7 @@ def test_render_string_with_project_context(renderer: TemplateRenderer, project_
     template_src = "project: {{ name }}, pkg: {{ python_package }}"
     ctx_dict = project_ctx.model_dump()
     result = renderer.render_string(template_src, ctx_dict)
-    assert "MyApp" in result
+    assert "my-app" in result
     assert "my_app" in result
 
 

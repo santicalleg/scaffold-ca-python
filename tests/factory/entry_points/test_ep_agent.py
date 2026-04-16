@@ -10,7 +10,7 @@ from scaffold_ca_python.models.layer import Layer
 
 
 def _project_ctx() -> ProjectContext:
-    return ProjectContext(name="MsDemo")
+    return ProjectContext(name="ms-demo")
 
 
 def _module_ctx(project: ProjectContext, subtype: str = "agent") -> ModuleContext:

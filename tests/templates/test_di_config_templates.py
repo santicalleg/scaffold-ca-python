@@ -9,7 +9,7 @@ renderer = TemplateRenderer()
 
 
 def _ctx() -> ProjectContext:
-    return ProjectContext(name="OrderService")
+    return ProjectContext(name="order-service")
 
 
 def _tmpl(name: str) -> str:
@@ -73,11 +73,6 @@ def test_usecase_container_class_name() -> None:
 def test_usecase_container_has_dependencies_container() -> None:
     out = _render("usecases_container")
     assert "DependenciesContainer" in out
-
-
-def test_usecase_container_imports_da_container() -> None:
-    out = _render("usecases_container")
-    assert "DAContainer" in out
 
 
 def test_usecase_container_uses_python_package() -> None:

@@ -10,7 +10,7 @@ from scaffold_ca_python.models.layer import Layer
 
 
 def _project_ctx() -> ProjectContext:
-    return ProjectContext(name="MsDemo")
+    return ProjectContext(name="ms-demo")
 
 
 def _module_ctx(project: ProjectContext, subtype: str = "generic") -> ModuleContext:
@@ -74,8 +74,6 @@ def test_generic_no_dependencies_injected(tmp_path: Path) -> None:
     _ = builder.persist()
     pyproject = (tmp_path / "pyproject.toml").read_text(encoding="utf-8")
 
-    # Verify no new dependencies were added (only original [project] section)
-    lines = pyproject.strip().split("\n")
     # Should only have the original dependencies list unchanged
     assert 'dependencies = []' in pyproject, "Expected no new dependencies"
 

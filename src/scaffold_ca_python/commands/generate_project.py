@@ -32,8 +32,8 @@ _LAYER_DIRS: list[tuple[str, str]] = [
 _GCA = "Scaffold a new Clean Architecture project. Alias: 'ca'"
 _GCA_EPILOG = (
     "Examples:\n\n  "
-    "  * scaffold ca --name OrderService\n\n"
-    "  * scaffold clean-architecture --name OrderService"
+    "  * scaffold ca --name my-project\n\n"
+    "  * scaffold clean-architecture --name my_project"
 )
 
 def _generate_project_impl(
@@ -47,7 +47,7 @@ def _generate_project_impl(
         raise typer.Exit(code=1) from None
 
     python_pkg = to_snake_case(name)
-    target_dir = Path.cwd() / python_pkg
+    target_dir = Path.cwd() / name
 
     if target_dir.exists():
         console.print(

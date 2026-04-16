@@ -1,6 +1,6 @@
 # scaffold-ca-python Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-14
+Auto-generated from all feature plans. Last updated: 2026-04-15
 
 ## Active Technologies
 - Python 3.13 + Typer 0.16, Jinja2 3.1, Pydantic v2, Rich 14, uv (dep management) (008-fastapi-entrypoint-baseline)
@@ -17,6 +17,8 @@ Auto-generated from all feature plans. Last updated: 2026-04-14
 - File system only (pyproject.toml + generated project files) (015-factory-builder-refactor)
 - Python 3.13+ + yper>=0.16.0, rich>=14.1.0; ruff (linter/formatter), mypy strict (type checker) (016-dedup-command-aliases)
 - N/A — CLI tool, no database (016-dedup-command-aliases)
+- Python 3.13+ + yper ≥ 0.16, pydantic ≥ 2.0, rich ≥ 14.1, jinja2 ≥ 3.1 (017-pep8-naming-validation)
+- N/A (file generation only) (017-pep8-naming-validation)
 
 - Python 3.13 + Typer 0.16.0, Rich 14.1.0 (both already in `pyproject.toml`) (007-cli-usability-enhancements)
 
@@ -36,9 +38,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.13: Follow standard conventions
 
 ## Recent Changes
+- 017-pep8-naming-validation: Added Python 3.13+ + yper ≥ 0.16, pydantic ≥ 2.0, rich ≥ 14.1, jinja2 ≥ 3.1
 - 016-dedup-command-aliases: Added Python 3.13+ + yper>=0.16.0, rich>=14.1.0; ruff (linter/formatter), mypy strict (type checker)
 - 015-factory-builder-refactor: Added Python 3.13 + Typer ≥ 0.16, Rich ≥ 14.1, Jinja2 ≥ 3.1, Pydantic v2, uv
-- 014-tests-in-src: Added Python 3.13 + Typer (CLI), Rich (output formatting), Jinja2 (template rendering), Pydantic v2, pytest 9.0, pytest-cov, ruff, mypy strict, uv (package manager)
 
 
 <!-- MANUAL ADDITIONS START -->

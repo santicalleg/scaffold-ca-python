@@ -9,7 +9,7 @@ renderer = TemplateRenderer()
 
 
 def _ctx() -> ProjectContext:
-    return ProjectContext(name="MyApp")
+    return ProjectContext(name="my-app")
 
 
 def _tmpl(name: str) -> str:
@@ -56,7 +56,7 @@ def test_python_version_renders_313() -> None:
 
 def test_readme_contains_project_name() -> None:
     out = renderer.render_string(_tmpl("project/README.jinja2"), _ctx().model_dump())
-    assert "MyApp" in out
+    assert "my-app" in out
 
 
 def test_pyproject_template_testpaths_is_src_tests() -> None:

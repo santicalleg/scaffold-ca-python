@@ -10,11 +10,11 @@ from scaffold_ca_python.models.layer import Layer
 
 
 def _project_ctx() -> ProjectContext:
-    return ProjectContext(name="MsDemo")
+    return ProjectContext(name="ms-demo")
 
 
 def _module_ctx(project: ProjectContext) -> ModuleContext:
-    return ModuleContext(name="Secrets", layer=Layer.DRIVEN_ADAPTERS, project=project)
+    return ModuleContext(name="secrets", layer=Layer.DRIVEN_ADAPTERS, project=project)
 
 
 def _write_minimal_pyproject(root: Path) -> None:

@@ -25,14 +25,14 @@ runner = CliRunner()
 def project_root_bench(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Bootstrap a CA project once for all benchmark tests in this module."""
     tmp = tmp_path_factory.mktemp("bench")
-    runner.invoke(app, ["ca", "--name", "BenchApp"], catch_exceptions=False)
+    runner.invoke(app, ["ca", "--name", "bench-app"], catch_exceptions=False)
     # ca writes relative to cwd; we need to call from distinct cwd
     import os
 
     orig = os.getcwd()
     os.chdir(tmp)
-    runner.invoke(app, ["ca", "--name", "BenchApp"], catch_exceptions=False)
-    project_dir = tmp / "bench_app"
+    runner.invoke(app, ["ca", "--name", "bench-app"], catch_exceptions=False)
+    project_dir = tmp / "bench-app"
     os.chdir(project_dir)
     os.chdir(orig)
     return project_dir
@@ -41,8 +41,8 @@ def project_root_bench(tmp_path_factory: pytest.TempPathFactory) -> Path:
 @pytest.fixture()
 def bench_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.chdir(tmp_path)
-    runner.invoke(app, ["ca", "--name", "BenchApp"], catch_exceptions=False)
-    project_dir = tmp_path / "bench_app"
+    runner.invoke(app, ["ca", "--name", "bench-app"], catch_exceptions=False)
+    project_dir = tmp_path / "bench-app"
     monkeypatch.chdir(project_dir)
     return project_dir
 
@@ -122,8 +122,8 @@ def test_gh_performance(benchmark: pytest.fixture, bench_project: Path) -> None:
 def large_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Create a CA project with 200 Python source files for vs benchmark."""
     monkeypatch.chdir(tmp_path)
-    runner.invoke(app, ["ca", "--name", "LargeApp"], catch_exceptions=False)
-    project_dir = tmp_path / "large_app"
+    runner.invoke(app, ["ca", "--name", "large-app"], catch_exceptions=False)
+    project_dir = tmp_path / "large-app"
     monkeypatch.chdir(project_dir)
 
     # Generate 200 stub Python files under domain/model/

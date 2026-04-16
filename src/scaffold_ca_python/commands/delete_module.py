@@ -89,7 +89,8 @@ def _get_python_package(root: Path) -> str:
     name = section.get("name", root.name)
     import re
 
-    s = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", name)
+    s = name.replace("-", "_")
+    s = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", s)
     s = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s)
     return s.lower()
 

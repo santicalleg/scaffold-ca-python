@@ -28,11 +28,11 @@ class _FilesystemReadingFactory:
 
 
 def _project_ctx() -> ProjectContext:
-    return ProjectContext(name="MsDemo")
+    return ProjectContext(name="ms-demo")
 
 
 def _module_ctx(project: ProjectContext) -> ModuleContext:
-    return ModuleContext(name="Health", layer=Layer.ENTRY_POINTS, project=project)
+    return ModuleContext(name="health", layer=Layer.ENTRY_POINTS, project=project)
 
 
 def _write_minimal_pyproject(root: Path) -> None:

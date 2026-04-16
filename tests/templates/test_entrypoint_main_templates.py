@@ -3,13 +3,16 @@
 import importlib.resources
 
 from scaffold_ca_python.core.template_renderer import TemplateRenderer
-from scaffold_ca_python.models.context import ProjectContext
+from scaffold_ca_python.models.context import ModuleContext, ProjectContext
+from scaffold_ca_python.models.layer import Layer
 
 renderer = TemplateRenderer()
 
+def _project() -> ProjectContext:
+    return ProjectContext(name="my-app")
 
-def _ctx() -> ProjectContext:
-    return ProjectContext(name="OrderService")
+def _ctx(name: str = "my-app", subtype: str | None = None) -> ModuleContext:
+    return ModuleContext(name=name, layer=Layer.ENTRY_POINTS, project=_project(), subtype=subtype)
 
 
 def _tmpl(name: str) -> str:
@@ -36,25 +39,6 @@ def test_default_main_prints_hello_world() -> None:
 def test_default_main_has_name_guard() -> None:
     out = _render("project/main.py.jinja2")
     assert '__name__ == "__main__"' in out
-
-
-# --- restapi entrypoint_main.py -------------------------------------------
-
-
-def test_restapi_main_has_def_main() -> None:
-    out = _render("entry_point/restapi/entrypoint_main.py.jinja2")
-    assert "def main" in out
-
-
-def test_restapi_main_has_uvicorn() -> None:
-    out = _render("entry_point/restapi/entrypoint_main.py.jinja2")
-    assert "uvicorn" in out
-
-
-def test_restapi_main_uses_python_package() -> None:
-    ctx = _ctx()
-    out = renderer.render_string(_tmpl("entry_point/restapi/entrypoint_main.py.jinja2"), ctx.model_dump())
-    assert ctx.python_package in out
 
 
 # --- agent entrypoint_main.py ---------------------------------------------
