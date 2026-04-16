@@ -652,7 +652,7 @@ def test_restapi_dry_run_reports_scripts_update(project_root: Path) -> None:
     assert "server:start_server" in result.output
     with (project_root / "pyproject.toml").open("rb") as fh:
         data = tomllib.load(fh)
-    assert data["project"]["scripts"]["my_app"] == "my_app.main:main"
+    assert data["project"]["scripts"]["my-app"] == "my_app.main:main"
 
 
 def test_agent_does_not_change_project_scripts(project_root: Path) -> None:
@@ -662,7 +662,7 @@ def test_agent_does_not_change_project_scripts(project_root: Path) -> None:
     runner.invoke(app, ["gep", "--type", "agent"], catch_exceptions=False)
     with (project_root / "pyproject.toml").open("rb") as fh:
         data = tomllib.load(fh)
-    assert data["project"]["scripts"]["my_app"] == "my_app.main:main"
+    assert data["project"]["scripts"]["my-app"] == "my_app.main:main"
 
 
 def test_mcp_does_not_change_project_scripts(project_root: Path) -> None:
@@ -672,7 +672,7 @@ def test_mcp_does_not_change_project_scripts(project_root: Path) -> None:
     runner.invoke(app, ["gep", "--type", "mcp"], catch_exceptions=False)
     with (project_root / "pyproject.toml").open("rb") as fh:
         data = tomllib.load(fh)
-    assert data["project"]["scripts"]["my_app"] == "my_app.main:main"
+    assert data["project"]["scripts"]["my-app"] == "my_app.main:main"
 
 
 def test_generic_does_not_change_project_scripts(project_root: Path) -> None:
@@ -682,7 +682,7 @@ def test_generic_does_not_change_project_scripts(project_root: Path) -> None:
     runner.invoke(app, ["gep", "--type", "generic"], catch_exceptions=False)
     with (project_root / "pyproject.toml").open("rb") as fh:
         data = tomllib.load(fh)
-    assert data["project"]["scripts"]["my_app"] == "my_app.main:main"
+    assert data["project"]["scripts"]["my-app"] == "my_app.main:main"
 
 
 # ---------------------------------------------------------------------------

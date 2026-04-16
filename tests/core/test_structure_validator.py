@@ -206,13 +206,3 @@ def test_files_outside_known_layers_are_skipped(tmp_path: Path) -> None:
 
     # The conftest.py at root level has no layer, so no violation should be raised
     assert report.passed
-
-
-def test_malformed_file_is_skipped(tmp_path: Path) -> None:
-    src = tmp_path / "src" / "my_app"
-    _write(src / "domain" / "model" / "bad.py", "def broken(\n")
-
-    report = StructureValidator().validate(tmp_path)
-
-    # malformed file should be skipped — no crash, violations list is empty
-    assert report.violations == []

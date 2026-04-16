@@ -17,6 +17,14 @@ def _to_snake_case(name: str) -> str:
     return s.lower()
 
 
+def _to_kebab_case(name: str) -> str:
+    """Convert PascalCase, snake_case, or mixed name to kebab-case."""
+    name = name.replace("_", "-")
+    s = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1-\2", name)
+    s = re.sub(r"([a-z0-9])([A-Z])", r"\1-\2", s)
+    return s.lower()
+
+
 def _to_pascal_case(name: str) -> str:
     """Convert snake_case, kebab-case, or mixed name to PascalCase (preserves inner case)."""
     return "".join(word[0].upper() + word[1:] for word in re.split(r"[_\s-]+", name) if word)
@@ -40,6 +48,12 @@ class ProjectContext(BaseModel):
     def python_package(self) -> str:
         """Derive the Python import root: snake_case of name."""
         return _to_snake_case(self.name)
+    
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def python_package_script(self) -> str:
+        """Derive the Python import root: kebab-case of name."""
+        return _to_kebab_case(self.name)
 
 
 class ModuleContext(BaseModel):

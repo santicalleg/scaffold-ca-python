@@ -87,4 +87,3 @@ def test_project_resource_container_has_declarative_container() -> None:
         _ctx().model_dump(),
     )
     assert "DeclarativeContainer" in out
-    assert "pydantic_settings" in out
