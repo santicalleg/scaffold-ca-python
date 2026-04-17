@@ -225,10 +225,9 @@ def test_mcp_prompts_has_fastmcp_import() -> None:
 
 
 def test_mcp_prompts_is_sync_not_async() -> None:
-    """bind_prompts is intentionally sync (unlike bind_tools/bind_resources)."""
+    """bind_prompts is async (same as bind_tools and bind_resources)."""
     out = renderer.render_string(_tmpl("entry_point/mcp/prompts.py.jinja2"), _ctx().model_dump())
-    assert "def bind_prompts" in out
-    assert "async def bind_prompts" not in out
+    assert "async def bind_prompts" in out
 
 
 # ---------------------------------------------------------------------------
@@ -298,6 +297,91 @@ def test_mcp_app_with_prompts_includes_bind_prompts() -> None:
 def test_mcp_app_without_prompts_excludes_bind_prompts() -> None:
     out = renderer.render_string(_tmpl("entry_point/mcp/app.py.jinja2"), _app_ctx(with_prompts=False))
     assert "bind_prompts" not in out
+
+
+# ---------------------------------------------------------------------------
+# mcp — test_tools.py template
+# ---------------------------------------------------------------------------
+
+
+def test_mcp_test_tools_has_make_mock_mcp() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/test_tools.py.jinja2"), _ctx().model_dump())
+    assert "_make_mock_mcp" in out
+
+
+def test_mcp_test_tools_has_registers_test() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/test_tools.py.jinja2"), _ctx().model_dump())
+    assert "test_bind_tools_registers_example_tool" in out
+
+
+def test_mcp_test_tools_has_result_test() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/test_tools.py.jinja2"), _ctx().model_dump())
+    assert "test_example_tool_returns_expected_result" in out
+
+
+# ---------------------------------------------------------------------------
+# mcp — test_resources.py template
+# ---------------------------------------------------------------------------
+
+
+def test_mcp_test_resources_has_make_mock_mcp() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/test_resources.py.jinja2"), _ctx().model_dump())
+    assert "_make_mock_mcp" in out
+
+
+def test_mcp_test_resources_has_registers_test() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/test_resources.py.jinja2"), _ctx().model_dump())
+    assert "test_bind_resources_registers_example_resource" in out
+
+
+def test_mcp_test_resources_has_result_test() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/test_resources.py.jinja2"), _ctx().model_dump())
+    assert "test_example_resource_returns_dict" in out
+
+
+# ---------------------------------------------------------------------------
+# mcp — test_prompts.py template
+# ---------------------------------------------------------------------------
+
+
+def test_mcp_test_prompts_has_make_mock_mcp() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/test_prompts.py.jinja2"), _ctx().model_dump())
+    assert "_make_mock_mcp" in out
+
+
+def test_mcp_test_prompts_has_registers_test() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/test_prompts.py.jinja2"), _ctx().model_dump())
+    assert "test_bind_prompts_registers_example_prompt" in out
+
+
+def test_mcp_test_prompts_has_result_test() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/test_prompts.py.jinja2"), _ctx().model_dump())
+    assert "test_example_prompt_returns_expected_string" in out
+
+
+# ---------------------------------------------------------------------------
+# mcp — test_app.py template
+# ---------------------------------------------------------------------------
+
+
+def test_mcp_test_app_has_mcp_instance_test() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/test_app.py.jinja2"), _app_ctx())
+    assert "test_mcp_instance_is_fastmcp" in out
+
+
+def test_mcp_test_app_has_start_server_test() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/test_app.py.jinja2"), _app_ctx())
+    assert "test_start_server_returns_starlette" in out
+
+
+def test_mcp_test_app_has_routes_test() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/test_app.py.jinja2"), _app_ctx())
+    assert "test_start_server_has_routes" in out
+
+
+def test_mcp_test_app_imports_fastmcp() -> None:
+    out = renderer.render_string(_tmpl("entry_point/mcp/test_app.py.jinja2"), _app_ctx())
+    assert "FastMCP" in out
 
 
 # ---------------------------------------------------------------------------

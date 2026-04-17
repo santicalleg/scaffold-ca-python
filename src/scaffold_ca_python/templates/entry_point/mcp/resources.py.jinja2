@@ -14,13 +14,7 @@ async def bind_resources(
     # Replace with your actual use-case injection:
     # some_usecase: SomeUseCase = Provide[Container.usecase_container.some_usecase],
 ) -> None:
-    """Bind all MCP resources to the server instance.
-
-    Called inside ``lifespan`` in ``application/app.py`` when
-    ``--with-resources`` was used during project generation.  Add one
-    ``@mcp.resource`` decorated inner function per resource your server
-    exposes.
-    """
+    """Bind all MCP resources to the server instance."""
 
     @mcp.resource("file://example_resource", mime_type="application/json")
     async def example_resource() -> dict[str, object]:

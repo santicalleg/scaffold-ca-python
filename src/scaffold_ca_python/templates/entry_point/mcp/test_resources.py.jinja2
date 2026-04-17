@@ -2,12 +2,46 @@
 
 from __future__ import annotations
 
+import asyncio
 import inspect
+from unittest.mock import MagicMock
 
 from {{ project.python_package }}.infrastructure.entry_points.mcp_server.resources import bind_resources
+
+
+def _make_mock_mcp() -> tuple[MagicMock, dict[str, object]]:
+    """Return (mock_mcp, registered) where registered maps resource URI → handler."""
+    registered: dict[str, object] = {}
+    mock = MagicMock()
+
+    def resource_decorator(uri: str, **_: object) -> object:
+        def wrapper(fn: object) -> object:
+            registered[uri] = fn
+            return fn
+        return wrapper
+
+    mock.resource = resource_decorator
+    return mock, registered
 
 
 def test_bind_resources_is_async_callable() -> None:
     """bind_resources must be an async function (or wrap one via @inject)."""
     fn = getattr(bind_resources, "__wrapped__", bind_resources)
     assert inspect.iscoroutinefunction(fn), "bind_resources must be async"
+
+
+def test_bind_resources_registers_example_resource() -> None:
+    """Calling bind_resources registers 'file://example_resource' on the mcp instance."""
+    mock_mcp, registered = _make_mock_mcp()
+    fn = getattr(bind_resources, "__wrapped__", bind_resources)
+    asyncio.run(fn(mock_mcp))
+    assert "file://example_resource" in registered
+
+
+def test_example_resource_returns_dict() -> None:
+    """The example_resource inner function returns a dict."""
+    mock_mcp, registered = _make_mock_mcp()
+    fn = getattr(bind_resources, "__wrapped__", bind_resources)
+    asyncio.run(fn(mock_mcp))
+    result = asyncio.run(registered["file://example_resource"]())  # type: ignore[operator]
+    assert isinstance(result, dict)

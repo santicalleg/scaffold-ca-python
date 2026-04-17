@@ -119,6 +119,12 @@ class EntryPointMcp(ModuleFactory):
             builder.render(f"{base}/app.py.jinja2", app_ctx),
             template_name=f"{base}/app.py.jinja2",
         )
+        builder.add_file(
+            test_dir / "test_app.py",
+            builder.render(f"{base}/test_app.py.jinja2", app_ctx),
+            template_name=f"{base}/test_app.py.jinja2",
+            is_test=True,
+        )
 
         # Dependencies
         builder.add_dependency("mcp>=1.0")

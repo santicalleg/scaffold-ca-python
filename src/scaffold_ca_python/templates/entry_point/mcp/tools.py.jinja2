@@ -14,12 +14,7 @@ async def bind_tools(
     # Replace with your actual use-case injection:
     # some_usecase: SomeUseCase = Provide[Container.usecase_container.some_usecase],
 ) -> None:
-    """Bind all MCP tools to the server instance.
-
-    Called inside ``lifespan`` in ``application/app.py`` after the DI
-    container has been wired.  Add one ``@mcp.tool`` decorated inner
-    function per tool your server exposes.
-    """
+    """Bind all MCP tools to the server instance."""
 
     @mcp.tool("example_tool")
     async def example_tool(query: str) -> str:

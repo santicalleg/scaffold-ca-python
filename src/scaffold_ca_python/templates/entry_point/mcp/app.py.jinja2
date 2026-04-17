@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from typing import AsyncIterator
 
 from mcp.server.fastmcp import FastMCP
 from starlette.applications import Starlette
@@ -19,22 +18,21 @@ mcp: FastMCP = FastMCP("{{ project.name }}", stateless_http=True)
 
 
 @asynccontextmanager
-async def lifespan(_app: Starlette) -> AsyncIterator[None]:
+async def lifespan(_app: Starlette) -> None:
     """Wire the DI container, register all MCP primitives, then run the server."""
     container = Container()
     container.wire(
         modules=[
             tools,
-            {% if with_resources %}resources,
-            {% endif %}{% if with_prompts %}prompts,
-            {% endif %}
+            {% if with_resources %}resources,{% endif %}
+            {% if with_prompts %}prompts,{% endif %}
         ]
     )
 
     await tools.bind_tools(mcp)
     {% if with_resources %}await resources.bind_resources(mcp)
-    {% endif %}{% if with_prompts %}await prompts.bind_prompts(mcp)
-    {% endif %}
+    {% endif %}{% if with_prompts %}await prompts.bind_prompts(mcp){% endif %}
+
     # Uncomment the following lines if you have async resources to initialize on startup and shutdown
     #await container.resource_container.init_resources()
 
@@ -46,25 +44,7 @@ async def lifespan(_app: Starlette) -> AsyncIterator[None]:
 
 
 def start_server() -> Starlette:
-    """Return a Starlette ASGI application wrapping the FastMCP instance.
-
-    Called by :mod:`{{ project.python_package }}.server` which passes the result to
-    ``uvicorn.run()``.
-
-    Example: adding transport-level security middleware::
-
-        # from {{ project.python_package }}.infrastructure.auth.middleware import (
-        #     AuthContextMiddleware,
-        # )
-        # from {{ project.python_package }}.application.config.security import (
-        #     TransportSecuritySettings,
-        # )
-        # app = Starlette(
-        #     routes=[Mount("/", app=mcp.streamable_http_app())],
-        #     lifespan=lifespan,
-        # )
-        # return AuthContextMiddleware(app, settings=TransportSecuritySettings())
-    """
+    """Return a Starlette ASGI application wrapping the FastMCP instance."""
     return Starlette(
         routes=[Mount("/", app=mcp.streamable_http_app())],
         lifespan=lifespan,

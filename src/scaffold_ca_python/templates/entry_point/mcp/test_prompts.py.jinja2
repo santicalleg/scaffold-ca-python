@@ -2,13 +2,39 @@
 
 from __future__ import annotations
 
+import asyncio
 import inspect
+from unittest.mock import MagicMock
 
 from {{ project.python_package }}.infrastructure.entry_points.mcp_server.prompts import bind_prompts
 
 
+def _make_mock_mcp() -> tuple[MagicMock, dict[str, object]]:
+    """Return (mock_mcp, registered) where registered maps prompt name → handler."""
+    registered: dict[str, object] = {}
+    mock = MagicMock()
+    mock.prompt = lambda: (lambda fn: registered.setdefault(fn.__name__, fn) or fn)
+    return mock, registered
+
+
 def test_bind_prompts_is_callable() -> None:
-    """bind_prompts must be a regular (sync) callable."""
+    """bind_prompts must be an async callable."""
     fn = getattr(bind_prompts, "__wrapped__", bind_prompts)
-    assert callable(fn), "bind_prompts must be callable"
-    assert not inspect.iscoroutinefunction(fn), "bind_prompts must be sync, not async"
+    assert inspect.iscoroutinefunction(fn), "bind_prompts must be async"
+
+
+def test_bind_prompts_registers_example_prompt() -> None:
+    """Calling bind_prompts registers 'example_prompt' on the mcp instance."""
+    mock_mcp, registered = _make_mock_mcp()
+    fn = getattr(bind_prompts, "__wrapped__", bind_prompts)
+    asyncio.run(fn(mock_mcp))
+    assert "example_prompt" in registered
+
+
+def test_example_prompt_returns_expected_string() -> None:
+    """The example_prompt inner function returns a prompt containing the topic."""
+    mock_mcp, registered = _make_mock_mcp()
+    fn = getattr(bind_prompts, "__wrapped__", bind_prompts)
+    asyncio.run(fn(mock_mcp))
+    result = asyncio.run(registered["example_prompt"]("Python"))  # type: ignore[operator]
+    assert "Python" in result
