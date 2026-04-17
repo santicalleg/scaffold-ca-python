@@ -132,3 +132,47 @@ def test_filesystem_read_in_factory_runs_during_dry_run(tmp_path: Path) -> None:
     _ = builder.persist()
 
     assert builder.get_param("probe_exists") is True
+
+
+# ---------------------------------------------------------------------------
+# insert_after
+# ---------------------------------------------------------------------------
+
+
+def test_insert_after_is_included_in_dry_run_preview(tmp_path: Path) -> None:
+    project = _project_ctx()
+    builder = ModuleBuilder(project_root=tmp_path, project_ctx=project, dry_run=True)
+
+    target = tmp_path / "config.py"
+    target.write_text('LOG_LEVEL: str = "INFO"\n', encoding="utf-8")
+    builder.insert_after(target, anchor="LOG_LEVEL", content='HOST: str = "0.0.0.0"')
+
+    preview = builder.persist()
+
+    assert target in preview
+    # dry-run must not modify the file
+    assert 'HOST' not in target.read_text(encoding="utf-8")
+
+
+def test_insert_after_real_persist_modifies_file(tmp_path: Path) -> None:
+    _write_minimal_pyproject(tmp_path)
+    project = _project_ctx()
+    builder = ModuleBuilder(project_root=tmp_path, project_ctx=project, dry_run=False)
+
+    target = tmp_path / "config.py"
+    target.write_text(
+        'class Settings:\n    LOG_LEVEL: str = "INFO"\n    model_config = None\n',
+        encoding="utf-8",
+    )
+    builder.insert_after(
+        target,
+        anchor="LOG_LEVEL",
+        content='    HOST: str = "0.0.0.0"\n    PORT: int = 8000',
+    )
+    builder.persist()
+
+    text = target.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    log_idx = next(i for i, l in enumerate(lines) if "LOG_LEVEL" in l)
+    assert "HOST" in lines[log_idx + 1]
+    assert "PORT" in lines[log_idx + 2]

@@ -33,7 +33,7 @@ async def lifespan(_app: Starlette) -> AsyncIterator[None]:
 
     await tools.bind_tools(mcp)
     {% if with_resources %}await resources.bind_resources(mcp)
-    {% endif %}{% if with_prompts %}bind_prompts(mcp)
+    {% endif %}{% if with_prompts %}await prompts.bind_prompts(mcp)
     {% endif %}
     # Uncomment the following lines if you have async resources to initialize on startup and shutdown
     #await container.resource_container.init_resources()

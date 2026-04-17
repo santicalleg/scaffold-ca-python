@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from scaffold_ca_python.core.file_writer import FileWriter
-from scaffold_ca_python.models.file_operation import CreateFile, DeleteFile, GeneratedFile
+from scaffold_ca_python.models.file_operation import CreateFile, DeleteFile, GeneratedFile, InsertAfter
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -168,3 +168,65 @@ def test_overwrite_dry_run_does_not_write(tmp_path: Path) -> None:
     writer.execute([_create_op_overwrite(target, "# replaced")], dry_run=True)
 
     assert target.read_text() == "# original"
+
+
+# ---------------------------------------------------------------------------
+# insert_after
+# ---------------------------------------------------------------------------
+
+
+def _insert_op(path: Path, anchor: str, content: str) -> InsertAfter:
+    return InsertAfter(path=path, anchor=anchor, content=content)
+
+
+def test_insert_after_adds_content_below_anchor_line(tmp_path: Path) -> None:
+    target = tmp_path / "config.py"
+    target.write_text(
+        'class Settings:\n    ENV: str = "dev"\n    LOG_LEVEL: str = "INFO"\n'
+    )
+    writer = FileWriter()
+    writer.execute([_insert_op(target, "LOG_LEVEL", '    HOST: str = "0.0.0.0"\n    PORT: int = 8000')])
+
+    result = target.read_text()
+    lines = result.splitlines()
+    log_idx = next(i for i, l in enumerate(lines) if "LOG_LEVEL" in l)
+    assert "HOST" in lines[log_idx + 1]
+    assert "PORT" in lines[log_idx + 2]
+
+
+def test_insert_after_anchor_not_found_raises(tmp_path: Path) -> None:
+    target = tmp_path / "config.py"
+    target.write_text("x = 1\n")
+    writer = FileWriter()
+    with pytest.raises(ValueError, match="anchor"):
+        writer.execute([_insert_op(target, "MISSING_ANCHOR", "y = 2")])
+
+
+def test_insert_after_file_not_found_raises(tmp_path: Path) -> None:
+    target = tmp_path / "nonexistent.py"
+    writer = FileWriter()
+    with pytest.raises(FileNotFoundError):
+        writer.execute([_insert_op(target, "x", "y = 2")])
+
+
+def test_insert_after_dry_run_returns_path_without_modifying(tmp_path: Path) -> None:
+    target = tmp_path / "config.py"
+    original = 'LOG_LEVEL: str = "INFO"\n'
+    target.write_text(original)
+    writer = FileWriter()
+    result = writer.execute([_insert_op(target, "LOG_LEVEL", "HOST: str = \"0.0.0.0\"")], dry_run=True)
+
+    assert target in result
+    assert target.read_text() == original
+
+
+def test_insert_after_inserts_at_first_occurrence_only(tmp_path: Path) -> None:
+    target = tmp_path / "dup.py"
+    target.write_text("LOG_LEVEL = 1\nLOG_LEVEL = 2\n")
+    writer = FileWriter()
+    writer.execute([_insert_op(target, "LOG_LEVEL", "INSERTED = True")])
+
+    lines = target.read_text().splitlines()
+    assert lines[1] == "INSERTED = True"
+    # second LOG_LEVEL is now at index 2; no second insertion
+    assert lines.count("INSERTED = True") == 1

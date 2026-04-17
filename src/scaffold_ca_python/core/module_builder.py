@@ -15,7 +15,7 @@ from scaffold_ca_python.core.pyproject_writer import (
     update_project_scripts,
 )
 from scaffold_ca_python.core.template_renderer import TemplateRenderer
-from scaffold_ca_python.models.file_operation import CreateFile, DeleteFile, FileOperation, GeneratedFile
+from scaffold_ca_python.models.file_operation import CreateFile, DeleteFile, FileOperation, GeneratedFile, InsertAfter
 
 if TYPE_CHECKING:
     from scaffold_ca_python.models.context import ModuleContext, ProjectContext
@@ -75,6 +75,15 @@ class ModuleBuilder:
     def delete_file(self, path: Path) -> None:
         """Queue a file deletion operation."""
         self._operations.append(DeleteFile(path=path))
+
+    def insert_after(self, path: Path, anchor: str, content: str) -> None:
+        """Queue an insert-after operation on an existing file.
+
+        *content* will be inserted on a new line immediately after the first
+        line in *path* that contains *anchor*.  In dry-run mode the path is
+        included in the preview list without modifying the file.
+        """
+        self._operations.append(InsertAfter(path=path, anchor=anchor, content=content))
 
     def render(self, template_name: str, context: BaseModel | dict[str, Any]) -> str:
         """Render a template through the shared renderer."""

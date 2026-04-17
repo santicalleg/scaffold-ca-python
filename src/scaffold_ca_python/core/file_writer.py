@@ -7,7 +7,7 @@ import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from scaffold_ca_python.models.file_operation import CreateFile, DeleteFile, FileOperation
+from scaffold_ca_python.models.file_operation import CreateFile, DeleteFile, FileOperation, InsertAfter
 
 if TYPE_CHECKING:
     pass
@@ -60,7 +60,7 @@ class FileWriter:
         for op in operations:
             if isinstance(op, CreateFile):
                 result.append(op.file.path)
-            elif isinstance(op, DeleteFile):
+            elif isinstance(op, (DeleteFile, InsertAfter)):
                 result.append(op.path)
         return result
 
@@ -105,4 +105,28 @@ class FileWriter:
             if op.path.exists():
                 op.path.unlink()
 
+        # Process insert_after mutations in declaration order
+        inserts: list[InsertAfter] = [
+            op for op in operations if isinstance(op, InsertAfter)
+        ]
+        for op in inserts:
+            self._apply_insert_after(op)
+
         return committed
+
+    @staticmethod
+    def _apply_insert_after(op: InsertAfter) -> None:
+        """Insert *op.content* on a new line after the first line containing *op.anchor*."""
+        if not op.path.exists():
+            raise FileNotFoundError(f"insert_after target not found: {op.path}")
+        original = op.path.read_text(encoding="utf-8")
+        lines = original.splitlines(keepends=True)
+        for i, line in enumerate(lines):
+            if op.anchor in line:
+                insertion = op.content if op.content.endswith("\n") else op.content + "\n"
+                lines.insert(i + 1, insertion)
+                op.path.write_text("".join(lines), encoding="utf-8")
+                return
+        raise ValueError(
+            f"insert_after anchor {op.anchor!r} not found in {op.path}"
+        )

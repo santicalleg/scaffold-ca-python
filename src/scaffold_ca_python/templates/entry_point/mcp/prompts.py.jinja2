@@ -9,7 +9,7 @@ from {{ project.python_package }}.application.config.container import Container
 
 
 @inject
-def bind_prompts(
+async def bind_prompts(
     mcp: FastMCP,
     # Replace with your actual use-case injection:
     # prompt_usecase: SomeUseCase = Provide[Container.some_usecase],
@@ -18,8 +18,8 @@ def bind_prompts(
 
     Called inside ``lifespan`` in ``application/app.py`` when
     ``--with-prompts`` was used during project generation.  Unlike
-    ``bind_tools`` and ``bind_resources``, this function is **synchronous**
-    because prompt registration does not require I/O.  Add one
+    ``bind_tools`` and ``bind_resources``, this function is **asynchronous**
+    because prompt registration may require I/O.  Add one
     ``@mcp.prompt`` decorated inner function per prompt template.
     """
 

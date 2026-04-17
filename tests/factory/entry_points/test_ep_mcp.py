@@ -127,6 +127,14 @@ def test_mcp_dependencies_injected(tmp_path: Path) -> None:
     """T008 (H3): all five required deps are present after a live run."""
     builder = _make_builder(tmp_path, dry_run=False)
 
+    # Simulate the config.py that `scaffold ca` would have created first.
+    config_py = tmp_path / "src" / "ms_demo" / "application" / "config" / "config.py"
+    config_py.parent.mkdir(parents=True, exist_ok=True)
+    config_py.write_text(
+        '"""Application settings."""\nclass Settings:\n    LOG_LEVEL: str = "INFO"\n',
+        encoding="utf-8",
+    )
+
     from scaffold_ca_python.factory.entry_points.ep_mcp import EntryPointMcp
 
     EntryPointMcp().build(builder)
@@ -201,6 +209,11 @@ def test_mcp_app_py_not_overwritten(tmp_path: Path) -> None:
     """T028: existing application/app.py raises FileExistsError (no-overwrite guard)."""
     _write_minimal_pyproject(tmp_path)
     project = _project_ctx()
+
+    # Pre-create config.py (created by `scaffold ca` in real usage).
+    config_py = tmp_path / "src" / "ms_demo" / "application" / "config" / "config.py"
+    config_py.parent.mkdir(parents=True, exist_ok=True)
+    config_py.write_text('class Settings:\n    LOG_LEVEL: str = "INFO"\n', encoding="utf-8")
 
     # Pre-create app.py with sentinel content
     app_py = tmp_path / "src" / "ms_demo" / "application" / "app.py"

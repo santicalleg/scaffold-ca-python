@@ -103,6 +103,14 @@ class EntryPointMcp(ModuleFactory):
         )
         builder.delete_file(main_py)
 
+        # config.py — add HOST / PORT for uvicorn via insert_after
+        config_py_path = project_root / "src" / pkg / "application" / "config" / "config.py"
+        builder.insert_after(
+            config_py_path,
+            anchor="LOG_LEVEL",
+            content='    HOST: str = "0.0.0.0"\n    PORT: int = 8000',
+        )
+
         # app.py composition root (Phase 5 / T031) — no overwrite guard
         app_py_path = project_root / "src" / pkg / "application" / "app.py"
         app_ctx: dict[str, object] = {**ctx_dict, "with_resources": with_resources, "with_prompts": with_prompts}
