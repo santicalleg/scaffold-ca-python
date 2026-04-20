@@ -3,10 +3,25 @@ name = "scaffold-ca-python"
 dynamic = ["version"]
 description = "Scaffolder to generate Clean Architecture apps"
 readme = "README.md"
+license = "MIT"
 authors = [
-    { email = "santiagocalleg@gmail.com" }
+    { name = "Santiago Calle Gomez", email = "santiagocalleg@gmail.com" }
 ]
 requires-python = ">=3.13"
+keywords = ["clean architecture", "scaffold", "code generation", "cli", "python", "mcp", "fastapi"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+    "Typing :: Typed",
+]
 dependencies = [
     "jinja2>=3.1",
     "pydantic>=2.0",
@@ -19,6 +34,11 @@ dependencies = [
 [project.scripts]
 scaffold-ca-python = "scaffold_ca_python.cli:app"
 scaffold = "scaffold_ca_python.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/santicalleg/scaffold-ca-python"
+Repository = "https://github.com/santicalleg/scaffold-ca-python"
+Issues = "https://github.com/santicalleg/scaffold-ca-python/issues"
 
 [build-system]
 requires = ["hatchling", "uv-dynamic-versioning"]
@@ -34,9 +54,6 @@ bump = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/scaffold_ca_python"]
-
-[tool.hatch.build.targets.wheel.force-include]
-"src/scaffold_ca_python/templates" = "scaffold_ca_python/templates"
 
 [tool.ruff]
 line-length = 120

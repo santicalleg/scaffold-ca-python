@@ -1,6 +1,6 @@
 # scaffold-ca-python Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-16
+Auto-generated from all feature plans. Last updated: 2026-04-20
 
 ## Active Technologies
 - Python 3.13 + Typer 0.16, Jinja2 3.1, Pydantic v2, Rich 14, uv (dep management) (008-fastapi-entrypoint-baseline)
@@ -21,6 +21,8 @@ Auto-generated from all feature plans. Last updated: 2026-04-16
 - N/A (file generation only) (017-pep8-naming-validation)
 - Python 3.13+ + Typer (CLI), Rich (output), Jinja2 (templates), Pydantic v2 (context models), `mcp>=1.0` (generated project dep), `starlette` (generated project dep), `uvicorn` (generated project dep), `dependency-injector` (generated project dep) (019-mcp-entry-point-restructure)
 - N/A — file system writes only (019-mcp-entry-point-restructure)
+- Python 3.13+ + hatchling (build backend), uv-dynamic-versioning (git-tag versioning, PEP 440), uv (build + publish) (020-pypi-publish-readme)
+- N/A — pyproject.toml (TOML) and README.md (Markdown) edits only (020-pypi-publish-readme)
 
 - Python 3.13 + Typer 0.16.0, Rich 14.1.0 (both already in `pyproject.toml`) (007-cli-usability-enhancements)
 
@@ -40,9 +42,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.13: Follow standard conventions
 
 ## Recent Changes
+- 020-pypi-publish-readme: Added Python 3.13+ + hatchling (build backend), uv-dynamic-versioning (git-tag versioning, PEP 440), uv (build + publish)
 - 019-mcp-entry-point-restructure: Added Python 3.13+ + Typer (CLI), Rich (output), Jinja2 (templates), Pydantic v2 (context models), `mcp>=1.0` (generated project dep), `starlette` (generated project dep), `uvicorn` (generated project dep), `dependency-injector` (generated project dep)
 - 017-pep8-naming-validation: Added Python 3.13+ + yper ≥ 0.16, pydantic ≥ 2.0, rich ≥ 14.1, jinja2 ≥ 3.1
-- 016-dedup-command-aliases: Added Python 3.13+ + yper>=0.16.0, rich>=14.1.0; ruff (linter/formatter), mypy strict (type checker)
 
 
 <!-- MANUAL ADDITIONS START -->
