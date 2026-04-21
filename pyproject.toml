@@ -1,5 +1,5 @@
 [project]
-name = "scaffold-ca-python"
+name = "clean-architecture-scaffold"
 dynamic = ["version"]
 description = "Scaffolder to generate Clean Architecture apps"
 readme = "README.md"
