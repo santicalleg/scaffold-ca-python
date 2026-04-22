@@ -1,0 +1,24 @@
+"""Tests for RestConsumerAdapter."""
+
+from __future__ import annotations
+
+import pytest
+import respx
+import httpx
+
+from {{ project.python_package }}.infrastructure.driven_adapters.rest_consumer.rest_consumer import (
+    RestConsumerAdapter,
+)
+
+
+@pytest.fixture()
+def adapter() -> RestConsumerAdapter:
+    return RestConsumerAdapter(base_url="https://example.com")
+
+
+@respx.mock
+@pytest.mark.asyncio
+async def test_get_returns_response(adapter: RestConsumerAdapter) -> None:
+    respx.get("https://example.com/ping").mock(return_value=httpx.Response(200))
+    response = await adapter.get("/ping")
+    assert response.status_code == 200

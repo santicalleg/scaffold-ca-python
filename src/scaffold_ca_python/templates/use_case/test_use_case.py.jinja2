@@ -1,0 +1,12 @@
+"""Tests for {{ class_name }}UseCase."""
+
+import pytest
+
+from {{ project.python_package }}.domain.usecase.{{ module_name }} import {{ class_name }}UseCase
+
+
+@pytest.mark.asyncio
+async def test_{{ module_name }}_raises_not_implemented() -> None:
+    use_case = {{ class_name }}UseCase()
+    with pytest.raises(NotImplementedError):
+        await use_case.execute()

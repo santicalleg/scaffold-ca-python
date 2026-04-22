@@ -1,0 +1,17 @@
+"""Resource DI container — wires infrastructure resources (DB pools, HTTP clients, etc.)."""
+from dependency_injector import containers, providers
+
+from {{ python_package }}.application.config.config import settings
+
+# Import resource-level classes here to wire them in the ResourceContainer below.
+#{{ python_package }}.infrastructure.driven_adapters.my_repo.MyResource
+
+
+class ResourceContainer(containers.DeclarativeContainer):
+    """Wire resource-level singletons (connections, clients) here."""
+
+    # Example:
+    # db_pool = providers.Resource(
+    #     MyResource,
+    #     arg1=settings.ARG1,
+    # )

@@ -1,0 +1,40 @@
+"""Tests for {{ project.python_package }}.infrastructure.entry_points.mcp_server.tools."""
+
+from __future__ import annotations
+
+import asyncio
+import inspect
+from unittest.mock import MagicMock
+
+from {{ project.python_package }}.infrastructure.entry_points.mcp_server.tools import bind_tools
+
+
+def _make_mock_mcp() -> tuple[MagicMock, dict[str, object]]:
+    """Return (mock_mcp, registered) where registered maps tool name → handler."""
+    registered: dict[str, object] = {}
+    mock = MagicMock()
+    mock.tool = lambda name: (lambda fn: registered.setdefault(name, fn) or fn)
+    return mock, registered
+
+
+def test_bind_tools_is_async_callable() -> None:
+    """bind_tools must be an async function (or wrap one via @inject)."""
+    fn = getattr(bind_tools, "__wrapped__", bind_tools)
+    assert inspect.iscoroutinefunction(fn), "bind_tools must be async"
+
+
+def test_bind_tools_registers_example_tool() -> None:
+    """Calling bind_tools registers 'example_tool' on the mcp instance."""
+    mock_mcp, registered = _make_mock_mcp()
+    fn = getattr(bind_tools, "__wrapped__", bind_tools)
+    asyncio.run(fn(mock_mcp))
+    assert "example_tool" in registered
+
+
+def test_example_tool_returns_expected_result() -> None:
+    """The example_tool inner function returns a string containing the query."""
+    mock_mcp, registered = _make_mock_mcp()
+    fn = getattr(bind_tools, "__wrapped__", bind_tools)
+    asyncio.run(fn(mock_mcp))
+    result = asyncio.run(registered["example_tool"]("hello"))  # type: ignore[operator]
+    assert "hello" in result

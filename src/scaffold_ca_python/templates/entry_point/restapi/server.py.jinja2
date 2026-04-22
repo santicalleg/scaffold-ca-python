@@ -1,0 +1,5 @@
+"""Server entry point for {{ project.name }} — delegates to the application factory."""
+from {{ project.python_package }}.application.app import start_server
+
+if __name__ == "__main__":
+    start_server()

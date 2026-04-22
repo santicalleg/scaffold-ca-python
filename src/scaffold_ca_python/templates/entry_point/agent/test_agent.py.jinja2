@@ -1,0 +1,20 @@
+"""Tests for {{ project.name }}Agent."""
+
+from __future__ import annotations
+
+import pytest
+
+from {{ project.python_package }}.infrastructure.entry_points.agent.agent import {{ project.name }}Agent
+from {{ project.python_package }}.infrastructure.entry_points.agent.card import AgentCard
+
+
+def test_agent_card_has_name() -> None:
+    card = AgentCard()
+    assert card.name == "{{ project.name }}"
+
+
+@pytest.mark.asyncio
+async def test_agent_run_raises_not_implemented() -> None:
+    agent = {{ project.name }}Agent()
+    with pytest.raises(NotImplementedError):
+        await agent.run({})

@@ -1,0 +1,15 @@
+"""AgentCard definition for {{ project.name }}."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
+
+@dataclass
+class AgentCard:
+    """Describes the capabilities and identity of this agent."""
+
+    name: str = "{{ project.name }}"
+    description: str = "An AI agent built with scaffold-ca-python."
+    version: str = "0.1.0"
+    capabilities: list[str] = field(default_factory=list)

@@ -1,0 +1,51 @@
+"""MCP composition root — creates the FastMCP instance and Starlette ASGI app."""
+
+from __future__ import annotations
+
+from contextlib import asynccontextmanager
+
+from mcp.server.fastmcp import FastMCP
+from starlette.applications import Starlette
+from starlette.routing import Mount
+
+from {{ project.python_package }}.application.config.container import Container
+from {{ project.python_package }}.infrastructure.entry_points.mcp_server import tools
+{% if with_resources %}from {{ project.python_package }}.infrastructure.entry_points.mcp_server import resources
+{% endif %}{% if with_prompts %}from {{ project.python_package }}.infrastructure.entry_points.mcp_server import prompts
+{% endif %}
+
+mcp: FastMCP = FastMCP("{{ project.name }}", stateless_http=True)
+
+
+@asynccontextmanager
+async def lifespan(_app: Starlette) -> None:
+    """Wire the DI container, register all MCP primitives, then run the server."""
+    container = Container()
+    container.wire(
+        modules=[
+            tools,
+            {% if with_resources %}resources,{% endif %}
+            {% if with_prompts %}prompts,{% endif %}
+        ]
+    )
+
+    await tools.bind_tools(mcp)
+    {% if with_resources %}await resources.bind_resources(mcp)
+    {% endif %}{% if with_prompts %}await prompts.bind_prompts(mcp){% endif %}
+
+    # Uncomment the following lines if you have async resources to initialize on startup and shutdown
+    #await container.resource_container.init_resources()
+
+    async with mcp.session_manager.run():
+        yield
+
+    # Uncomment the following lines if you have async resources to initialize on startup and shutdown
+    #await container.resource_container.shutdown_resources()
+
+
+def start_server() -> Starlette:
+    """Return a Starlette ASGI application wrapping the FastMCP instance."""
+    return Starlette(
+        routes=[Mount("/", app=mcp.streamable_http_app())],
+        lifespan=lifespan,
+    )

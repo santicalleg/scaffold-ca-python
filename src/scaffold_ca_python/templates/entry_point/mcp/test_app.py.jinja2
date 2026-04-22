@@ -1,0 +1,32 @@
+"""Tests for {{ project.python_package }}.application.app."""
+
+from __future__ import annotations
+
+import inspect
+
+from mcp.server.fastmcp import FastMCP
+from starlette.applications import Starlette
+
+from {{ project.python_package }}.application import app as app_module
+
+
+def test_mcp_instance_is_fastmcp() -> None:
+    """The module-level mcp variable must be a FastMCP instance."""
+    assert isinstance(app_module.mcp, FastMCP)
+
+
+def test_start_server_returns_starlette() -> None:
+    """start_server() must return a Starlette ASGI application."""
+    server = app_module.start_server()
+    assert isinstance(server, Starlette)
+
+
+def test_start_server_has_routes() -> None:
+    """The returned Starlette app must expose at least one mounted route."""
+    server = app_module.start_server()
+    assert len(server.routes) > 0
+
+
+def test_lifespan_is_callable() -> None:
+    """lifespan must be a callable (async context manager factory)."""
+    assert callable(app_module.lifespan)

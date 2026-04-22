@@ -1,0 +1,116 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - master
+      - feature/*
+      - fix/*
+  pull_request:
+    branches:
+      - master
+    types:
+      - opened
+      - synchronize
+
+env:
+  UV_NO_SYNC: true
+
+permissions: {}
+
+jobs:
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+      
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
+            uv.lock
+      
+      - name: Install dependencies
+        run: uv sync --locked --group dev
+      
+      - name: Ruff lint
+        run: uv run ruff check src/ tests/
+      
+      - name: Ruff format check
+        run: uv run ruff format --check src/ tests/
+      
+      - name: Type check with mypy
+        run: uv run mypy src/
+
+  test:
+    name: Tests & Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+      
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
+            uv.lock
+      
+      - name: Install dependencies
+        run: uv sync --locked --group dev
+      
+      - name: Run tests with coverage
+        run: uv run pytest
+      
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: .coverage
+          if-no-files-found: ignore
+
+  check:
+    name: Check Status
+    if: always()
+    needs:
+      - lint
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@v1.2.2
+        with:
+          jobs: ${{ toJSON(needs) }}

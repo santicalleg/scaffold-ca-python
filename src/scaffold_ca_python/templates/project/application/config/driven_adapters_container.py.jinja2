@@ -1,0 +1,14 @@
+"""Driven-adapters DI container."""
+from dependency_injector import containers, providers
+
+# Import driven-adapter classes here to wire them in the DAContainer below.
+#{{ python_package }}.infrastructure.driven_adapters.my_repo.MyRepo
+
+class DAContainer(containers.DeclarativeContainer):
+    """Wire infrastructure driven-adapter singletons here."""
+
+    # Example:
+    # my_repo = providers.Singleton(
+    #     MyRepo,
+    #     arg1=arg1,
+    # )

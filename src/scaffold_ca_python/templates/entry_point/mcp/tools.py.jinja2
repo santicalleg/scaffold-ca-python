@@ -1,0 +1,22 @@
+"""MCP tools binding — register FastMCP tools via dependency injection."""
+
+from __future__ import annotations
+
+from dependency_injector.wiring import Provide, inject
+from mcp.server.fastmcp import FastMCP
+
+from {{ project.python_package }}.application.config.container import Container
+
+
+@inject
+async def bind_tools(
+    mcp: FastMCP,
+    # Replace with your actual use-case injection:
+    # some_usecase: SomeUseCase = Provide[Container.usecase_container.some_usecase],
+) -> None:
+    """Bind all MCP tools to the server instance."""
+
+    @mcp.tool("example_tool")
+    async def example_tool(query: str) -> str:
+        """Example tool stub — replace with your implementation."""
+        return f"result for: {query}"

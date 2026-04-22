@@ -1,0 +1,27 @@
+"""MCP server entrypoint — run with ``<pkg>-server`` or ``python -m <pkg>.server``."""
+
+from __future__ import annotations
+
+import sys
+
+import uvicorn
+
+from {{ project.python_package }}.application.config.config import settings
+from {{ project.python_package }}.application import app
+
+
+def main() -> None:
+    """Start the MCP server via uvicorn.
+
+    The ASGI app is obtained from :func:`app.start_server` which wires the DI
+    container and mounts the FastMCP ``streamable_http_app``.
+    """
+    uvicorn.run(
+        app.start_server(),
+        host=settings.HOST,
+        port=settings.PORT,
+    )
+
+
+if __name__ == "__main__":
+    sys.exit(main())

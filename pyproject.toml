@@ -1,19 +1,59 @@
 [project]
-name = "scaffold-ca-python"
+name = "clean-architecture-scaffold"
 dynamic = ["version"]
 description = "Scaffolder to generate Clean Architecture apps"
 readme = "README.md"
+license = "MIT"
 authors = [
-    { email = "santiagocalleg@gmail.com" }
+    { name = "Santiago Calle Gomez", email = "santiagocalleg@gmail.com" }
 ]
 requires-python = ">=3.13"
+keywords = ["clean architecture", "scaffold", "code generation", "cli", "python", "mcp", "fastapi"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+    "Typing :: Typed",
+]
 dependencies = [
-    "rich>=14.1.0",
+    "jinja2>=3.1.6",
+    "pydantic>=2.13.3",
+    "pyyaml>=6.0.3",
+    "tomli-w>=1.2.0",
     "typer>=0.16.0",
+    "rich>=15.0.0",
+]
+
+[dependency-groups]
+dev = [
+    { include-group = "tests" },
+    "prek>=0.3.2",
+    "types-pyyaml>=6.0.12.20250915",
+]
+
+tests = [
+    "ruff>=0.15.8",
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "pytest-benchmark>=5.2.3",
+    "pytest-cov>=7.1.0",
 ]
 
 [project.scripts]
 scaffold-ca-python = "scaffold_ca_python.cli:app"
+scaffold = "scaffold_ca_python.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/santicalleg/scaffold-ca-python"
+Repository = "https://github.com/santicalleg/scaffold-ca-python"
+Issues = "https://github.com/santicalleg/scaffold-ca-python/issues"
 
 [build-system]
 requires = ["hatchling", "uv-dynamic-versioning"]
@@ -25,4 +65,25 @@ source = "uv-dynamic-versioning"
 [tool.uv-dynamic-versioning]
 vcs = "git"
 style = "pep440"
-bump = true
+bump = false
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/scaffold_ca_python"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "ANN"]
+
+[tool.mypy]
+strict = true
+python_version = "3.13"
+
+[tool.pytest.ini_options]
+addopts = "--cov=scaffold_ca_python --cov-fail-under=80"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["scaffold_ca_python"]

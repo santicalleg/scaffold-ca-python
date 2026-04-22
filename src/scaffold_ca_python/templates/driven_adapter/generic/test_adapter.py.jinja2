@@ -1,0 +1,22 @@
+"""Tests for {{ class_name }}Adapter."""
+
+from __future__ import annotations
+
+import pytest
+
+from {{ project.python_package }}.infrastructure.driven_adapters.{{ module_name }}.{{ module_name }}_adapter import (
+    {{ class_name }}Adapter,
+)
+
+
+@pytest.fixture()
+def adapter() -> {{ class_name }}Adapter:
+    return {{ class_name }}Adapter()
+
+
+@pytest.mark.asyncio
+async def test_{{ module_name }}_adapter_execute_raises_not_implemented(
+    adapter: {{ class_name }}Adapter,
+) -> None:
+    with pytest.raises(NotImplementedError):
+        await adapter.execute()
