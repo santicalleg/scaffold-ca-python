@@ -48,7 +48,7 @@ class ProjectContext(BaseModel):
     def python_package(self) -> str:
         """Derive the Python import root: snake_case of name."""
         return _to_snake_case(self.name)
-    
+
     @computed_field  # type: ignore[prop-decorator]
     @property
     def python_package_script(self) -> str:
@@ -67,8 +67,7 @@ class ModuleContext(BaseModel):
     def _validate_name(cls, v: str) -> str:
         if not _NAME_RE.match(v):
             raise ValueError(
-                f"Module name '{v}' is invalid. "
-                "Use kebab-case (e.g., 'my-module') or snake_case (e.g., 'my_module')."
+                f"Module name '{v}' is invalid. Use kebab-case (e.g., 'my-module') or snake_case (e.g., 'my_module')."
             )
         return v
 

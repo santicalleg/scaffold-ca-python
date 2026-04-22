@@ -75,4 +75,4 @@ def test_generic_no_dependencies_injected(tmp_path: Path) -> None:
     pyproject = (tmp_path / "pyproject.toml").read_text(encoding="utf-8")
 
     # Verify no new dependencies were added (only original [project] section)
-    assert 'dependencies = []' in pyproject, "Expected no new dependencies"
+    assert "dependencies = []" in pyproject, "Expected no new dependencies"

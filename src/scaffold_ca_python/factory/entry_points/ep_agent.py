@@ -44,7 +44,7 @@ class EntryPointAgent(ModuleFactory):
         ctx_dict = {}
         if builder.module_ctx:
             ctx_dict.update(builder.module_ctx.model_dump())
-        
+
         # Add enable_kafka and enable_mcp_client if present in params
         if builder.get_param("enable_kafka"):
             ctx_dict["enable_kafka"] = True
@@ -52,15 +52,40 @@ class EntryPointAgent(ModuleFactory):
             ctx_dict["enable_mcp_client"] = True
 
         # Add source files
-        builder.add_file(src_dir / "__init__.py", builder.render(f"{base}/__init__.py.jinja2", ctx_dict), template_name=f"{base}/__init__.py.jinja2")
-        builder.add_file(src_dir / "agent.py", builder.render(f"{base}/agent.py.jinja2", ctx_dict), template_name=f"{base}/agent.py.jinja2")
-        builder.add_file(src_dir / "card.py", builder.render(f"{base}/card.py.jinja2", ctx_dict), template_name=f"{base}/card.py.jinja2")
+        def tpl(f: str) -> str:
+            return f"{base}/{f}"
+
+        builder.add_file(
+            src_dir / "__init__.py",
+            builder.render(f"{base}/__init__.py.jinja2", ctx_dict),
+            template_name=tpl("__init__.py.jinja2"),
+        )
+        builder.add_file(
+            src_dir / "agent.py",
+            builder.render(f"{base}/agent.py.jinja2", ctx_dict),
+            template_name=tpl("agent.py.jinja2"),
+        )
+        builder.add_file(
+            src_dir / "card.py",
+            builder.render(f"{base}/card.py.jinja2", ctx_dict),
+            template_name=tpl("card.py.jinja2"),
+        )
 
         # Add test files
-        builder.add_file(test_dir / "test_agent.py", builder.render(f"{base}/test_agent.py.jinja2", ctx_dict), template_name=f"{base}/test_agent.py.jinja2", is_test=True)
+        builder.add_file(
+            test_dir / "test_agent.py",
+            builder.render(f"{base}/test_agent.py.jinja2", ctx_dict),
+            template_name=tpl("test_agent.py.jinja2"),
+            is_test=True,
+        )
 
         # Overwrite main.py
-        builder.add_file(main_py, builder.render(f"{base}/entrypoint_main.py.jinja2", ctx_dict), template_name=f"{base}/entrypoint_main.py.jinja2", overwrite=True)
+        builder.add_file(
+            main_py,
+            builder.render(f"{base}/entrypoint_main.py.jinja2", ctx_dict),
+            template_name=tpl("entrypoint_main.py.jinja2"),
+            overwrite=True,
+        )
 
         # Add dependency
         builder.add_dependency("a2a-sdk>=0.1")

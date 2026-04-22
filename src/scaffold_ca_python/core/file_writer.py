@@ -106,9 +106,7 @@ class FileWriter:
                 op.path.unlink()
 
         # Process insert_after mutations in declaration order
-        inserts: list[InsertAfter] = [
-            op for op in operations if isinstance(op, InsertAfter)
-        ]
+        inserts: list[InsertAfter] = [op for op in operations if isinstance(op, InsertAfter)]
         for op in inserts:
             self._apply_insert_after(op)
 
@@ -127,6 +125,4 @@ class FileWriter:
                 lines.insert(i + 1, insertion)
                 op.path.write_text("".join(lines), encoding="utf-8")
                 return
-        raise ValueError(
-            f"insert_after anchor {op.anchor!r} not found in {op.path}"
-        )
+        raise ValueError(f"insert_after anchor {op.anchor!r} not found in {op.path}")

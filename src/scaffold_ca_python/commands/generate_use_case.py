@@ -24,11 +24,8 @@ _REGISTRY: dict[str, type[ModuleFactory]] = {
     "use_case": UseCaseFactory,
 }
 _GUC_HELP = "Scaffold a use case in domain/usecase/. Alias 'guc'."
-_GUC_EPILOG = (
-    "Example:\n\n"
-    "  * scaffold guc --name CreateOrder\n\n"
-    "  * scaffold generate-use-case --name CreateOrder\n\n"
-)
+_GUC_EPILOG = "Example:\n\n  * scaffold guc --name CreateOrder\n\n  * scaffold generate-use-case --name CreateOrder\n\n"
+
 
 def _generate_use_case_impl(name: str, dry_run: bool) -> None:
     # --- Validate name ---
@@ -86,7 +83,11 @@ def _generate_use_case_impl(name: str, dry_run: bool) -> None:
         console.print(tree)
         return
 
-    console.print(f"[green]✓[/green] Use case [bold]{module_ctx.class_name}UseCase[/bold] created. Created {len(created)} file(s).")
+    msg = (
+        f"[green]\u2713[/green] Use case [bold]{module_ctx.class_name}UseCase[/bold] "
+        f"created. Created {len(created)} file(s)."
+    )
+    console.print(msg)
 
 
 def register(app: typer.Typer) -> None:

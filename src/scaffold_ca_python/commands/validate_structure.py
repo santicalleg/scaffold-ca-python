@@ -16,11 +16,8 @@ console = Console()
 _validator = StructureValidator()
 
 _GVS_HELP = "Scan src/ for Clean Architecture import violations. Alias: 'vs'."
-_GVS_EPILOG = (
-    "Example:\n\n"
-    "  * scaffold vs\n\n"
-    "  * scaffold validate-structure\n"
-)
+_GVS_EPILOG = "Example:\n\n  * scaffold vs\n\n  * scaffold validate-structure\n"
+
 
 def _validate_structure_impl(dry_run: bool) -> None:
     try:

@@ -151,7 +151,7 @@ def test_insert_after_is_included_in_dry_run_preview(tmp_path: Path) -> None:
 
     assert target in preview
     # dry-run must not modify the file
-    assert 'HOST' not in target.read_text(encoding="utf-8")
+    assert "HOST" not in target.read_text(encoding="utf-8")
 
 
 def test_insert_after_real_persist_modifies_file(tmp_path: Path) -> None:
@@ -173,6 +173,6 @@ def test_insert_after_real_persist_modifies_file(tmp_path: Path) -> None:
 
     text = target.read_text(encoding="utf-8")
     lines = text.splitlines()
-    log_idx = next(i for i, l in enumerate(lines) if "LOG_LEVEL" in l)
+    log_idx = next(i for i, line in enumerate(lines) if "LOG_LEVEL" in line)
     assert "HOST" in lines[log_idx + 1]
     assert "PORT" in lines[log_idx + 2]

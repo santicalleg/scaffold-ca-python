@@ -75,7 +75,7 @@ def test_generic_no_dependencies_injected(tmp_path: Path) -> None:
     pyproject = (tmp_path / "pyproject.toml").read_text(encoding="utf-8")
 
     # Should only have the original dependencies list unchanged
-    assert 'dependencies = []' in pyproject, "Expected no new dependencies"
+    assert "dependencies = []" in pyproject, "Expected no new dependencies"
 
 
 def test_generic_main_py_overwritten(tmp_path: Path) -> None:

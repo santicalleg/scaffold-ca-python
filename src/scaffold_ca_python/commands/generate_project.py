@@ -30,11 +30,8 @@ _LAYER_DIRS: list[tuple[str, str]] = [
     ("infrastructure/helpers", "infrastructure/helpers"),
 ]
 _GCA = "Scaffold a new Clean Architecture project. Alias: 'ca'"
-_GCA_EPILOG = (
-    "Examples:\n\n  "
-    "  * scaffold ca --name my-project\n\n"
-    "  * scaffold clean-architecture --name my_project"
-)
+_GCA_EPILOG = "Examples:\n\n    * scaffold ca --name my-project\n\n  * scaffold clean-architecture --name my_project"
+
 
 def _generate_project_impl(
     name: str,
@@ -151,7 +148,7 @@ def register(app: typer.Typer) -> None:
     def clean_architecture(
         ctx: typer.Context,
         name: Annotated[
-            str,
+            str | None,
             typer.Option(
                 "--name",
                 help="Project name (PascalCase or snake_case).",

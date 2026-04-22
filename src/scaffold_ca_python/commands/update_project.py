@@ -14,11 +14,8 @@ from scaffold_ca_python.core.project_detector import find_project_root
 console = Console()
 
 _GUP = "Update project dependencies via uv lock --upgrade + uv sync. Alias: 'up'"
-_GUP_EPILOG = (
-    "Example:\n\n"
-    "  * scaffold up --dry-run\n\n"
-    "  * scaffold update-project --dry-run"
-)
+_GUP_EPILOG = "Example:\n\n  * scaffold up --dry-run\n\n  * scaffold update-project --dry-run"
+
 
 def _update_project_impl(dry_run: bool) -> None:
     # Locate project root

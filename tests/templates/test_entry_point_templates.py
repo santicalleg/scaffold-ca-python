@@ -254,6 +254,7 @@ def test_mcp_server_imports_app() -> None:
 # mcp — app.py (composition root) — Phase 5 / T026–T027
 # ---------------------------------------------------------------------------
 
+
 def _app_ctx(*, with_resources: bool = False, with_prompts: bool = False) -> dict[str, object]:
     return {**_ctx().model_dump(), "with_resources": with_resources, "with_prompts": with_prompts}
 

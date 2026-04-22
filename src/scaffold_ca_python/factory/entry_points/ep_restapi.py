@@ -52,22 +52,69 @@ class EntryPointRestApi(ModuleFactory):
         base = "entry_point/restapi"
 
         # Build context dict from module context
-        ctx_dict = {
-            **builder.module_ctx.model_dump(),
-        } if builder.module_ctx else {}
+        ctx_dict = (
+            {
+                **builder.module_ctx.model_dump(),
+            }
+            if builder.module_ctx
+            else {}
+        )
 
         # Add source files
-        builder.add_file(app_py_path, builder.render(f"{base}/app.py.jinja2", ctx_dict), template_name=f"{base}/app.py.jinja2")
-        builder.add_file(src_dir / "__init__.py", builder.render(f"{base}/__init__.py.jinja2", ctx_dict), template_name=f"{base}/__init__.py.jinja2")
-        builder.add_file(src_dir / "rest_controller.py", builder.render(f"{base}/rest_controller.py.jinja2", ctx_dict), template_name=f"{base}/rest_controller.py.jinja2")
-        builder.add_file(src_dir / "exception_handler.py", builder.render(f"{base}/exception_handler.py.jinja2", ctx_dict), template_name=f"{base}/exception_handler.py.jinja2")
-        builder.add_file(server_path, builder.render(f"{base}/server.py.jinja2", ctx_dict), template_name=f"{base}/server.py.jinja2")
+        def tpl(f: str) -> str:
+            return f"{base}/{f}"
+
+        builder.add_file(
+            app_py_path,
+            builder.render(f"{base}/app.py.jinja2", ctx_dict),
+            template_name=tpl("app.py.jinja2"),
+        )
+        builder.add_file(
+            src_dir / "__init__.py",
+            builder.render(f"{base}/__init__.py.jinja2", ctx_dict),
+            template_name=tpl("__init__.py.jinja2"),
+        )
+        builder.add_file(
+            src_dir / "rest_controller.py",
+            builder.render(f"{base}/rest_controller.py.jinja2", ctx_dict),
+            template_name=tpl("rest_controller.py.jinja2"),
+        )
+        builder.add_file(
+            src_dir / "exception_handler.py",
+            builder.render(f"{base}/exception_handler.py.jinja2", ctx_dict),
+            template_name=tpl("exception_handler.py.jinja2"),
+        )
+        builder.add_file(
+            server_path,
+            builder.render(f"{base}/server.py.jinja2", ctx_dict),
+            template_name=tpl("server.py.jinja2"),
+        )
 
         # Add test files
-        builder.add_file(test_dir / "test_rest_controller.py", builder.render(f"{base}/test_rest_controller.py.jinja2", ctx_dict), template_name=f"{base}/test_rest_controller.py.jinja2", is_test=True)
-        builder.add_file(test_dir / "test_server.py", builder.render(f"{base}/test_server.py.jinja2", ctx_dict), template_name=f"{base}/test_server.py.jinja2", is_test=True)
-        builder.add_file(test_dir / "test_exception_handler.py", builder.render(f"{base}/test_exception_handler.py.jinja2", ctx_dict), template_name=f"{base}/test_exception_handler.py.jinja2", is_test=True)
-        builder.add_file(test_app_path, builder.render(f"{base}/test_app.py.jinja2", ctx_dict), template_name=f"{base}/test_app.py.jinja2", is_test=True)
+        builder.add_file(
+            test_dir / "test_rest_controller.py",
+            builder.render(f"{base}/test_rest_controller.py.jinja2", ctx_dict),
+            template_name=tpl("test_rest_controller.py.jinja2"),
+            is_test=True,
+        )
+        builder.add_file(
+            test_dir / "test_server.py",
+            builder.render(f"{base}/test_server.py.jinja2", ctx_dict),
+            template_name=tpl("test_server.py.jinja2"),
+            is_test=True,
+        )
+        builder.add_file(
+            test_dir / "test_exception_handler.py",
+            builder.render(f"{base}/test_exception_handler.py.jinja2", ctx_dict),
+            template_name=tpl("test_exception_handler.py.jinja2"),
+            is_test=True,
+        )
+        builder.add_file(
+            test_app_path,
+            builder.render(f"{base}/test_app.py.jinja2", ctx_dict),
+            template_name=tpl("test_app.py.jinja2"),
+            is_test=True,
+        )
 
         # Delete main.py
         builder.delete_file(main_py)

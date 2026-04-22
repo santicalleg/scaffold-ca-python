@@ -25,11 +25,8 @@ _REGISTRY: dict[str, type[ModuleFactory]] = {
 }
 
 _GH_HELP = "Scaffold a helper utility module and test stub. Alias 'gh'."
-_GH_EPILOG = (
-    "Example:\n\n"
-    "  * scaffold gh --name JsonParser\n\n"
-    "  * scaffold generate-helper --name JsonParser\n\n"
-)
+_GH_EPILOG = "Example:\n\n  * scaffold gh --name JsonParser\n\n  * scaffold generate-helper --name JsonParser\n\n"
+
 
 def _generate_helper_impl(name: str, dry_run: bool) -> None:
     # --- Validate name ---
@@ -87,7 +84,8 @@ def _generate_helper_impl(name: str, dry_run: bool) -> None:
         console.print(tree)
         return
 
-    console.print(f"[green]✓[/green] Helper [bold]{module_ctx.class_name}[/bold] created. Created {len(created)} file(s).")
+    msg = f"[green]✓[/green] Helper [bold]{module_ctx.class_name}[/bold] created. Created {len(created)} file(s)."
+    console.print(msg)
 
 
 def register(app: typer.Typer) -> None:

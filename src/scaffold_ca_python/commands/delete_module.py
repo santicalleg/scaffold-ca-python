@@ -24,11 +24,7 @@ _REGISTRY: dict[str, type[ModuleFactory]] = {
 }
 
 _DM_HELP = "Delete a previously generated module and its test mirror. Alias 'dm'."
-_DM_EPILOG = (
-    "Examples:\n\n"
-    "  * scaffold dm --name Order\n\n"
-    "  * scaffold delete-module --name MyAdapter\n\n"
-)
+_DM_EPILOG = "Examples:\n\n  * scaffold dm --name Order\n\n  * scaffold delete-module --name MyAdapter\n\n"
 
 
 # ---------------------------------------------------------------------------
@@ -116,7 +112,7 @@ def _delete_module_impl(name: str, confirm: bool, dry_run: bool) -> None:
         raise typer.Exit(code=1) from None
 
     project_ctx = _load_project_context(project_root)
-    
+
     # Create a placeholder ModuleContext for the factory (layer doesn't matter for delete)
     module_ctx = ModuleContext(name=name, layer=Layer.HELPERS, project=project_ctx)
 

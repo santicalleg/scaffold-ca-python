@@ -41,9 +41,13 @@ class DeleteModuleFactory(ModuleFactory):
         candidates: list[tuple[Path, Path | None]] = []
 
         # Single-file layers (domain/model, domain/usecase)
+        model_src = src_root / "domain" / "model" / f"{snake_name}.py"
+        model_test = tests_root / "domain" / "model" / f"test_{snake_name}.py"
+        usecase_src = src_root / "domain" / "usecase" / f"{snake_name}.py"
+        usecase_test = tests_root / "domain" / "usecase" / f"test_{snake_name}.py"
         for src_rel, test_rel in [
-            (src_root / "domain" / "model" / f"{snake_name}.py", tests_root / "domain" / "model" / f"test_{snake_name}.py"),
-            (src_root / "domain" / "usecase" / f"{snake_name}.py", tests_root / "domain" / "usecase" / f"test_{snake_name}.py"),
+            (model_src, model_test),
+            (usecase_src, usecase_test),
         ]:
             if src_rel.exists():
                 candidates.append((src_rel, test_rel if test_rel.exists() else None))

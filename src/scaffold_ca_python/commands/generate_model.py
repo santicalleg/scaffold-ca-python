@@ -24,11 +24,8 @@ _REGISTRY: dict[str, type[ModuleFactory]] = {
     "model": ModelFactory,
 }
 _GM_HELP = "Scaffold a Pydantic v2 domain model and test stub. Alias 'gm'."
-_GM_EPILOG = (
-    "Example:\n\n"
-    "  * scaffold gm --name Order\n\n"
-    "  * scaffold generate-model --name Order\n\n"
-)
+_GM_EPILOG = "Example:\n\n  * scaffold gm --name Order\n\n  * scaffold generate-model --name Order\n\n"
+
 
 def _generate_model_impl(name: str, dry_run: bool) -> None:
     # --- Validate name ---
@@ -86,7 +83,8 @@ def _generate_model_impl(name: str, dry_run: bool) -> None:
         console.print(tree)
         return
 
-    console.print(f"[green]✓[/green] Model [bold]{module_ctx.class_name}[/bold] created. Created {len(created)} file(s).")
+    msg = f"[green]✓[/green] Model [bold]{module_ctx.class_name}[/bold] created. Created {len(created)} file(s)."
+    console.print(msg)
 
 
 def register(app: typer.Typer) -> None:

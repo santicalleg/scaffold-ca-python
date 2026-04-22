@@ -141,7 +141,13 @@ def test_mcp_dependencies_injected(tmp_path: Path) -> None:
     builder.persist()
 
     pyproject = (tmp_path / "pyproject.toml").read_text(encoding="utf-8")
-    expected_deps = ["mcp>=1.0", "uvicorn[standard]>=0.20", "starlette>=0.40", "dependency-injector>=4.49.0", "pydantic-settings>=2.13.1"]
+    expected_deps = [
+        "mcp>=1.0",
+        "uvicorn[standard]>=0.20",
+        "starlette>=0.40",
+        "dependency-injector>=4.49.0",
+        "pydantic-settings>=2.13.1",
+    ]
     for dep in expected_deps:
         assert dep in pyproject, f"Missing dep: {dep}"
 
@@ -232,4 +238,3 @@ def test_mcp_app_py_not_overwritten(tmp_path: Path) -> None:
     EntryPointMcp().build(builder)
     with pytest.raises(FileExistsError):
         builder.persist()
-

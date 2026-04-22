@@ -14,4 +14,3 @@ class ModuleFactory(Protocol):
 
     def build(self, builder: ModuleBuilder) -> None:
         """Populate *builder* with file/dependency operations for this module type."""
-

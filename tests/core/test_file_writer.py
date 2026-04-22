@@ -181,15 +181,13 @@ def _insert_op(path: Path, anchor: str, content: str) -> InsertAfter:
 
 def test_insert_after_adds_content_below_anchor_line(tmp_path: Path) -> None:
     target = tmp_path / "config.py"
-    target.write_text(
-        'class Settings:\n    ENV: str = "dev"\n    LOG_LEVEL: str = "INFO"\n'
-    )
+    target.write_text('class Settings:\n    ENV: str = "dev"\n    LOG_LEVEL: str = "INFO"\n')
     writer = FileWriter()
     writer.execute([_insert_op(target, "LOG_LEVEL", '    HOST: str = "0.0.0.0"\n    PORT: int = 8000')])
 
     result = target.read_text()
     lines = result.splitlines()
-    log_idx = next(i for i, l in enumerate(lines) if "LOG_LEVEL" in l)
+    log_idx = next(i for i, line in enumerate(lines) if "LOG_LEVEL" in line)
     assert "HOST" in lines[log_idx + 1]
     assert "PORT" in lines[log_idx + 2]
 
@@ -214,7 +212,7 @@ def test_insert_after_dry_run_returns_path_without_modifying(tmp_path: Path) -> 
     original = 'LOG_LEVEL: str = "INFO"\n'
     target.write_text(original)
     writer = FileWriter()
-    result = writer.execute([_insert_op(target, "LOG_LEVEL", "HOST: str = \"0.0.0.0\"")], dry_run=True)
+    result = writer.execute([_insert_op(target, "LOG_LEVEL", 'HOST: str = "0.0.0.0"')], dry_run=True)
 
     assert target in result
     assert target.read_text() == original

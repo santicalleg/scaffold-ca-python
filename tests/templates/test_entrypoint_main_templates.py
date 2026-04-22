@@ -8,8 +8,10 @@ from scaffold_ca_python.models.layer import Layer
 
 renderer = TemplateRenderer()
 
+
 def _project() -> ProjectContext:
     return ProjectContext(name="my-app")
+
 
 def _ctx(name: str = "my-app", subtype: str | None = None) -> ModuleContext:
     return ModuleContext(name=name, layer=Layer.ENTRY_POINTS, project=_project(), subtype=subtype)

@@ -189,11 +189,11 @@ def _generate_entry_point_impl(
         for p in sorted(created):
             tree.add(str(p.relative_to(project_root)))
         console.print(tree)
-        
+
         # Check if dependencies were collected by looking at builder internals
         if builder._dependencies:
             console.print(f"[dim]Would add to [project.dependencies]: {', '.join(builder._dependencies)}[/dim]")
-        
+
         if type_ == "restapi":
             main_py = project_root / "src" / pkg / "main.py"
             if main_py.exists():

@@ -44,11 +44,32 @@ class EntryPointGeneric(ModuleFactory):
             ctx_dict.update(builder.module_ctx.model_dump())
 
         # Add source files
-        builder.add_file(src_dir / "__init__.py", builder.render(f"{base}/__init__.py.jinja2", ctx_dict), template_name=f"{base}/__init__.py.jinja2")
-        builder.add_file(src_dir / "entry_point.py", builder.render(f"{base}/handler.py.jinja2", ctx_dict), template_name=f"{base}/handler.py.jinja2")
+        def tpl(f: str) -> str:
+            return f"{base}/{f}"
+
+        builder.add_file(
+            src_dir / "__init__.py",
+            builder.render(f"{base}/__init__.py.jinja2", ctx_dict),
+            template_name=tpl("__init__.py.jinja2"),
+        )
+        builder.add_file(
+            src_dir / "entry_point.py",
+            builder.render(f"{base}/handler.py.jinja2", ctx_dict),
+            template_name=tpl("handler.py.jinja2"),
+        )
 
         # Add test files
-        builder.add_file(test_dir / "test_entry_point.py", builder.render(f"{base}/test_handler.py.jinja2", ctx_dict), template_name=f"{base}/test_handler.py.jinja2", is_test=True)
+        builder.add_file(
+            test_dir / "test_entry_point.py",
+            builder.render(f"{base}/test_handler.py.jinja2", ctx_dict),
+            template_name=tpl("test_handler.py.jinja2"),
+            is_test=True,
+        )
 
         # Overwrite main.py
-        builder.add_file(main_py, builder.render(f"{base}/entrypoint_main.py.jinja2", ctx_dict), template_name=f"{base}/entrypoint_main.py.jinja2", overwrite=True)
+        builder.add_file(
+            main_py,
+            builder.render(f"{base}/entrypoint_main.py.jinja2", ctx_dict),
+            template_name=tpl("entrypoint_main.py.jinja2"),
+            overwrite=True,
+        )

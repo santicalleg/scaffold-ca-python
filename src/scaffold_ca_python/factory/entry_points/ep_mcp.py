@@ -136,4 +136,3 @@ class EntryPointMcp(ModuleFactory):
         # Signal to module_builder.persist() to update pyproject.toml scripts
         builder.add_param("scripts_entry", True)
         builder.add_param("scripts_entry_fn", "main")
-
