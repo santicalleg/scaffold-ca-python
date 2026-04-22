@@ -148,13 +148,13 @@ def register(app: typer.Typer) -> None:
     def clean_architecture(
         ctx: typer.Context,
         name: Annotated[
-            str | None,
+            str,
             typer.Option(
                 "--name",
                 help="Project name (PascalCase or snake_case).",
                 rich_help_panel="Required",
             ),
-        ] = None,
+        ] = None,  # type: ignore[assignment]
         dry_run: Annotated[
             bool,
             typer.Option(
