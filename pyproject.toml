@@ -23,12 +23,27 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "jinja2>=3.1",
-    "pydantic>=2.0",
-    "pyyaml>=6.0",
-    "rich>=14.1.0",
-    "tomli-w>=1.0",
+    "jinja2>=3.1.6",
+    "pydantic>=2.13.3",
+    "pyyaml>=6.0.3",
+    "tomli-w>=1.2.0",
     "typer>=0.16.0",
+    "rich>=15.0.0",
+]
+
+[dependency-groups]
+dev = [
+    { include-group = "tests" },
+    "prek>=0.3.2",
+    "types-pyyaml>=6.0.12.20250915",
+]
+
+tests = [
+    "ruff>=0.15.8",
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "pytest-benchmark>=5.2.3",
+    "pytest-cov>=7.1.0",
 ]
 
 [project.scripts]
@@ -72,14 +87,3 @@ testpaths = ["tests"]
 
 [tool.coverage.run]
 source = ["scaffold_ca_python"]
-
-[dependency-groups]
-dev = [
-    "jinja2>=3.1.6",
-    "mypy>=1.19.1",
-    "pytest>=9.0.2",
-    "pytest-benchmark>=5.2.3",
-    "pytest-cov>=7.1.0",
-    "ruff>=0.15.8",
-    "types-pyyaml>=6.0.12.20250915",
-]
