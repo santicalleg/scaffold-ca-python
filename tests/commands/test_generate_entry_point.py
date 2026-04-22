@@ -8,6 +8,7 @@ import pytest
 from typer.testing import CliRunner
 
 from scaffold_ca_python.cli import app
+from tests.conftest import strip_ansi
 
 runner = CliRunner()
 
@@ -618,7 +619,7 @@ def test_gep_no_args_exits_0() -> None:
 
 def test_gep_no_args_shows_type_option() -> None:
     result = runner.invoke(app, ["gep"])
-    assert "--type" in result.output
+    assert "--type" in strip_ansi(result.output)
 
 
 # ---------------------------------------------------------------------------

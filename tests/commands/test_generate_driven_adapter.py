@@ -6,6 +6,7 @@ import pytest
 from typer.testing import CliRunner
 
 from scaffold_ca_python.cli import app
+from tests.conftest import strip_ansi
 
 runner = CliRunner()
 
@@ -292,7 +293,7 @@ def test_gda_help_shows_type_descriptions() -> None:
 def test_gda_help_notes_name_required_for_generic() -> None:
     result = runner.invoke(app, ["gda", "--help"])
     assert result.exit_code == 0
-    assert "--name required" in result.output
+    assert "--name required" in strip_ansi(result.output)
 
 
 def test_gda_help_contains_custom_adapter_description() -> None:
@@ -313,7 +314,7 @@ def test_gda_no_args_exits_0() -> None:
 
 def test_gda_no_args_shows_type_option() -> None:
     result = runner.invoke(app, ["gda"])
-    assert "--type" in result.output
+    assert "--type" in strip_ansi(result.output)
 
 
 def test_pascal_case_name_exits_1(project_root: Path) -> None:

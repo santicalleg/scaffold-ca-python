@@ -6,6 +6,7 @@ import pytest
 from typer.testing import CliRunner
 
 from scaffold_ca_python.cli import app
+from tests.conftest import strip_ansi
 
 runner = CliRunner()
 
@@ -125,4 +126,4 @@ def test_gm_no_args_exits_0() -> None:
 
 def test_gm_no_args_shows_name_option() -> None:
     result = runner.invoke(app, ["gm"])
-    assert "--name" in result.output
+    assert "--name" in strip_ansi(result.output)

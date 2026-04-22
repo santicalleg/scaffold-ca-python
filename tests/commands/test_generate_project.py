@@ -6,6 +6,7 @@ import pytest
 from typer.testing import CliRunner
 
 from scaffold_ca_python.cli import app
+from tests.conftest import strip_ansi
 
 runner = CliRunner()
 
@@ -140,8 +141,9 @@ def test_clean_architecture_dry_run(tmp_path: Path, monkeypatch: pytest.MonkeyPa
 def test_clean_architecture_help_contains_options() -> None:
     result = runner.invoke(app, ["clean-architecture", "--help"])
     assert result.exit_code == 0
-    assert "--name" in result.output
-    assert "--dry-run" in result.output
+    output = strip_ansi(result.output)
+    assert "--name" in output
+    assert "--dry-run" in output
 
 
 def test_ca_help_identical_to_clean_architecture_help() -> None:
@@ -154,6 +156,8 @@ def test_ca_help_identical_to_clean_architecture_help() -> None:
     r_clean = runner.invoke(app, ["clean-architecture", "--help"])
 
     def _normalise(output: str) -> str:
+        # Clean ANSI codes first
+        output = strip_ansi(output)
         lines = output.splitlines()
         return "\n".join(
             line.replace(" ca ", " <CMD> ").replace(" clean-architecture ", " <CMD> ").rstrip()

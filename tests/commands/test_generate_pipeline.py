@@ -6,6 +6,7 @@ import pytest
 from typer.testing import CliRunner
 
 from scaffold_ca_python.cli import app
+from tests.conftest import strip_ansi
 
 runner = CliRunner()
 
@@ -170,7 +171,7 @@ def test_gpipe_help_shows_provider_descriptions() -> None:
 def test_gpipe_help_notes_provider_required() -> None:
     result = runner.invoke(app, ["gpipe", "--help"])
     assert result.exit_code == 0
-    assert "--provider is required" in result.output
+    assert "--provider is required" in strip_ansi(result.output)
 
 
 def test_gpipe_help_contains_examples_section() -> None:
@@ -191,4 +192,4 @@ def test_gpipe_no_args_exits_0() -> None:
 
 def test_gpipe_no_args_shows_provider_option() -> None:
     result = runner.invoke(app, ["gpipe"])
-    assert "--provider" in result.output
+    assert "--provider" in strip_ansi(result.output)
