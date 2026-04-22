@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/santicalleg/scaffold-ca-python/compare/v0.1.0...v0.1.1) (2026-04-22)
+
+
+### Bug Fixes
+
+* configure github app and use it with release-please action tasks ([3ac72f7](https://github.com/santicalleg/scaffold-ca-python/commit/3ac72f71b19092b0cc873ef2349674da27d3b554))
+
 ## 0.1.0 (2026-04-22)
 
 
