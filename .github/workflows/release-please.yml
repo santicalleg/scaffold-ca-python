@@ -3,6 +3,8 @@ name: Release Please
 on:
   push:
     branches:
+      - trunk
+      - main
       - master
 
 permissions:
@@ -21,7 +23,7 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
-      
+
       - name: Create Release PR
         id: release
         uses: google-github-actions/release-please-action@v4

@@ -3,11 +3,15 @@ name: Test
 on:
   push:
     branches:
+      - trunk
+      - main
       - master
       - feature/*
       - fix/*
   pull_request:
     branches:
+      - trunk
+      - main
       - master
     types:
       - opened
@@ -27,16 +31,16 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
-      
+
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version-file: ".python-version"
-      
+
       - name: Setup uv
         uses: astral-sh/setup-uv@v4
         with:
@@ -44,16 +48,16 @@ jobs:
           cache-dependency-glob: |
             pyproject.toml
             uv.lock
-      
+
       - name: Install dependencies
         run: uv sync --locked --group dev
-      
+
       - name: Ruff lint
         run: uv run ruff check src/ tests/
-      
+
       - name: Ruff format check
         run: uv run ruff format --check src/ tests/
-      
+
       - name: Type check with mypy
         run: uv run mypy src/
 
@@ -65,16 +69,16 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
-      
+
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version-file: ".python-version"
-      
+
       - name: Setup uv
         uses: astral-sh/setup-uv@v4
         with:
@@ -82,13 +86,13 @@ jobs:
           cache-dependency-glob: |
             pyproject.toml
             uv.lock
-      
+
       - name: Install dependencies
         run: uv sync --locked --group dev
-      
+
       - name: Run tests with coverage
         run: uv run pytest
-      
+
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
         if: always()
@@ -109,7 +113,7 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
-      
+
       - name: Decide whether the needed jobs succeeded or failed
         uses: re-actors/alls-green@v1.2.2
         with:
